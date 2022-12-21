@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Dazel">
+      <UniqueIdentifier>{95C7040D-01DC-2CBE-CA5D-D01D363129EF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dazel\Events">
+      <UniqueIdentifier>{D979C53A-C5DC-54DF-6E62-8D955AA42062}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{2AC788B4-1694-E3BF-3FAD-D1672BD9184E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\Windows">
+      <UniqueIdentifier>{64FBD71A-50F4-F66C-7926-DCF1657ED678}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Dazel.h" />
+    <ClInclude Include="src\Dazel\Application.h">
+      <Filter>Dazel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\Core.h">
+      <Filter>Dazel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\EntryPoint.h">
+      <Filter>Dazel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\Events\ApplicationEvent.h">
+      <Filter>Dazel\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\Events\Event.h">
+      <Filter>Dazel\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\Events\KeyEvent.h">
+      <Filter>Dazel\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\Events\MouseEvent.h">
+      <Filter>Dazel\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\Log.h">
+      <Filter>Dazel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\Window.h">
+      <Filter>Dazel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DazelPCH.h" />
+    <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
+      <Filter>Platform\Windows</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Dazel\Application.cpp">
+      <Filter>Dazel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Dazel\Log.cpp">
+      <Filter>Dazel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DazelPCH.cpp" />
+    <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
+      <Filter>Platform\Windows</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

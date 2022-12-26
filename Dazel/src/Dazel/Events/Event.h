@@ -24,6 +24,7 @@ namespace DAZEL
 
 		KeyPressed,
 		KeyReleased,
+		KeyTyped,
 
 		MouseButtonPressed,
 		MouseButtonReleased,
@@ -64,8 +65,10 @@ namespace DAZEL
 
 		inline bool IsInCategory(EventCategory category) { return GetCategoryFlags() & category; }
 
+		inline bool bIsHandled() { return m_bHandled; }
+
 	protected:
-		bool m_Handled = false; //是否已被处理
+		bool m_bHandled = false; //是否已被处理
 	};
 
 	class EventDispatcher
@@ -81,7 +84,7 @@ namespace DAZEL
 		{
 			if (m_Event.GetEventType() == T::GetStaticType())
 			{
-				m_Event.m_Handled = func(*(T*)&m_Event);
+				m_Event.m_bHandled = func(*(T*)&m_Event);
 				return true;
 			}
 			return false;

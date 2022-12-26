@@ -1,3 +1,9 @@
 [submodule "Vender/spdlog"]
 	path = Vender/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "Dazel/Vender/GLFW"]
+	path = Dazel/Vender/GLFW
+	url = https://github.com/TheCherno/glfw
+[submodule "Dazel/Vender/ImGui"]
+	path = Dazel/Vender/ImGui
+	url = https://github.com/TheCherno/imgui

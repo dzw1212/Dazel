@@ -2,6 +2,8 @@ outputdir = "%{cfg.longname}_%{cfg.architecture}"
 
 IncludeDir = {
     ["GLFW"] = "Dazel/Vender/GLFW/include",
+    ["GLAD"] = "Dazel/Vender/GLAD/include",
+    ["ImGui"] = "Dazel/Vender/ImGui"
 }
 
 startproject "Sandbox"
@@ -12,6 +14,8 @@ workspace "Dazel"
 	configurations {"Debug", "Release", "Publish"}
 
     include "Dazel/Vender/GLFW"
+    include "Dazel/Vender/GLAD"
+    include "Dazel/Vender/ImGui"
 
 	project "Dazel"
 		location "Dazel"
@@ -35,12 +39,16 @@ workspace "Dazel"
             "%{prj.name}/src",
 			"%{prj.name}/Vender/spdlog/include",
             "%{IncludeDir.GLFW}",
+            "%{IncludeDir.GLAD}",
+            "%{IncludeDir.ImGui}",
 		}
 
         links
         {
             "GLFW",
-            "opengl32.lib"
+            "GLAD",
+            "ImGui",
+            "opengl32.lib",
         }
 
 		filter "system:windows"
@@ -53,6 +61,7 @@ workspace "Dazel"
 				"DAZEL_PLATFORM_WINDOWS",
 				"DAZEL_BUILD_DLL",
                 "DAZEL_ENABLE_ASSERTS",
+                "GLFW_INCLUDE_NONE",
 			}
 
 			postbuildcommands
@@ -62,14 +71,17 @@ workspace "Dazel"
 
 		filter "configurations:Debug"
 			defines "DAZEL_DEBUG"
+            buildoptions "/MDd"
 			symbols "On"
 
 		filter "configurations:Release"
 			defines "DAZEL_RELEASE"
+            buildoptions "/MD"
 			optimize "On"
 
 		filter "configurations:Publish"
 			defines "DAZEL_PUBLISH"
+            buildoptions "/MD"
 			optimize "On"
 
 	project "Sandbox"
@@ -91,6 +103,8 @@ workspace "Dazel"
             "Dazel/src",
 			"Dazel/Vender/spdlog/include",
             "%{IncludeDir.GLFW}",
+            "%{IncludeDir.GLAD}",
+            "%{IncludeDir.ImGui}",
 		}
 
 		links "Dazel"
@@ -104,16 +118,20 @@ workspace "Dazel"
 			{
 				"DAZEL_PLATFORM_WINDOWS",
                 "DAZEL_ENABLE_ASSERTS",
+                "GLFW_INCLUDE_NONE",
 			}
 
 		filter "configurations:Debug"
 			defines "DAZEL_DEBUG"
+            buildoptions "/MDd"
 			symbols "On"
 
 		filter "configurations:Release"
 			defines "DAZEL_RELEASE"
+            buildoptions "/MD"
 			optimize "On"
 
 		filter "configurations:Publish"
 			defines "DAZEL_PUBLISH"
+            buildoptions "/MD"
 			optimize "On"

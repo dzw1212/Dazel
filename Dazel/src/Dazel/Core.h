@@ -35,3 +35,5 @@ using UINT = unsigned int;
 	#define ASSERT(condition, ...)
 	#define CORE_ASSERT(condition, ...)
 #endif
+
+#define BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)

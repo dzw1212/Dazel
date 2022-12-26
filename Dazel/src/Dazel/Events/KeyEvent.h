@@ -46,6 +46,19 @@ namespace DAZEL
 		{
 			return std::format("[KeyReleasedEvent] KeyCode:{}", m_nKeyCode);
 		}
-		
+	};
+
+	class DAZEL_API KeyTypedEvent : public KeyEvent
+	{
+	public:
+		EVENT_CLASS_TYPE(KeyTyped)
+	public:
+		KeyTypedEvent(int nKeyCode)
+			: KeyEvent(nKeyCode) {}
+
+		std::string ToString() const override
+		{
+			return std::format("[KeyTypedEvent] KeyCode:{}", m_nKeyCode);
+		}
 	};
 }

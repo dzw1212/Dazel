@@ -79,11 +79,12 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DazelPCH.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_BUILD_DLL;DAZEL_ENABLE_ASSERTS;DAZEL_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;Vender\spdlog\include;Vender\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_BUILD_DLL;DAZEL_ENABLE_ASSERTS;GLFW_INCLUDE_NONE;DAZEL_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;Vender\spdlog\include;Vender\GLFW\include;Vender\GLAD\include;Vender\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalOptions>/MDd %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -101,14 +102,15 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DazelPCH.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_BUILD_DLL;DAZEL_ENABLE_ASSERTS;DAZEL_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;Vender\spdlog\include;Vender\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_BUILD_DLL;DAZEL_ENABLE_ASSERTS;GLFW_INCLUDE_NONE;DAZEL_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;Vender\spdlog\include;Vender\GLFW\include;Vender\GLAD\include;Vender\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -127,14 +129,15 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DazelPCH.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_BUILD_DLL;DAZEL_ENABLE_ASSERTS;DAZEL_PUBLISH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;Vender\spdlog\include;Vender\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_BUILD_DLL;DAZEL_ENABLE_ASSERTS;GLFW_INCLUDE_NONE;DAZEL_PUBLISH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;Vender\spdlog\include;Vender\GLFW\include;Vender\GLAD\include;Vender\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -157,22 +160,37 @@
     <ClInclude Include="src\Dazel\Events\Event.h" />
     <ClInclude Include="src\Dazel\Events\KeyEvent.h" />
     <ClInclude Include="src\Dazel\Events\MouseEvent.h" />
+    <ClInclude Include="src\Dazel\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\Dazel\Layer.h" />
+    <ClInclude Include="src\Dazel\LayerStack.h" />
     <ClInclude Include="src\Dazel\Log.h" />
     <ClInclude Include="src\Dazel\Window.h" />
     <ClInclude Include="src\DazelPCH.h" />
+    <ClInclude Include="src\Platform\OpenGL\imgui_impl_opengl3.h" />
+    <ClInclude Include="src\Platform\OpenGL\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Dazel\Application.cpp" />
+    <ClCompile Include="src\Dazel\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Dazel\Layer.cpp" />
+    <ClCompile Include="src\Dazel\LayerStack.cpp" />
     <ClCompile Include="src\Dazel\Log.cpp" />
     <ClCompile Include="src\DazelPCH.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\imgui_impl_opengl3.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vender\GLFW\GLFW.vcxproj">
       <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Vender\GLAD\GLAD.vcxproj">
+      <Project>{5D4A857C-4981-860D-F26D-6C10DE83020F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Vender\ImGui\ImGui.vcxproj">
+      <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

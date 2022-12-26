@@ -3,6 +3,10 @@
 #include "Dazel/Events/Event.h"
 #include "Dazel/Core.h"
 
+#include "Dazel/Events/ApplicationEvent.h"
+#include "Dazel/Events/KeyEvent.h"
+#include "Dazel/Events/MouseEvent.h"
+
 namespace DAZEL
 {
 	struct sWindowProps

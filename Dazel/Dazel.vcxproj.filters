@@ -37,6 +37,12 @@
     <ClInclude Include="src\Dazel\Events\MouseEvent.h">
       <Filter>Dazel\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\Dazel\Layer.h">
+      <Filter>Dazel</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\LayerStack.h">
+      <Filter>Dazel</Filter>
+    </ClInclude>
     <ClInclude Include="src\Dazel\Log.h">
       <Filter>Dazel</Filter>
     </ClInclude>
@@ -47,9 +53,18 @@
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
       <Filter>Platform\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="src\Dazel\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\Platform\OpenGL\imgui_impl_opengl3.h" />
+    <ClInclude Include="src\Platform\OpenGL\imgui_impl_opengl3_loader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Dazel\Application.cpp">
+      <Filter>Dazel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Dazel\Layer.cpp">
+      <Filter>Dazel</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Dazel\LayerStack.cpp">
       <Filter>Dazel</Filter>
     </ClCompile>
     <ClCompile Include="src\Dazel\Log.cpp">
@@ -59,5 +74,7 @@
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
       <Filter>Platform\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="src\Dazel\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\imgui_impl_opengl3.cpp" />
   </ItemGroup>
 </Project>

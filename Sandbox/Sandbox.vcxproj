@@ -78,12 +78,11 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_ENABLE_ASSERTS;GLFW_INCLUDE_NONE;DAZEL_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Dazel\src;..\Dazel\Vender\spdlog\include;..\Dazel\Vender\GLFW\include;..\Dazel\Vender\GLAD\include;..\Dazel\Vender\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_ENABLE_ASSERTS;_CRT_SECURE_NOT_WARNINGS;DAZEL_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Dazel\src;..\Dazel\Vender\spdlog\include;..\Dazel\Vender\GLFW\include;..\Dazel\Vender\GLAD\include;..\Dazel\Vender\ImGui;..\Dazel\Vender\glm;..\Dazel\Vender\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalOptions>/MDd %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -95,15 +94,14 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_ENABLE_ASSERTS;GLFW_INCLUDE_NONE;DAZEL_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Dazel\src;..\Dazel\Vender\spdlog\include;..\Dazel\Vender\GLFW\include;..\Dazel\Vender\GLAD\include;..\Dazel\Vender\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_ENABLE_ASSERTS;_CRT_SECURE_NOT_WARNINGS;DAZEL_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Dazel\src;..\Dazel\Vender\spdlog\include;..\Dazel\Vender\GLFW\include;..\Dazel\Vender\GLAD\include;..\Dazel\Vender\ImGui;..\Dazel\Vender\glm;..\Dazel\Vender\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -116,15 +114,14 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_ENABLE_ASSERTS;GLFW_INCLUDE_NONE;DAZEL_PUBLISH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Dazel\src;..\Dazel\Vender\spdlog\include;..\Dazel\Vender\GLFW\include;..\Dazel\Vender\GLAD\include;..\Dazel\Vender\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_ENABLE_ASSERTS;_CRT_SECURE_NOT_WARNINGS;DAZEL_PUBLISH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Dazel\src;..\Dazel\Vender\spdlog\include;..\Dazel\Vender\GLFW\include;..\Dazel\Vender\GLAD\include;..\Dazel\Vender\ImGui;..\Dazel\Vender\glm;..\Dazel\Vender\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -134,12 +131,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Sandbox2D.cpp" />
     <ClCompile Include="src\SandboxApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dazel\Dazel.vcxproj">
       <Project>{95C7040D-01DC-2CBE-CA5D-D01D363129EF}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Sandbox2D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

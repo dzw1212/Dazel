@@ -4,18 +4,20 @@
 #include "GLFW/glfw3.h"
 #include "glad/glad.h"
 
+#include "Platform/OpenGL/OpenGLContext.h"
+
 namespace DAZEL
-{
-	static bool s_bGLFWInitialized = false;
+{ 
+	static int s_nGLFWWindowCount = 0;
 
 	static void GLFWErrCallBack(int nErrCode, const char* pcErrDesc)
 	{
 		CORE_LOG_ERROR("[GLFW Error] ErrCode:{} ErrDesc:{}", nErrCode, pcErrDesc);
 	}
 
-	Window* Window::Create(const sWindowProps& props)
+	Scope<Window> Window::Create(const sWindowProps& props)
 	{
-		return new WindowsWindow(props);
+		return std::make_unique<WindowsWindow>(props);
 	}
 
 	WindowsWindow::WindowsWindow(const sWindowProps& props)
@@ -28,14 +30,32 @@ namespace DAZEL
 		Shutdown();
 	}
 
+	void WindowsWindow::Shutdown()
+	{
+		PROFILE_FUNCTION();
+
+		glfwDestroyWindow(m_Window);
+		s_nGLFWWindowCount--;
+
+		if (s_nGLFWWindowCount == 0)
+		{
+			glfwTerminate();
+		}
+
+	}
+
 	void WindowsWindow::OnUpdate()
 	{
+		PROFILE_FUNCTION();
+
 		glfwPollEvents();
-		glfwSwapBuffers(m_Window);
+		m_Context->SwapBuffers();
 	}
 
 	void WindowsWindow::SetVSync(bool bEnable)
 	{
+		PROFILE_FUNCTION();
+
 		if (bEnable)
 			glfwSwapInterval(1); //开启垂直同步,并设为60HZ
 		else
@@ -48,28 +68,40 @@ namespace DAZEL
 		return m_Data.bVSync;
 	}
 
+	void* WindowsWindow::GetNativeWindow()
+	{
+		return m_Window;
+	}
+
 	void WindowsWindow::Init(const sWindowProps& props)
 	{
+		PROFILE_FUNCTION();
+
 		m_Data.sProps = props;
 		LOG_INFO("[Creating Windows Window] Title:<{}> Size:({},{})", 
 			m_Data.sProps.strTitle, m_Data.sProps.uiWidth, m_Data.sProps.uiHeight);
 
-		if (!s_bGLFWInitialized)
+		if (s_nGLFWWindowCount == 0)
 		{
+			PROFILE_SCOPE("glfwInit SetErrorCallback");
 			int nRet = glfwInit();
 			CORE_ASSERT(nRet == GLFW_TRUE, "GLFW Init failed");
 			glfwSetErrorCallback(GLFWErrCallBack);
-			s_bGLFWInitialized = true;
+			s_nGLFWWindowCount++;
 		}
 
-		m_Window = glfwCreateWindow((int)props.uiWidth, (int)props.uiHeight, props.strTitle.c_str(), nullptr, nullptr);
-		CORE_ASSERT(m_Window, "GLFW create window failed");
-		glfwMakeContextCurrent(m_Window);
+		{
+			PROFILE_SCOPE("glfwCreateWindow");
+			m_Window = glfwCreateWindow((int)props.uiWidth, (int)props.uiHeight, props.strTitle.c_str(), nullptr, nullptr);
+			CORE_ASSERT(m_Window, "GLFW create window failed");
+		}
+		
+
+		m_Context = new OpenGLContext(m_Window);
+		m_Context->Init();
+
 		glfwSetWindowUserPointer(m_Window, &m_Data); //将自定义数据传递给window,后续通过glfwGetWindowUserPointer获取
 		SetVSync(true);
-
-		int nRet = gladLoadGLLoader(GLADloadproc(glfwGetProcAddress));
-		CORE_ASSERT(nRet, "GLAD Init failed");
 
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int nWidth, int nHeight)
 			{
@@ -178,17 +210,10 @@ namespace DAZEL
 				sWindowData* pWindowData = (sWindowData*)glfwGetWindowUserPointer(window);
 				CORE_ASSERT(pWindowData, "WindowData is NULL");
 
-				LOG_ERROR("uiChar = {}", uiChar);
-
 				KeyTypedEvent event(uiChar);
 				pWindowData->EventCallback(event);
 			}
 		);
-	}
-
-	void WindowsWindow::Shutdown()
-	{
-		glfwDestroyWindow(m_Window);
 	}
 
 }

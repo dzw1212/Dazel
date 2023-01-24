@@ -1,6 +1,6 @@
 #pragma once
 #include "DazelPCH.h"
-#include "Dazel/Core.h"
+#include "Dazel/Core/Core.h"
 
 namespace DAZEL
 {

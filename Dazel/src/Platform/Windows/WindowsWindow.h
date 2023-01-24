@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Dazel/Window.h"
+#include "Dazel/Core/Window.h"
+#include "Dazel/Renderer/GraphicsContext.h"
 
 struct GLFWwindow;
 
@@ -23,11 +24,13 @@ namespace DAZEL
 		}
 		void SetVSync(bool bEnable) override;
 		bool IsVSync() const override;
+		virtual void* GetNativeWindow() override;
 	private:
 		virtual void Init(const sWindowProps& props);
 		virtual void Shutdown();
 	private:
 		GLFWwindow* m_Window;
+		GraphicsContext* m_Context;
 
 		struct sWindowData
 		{

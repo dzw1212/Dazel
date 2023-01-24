@@ -7,3 +7,6 @@
 [submodule "Dazel/Vender/ImGui"]
 	path = Dazel/Vender/ImGui
 	url = https://github.com/TheCherno/imgui
+[submodule "Dazel/Vender/glm"]
+	path = Dazel/Vender/glm
+	url = https://github.com/g-truc/glm

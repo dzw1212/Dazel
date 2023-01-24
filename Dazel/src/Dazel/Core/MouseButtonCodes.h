@@ -1,0 +1,16 @@
+#pragma once
+
+//copy from glfw3
+
+#define DAZEL_MOUSE_BUTTON_1         0
+#define DAZEL_MOUSE_BUTTON_2         1
+#define DAZEL_MOUSE_BUTTON_3         2
+#define DAZEL_MOUSE_BUTTON_4         3
+#define DAZEL_MOUSE_BUTTON_5         4
+#define DAZEL_MOUSE_BUTTON_6         5
+#define DAZEL_MOUSE_BUTTON_7         6
+#define DAZEL_MOUSE_BUTTON_8         7
+#define DAZEL_MOUSE_BUTTON_LAST      DAZEL_MOUSE_BUTTON_8
+#define DAZEL_MOUSE_BUTTON_LEFT      DAZEL_MOUSE_BUTTON_1
+#define DAZEL_MOUSE_BUTTON_RIGHT     DAZEL_MOUSE_BUTTON_2
+#define DAZEL_MOUSE_BUTTON_MIDDLE    DAZEL_MOUSE_BUTTON_3

@@ -14,6 +14,10 @@
 
 #include <string>
 #include <map>
+#include <unordered_map>
+#include <array>
 #include <vector>
 
-#include "Dazel/Log.h"
+#include "Dazel/Core/Log.h"
+
+#include "Dazel/Debug/Instrumentation.h"

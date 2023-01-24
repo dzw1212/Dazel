@@ -1,0 +1,1 @@
+{"otherData": {},"traceEvents":[{"cat":"function","dur":57,"name":"__cdecl DAZEL::OpenGLTexture2D::~OpenGLTexture2D(void)","ph":"X","pid":0,"tid":1802312781,"ts":1199597187010},{"cat":"function","dur":59706,"name":"void __cdecl DAZEL::WindowsWindow::Shutdown(void)","ph":"X","pid":0,"tid":1802312781,"ts":1199597187160}]}

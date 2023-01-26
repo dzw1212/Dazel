@@ -21,6 +21,7 @@ namespace DAZEL
 		virtual void SetFloat4(const std::string& strName, const glm::vec4& vec4) override;
 		virtual void SetFloat3(const std::string& strName, const glm::vec3& vec3) override;
 		virtual void SetInt(const std::string& strName, int nVal) override;
+		virtual void SetIntArray(const std::string& strName, int* pnVal, UINT uiCount) override;
 
 		virtual const std::string& GetName() const override;
 
@@ -38,6 +39,8 @@ namespace DAZEL
 		void UploadUniformUIVec2(const std::string& strName, const glm::uvec2& uvec2);
 		void UploadUniformUIVec3(const std::string& strName, const glm::uvec3& uvec3);
 		void UploadUniformUIVec4(const std::string& strName, const glm::uvec4& uvec4);
+
+		void UploadUniformIntArray(const std::string& strName, int* pnVal, UINT uiCount);
 
 	private:
 		std::unordered_map<GLenum, std::string> SplitShaderSource(const std::string& strShaderSrc);

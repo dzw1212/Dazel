@@ -25,9 +25,9 @@ namespace DAZEL
 		{
 			s_RendererAPI->SetViewport(nX, nY, nWidth, nHeight);
 		}
-		inline static void DrawIndexed(const Ref<VertexArray>& vertexArray)
+		inline static void DrawIndexed(const Ref<VertexArray>& vertexArray, UINT uiIndexCount = 0)
 		{
-			s_RendererAPI->DrawIndexed(vertexArray);
+			s_RendererAPI->DrawIndexed(vertexArray, uiIndexCount);
 		}
 	private:
 		static RendererAPI* s_RendererAPI;

@@ -155,7 +155,10 @@ namespace DAZEL
 		virtual void SetLayout(const BufferLayout& layout) = 0;
 		virtual const BufferLayout& GetLayout() = 0;
 
+		virtual void SetData(const void* data, UINT uiSize) = 0;
+
 		static Ref<VertexBuffer> Create(float* pfVertices, UINT uiSize);
+		static Ref<VertexBuffer> Create(UINT uiSize);
 	};
 
 	class IndexBuffer
@@ -169,5 +172,6 @@ namespace DAZEL
 		virtual UINT GetCount() const = 0;
 
 		static Ref<IndexBuffer> Create(UINT* puiIndices, UINT uiCount);
+		static Ref<IndexBuffer> Create(UINT uiCount);
 	};
 }

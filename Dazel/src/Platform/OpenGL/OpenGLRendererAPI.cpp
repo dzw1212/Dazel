@@ -33,10 +33,13 @@ namespace DAZEL
 
 		glViewport(nX, nY, nWidth, nHeight);
 	}
-	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray)
+	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, UINT uiIndexCount)
 	{
 		PROFILE_FUNCTION();
-
-		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+		if (uiIndexCount > 0)
+			glDrawElements(GL_TRIANGLES, uiIndexCount, GL_UNSIGNED_INT, nullptr);
+		else
+			glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+		
 	}
 }

@@ -19,6 +19,7 @@ namespace DAZEL
 		virtual void SetFloat4(const std::string& strName, const glm::vec4& vec4) = 0;
 		virtual void SetFloat3(const std::string& strName, const glm::vec3& vec3) = 0;
 		virtual void SetInt(const std::string& strName, int nVal) = 0;
+		virtual void SetIntArray(const std::string& strName, int* pnVal, UINT uiCount) = 0;
 
 		std::string ReadShaderFromFile(const std::string& strFilePath);
 		std::string ReadFile(const std::string& strFilePath);

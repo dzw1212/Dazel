@@ -95,4 +95,8 @@ namespace DAZEL
 
 		glBindTextureUnit(nSlot, m_uiId);
 	}
+	UINT OpenGLTexture2D::GetId() const
+	{
+		return m_uiId;
+	}
 }

@@ -140,6 +140,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Dazel\Core\Random.h" />
     <ClInclude Include="src\Dazel\Debug\Instrumentation.h" />
     <ClInclude Include="src\Dazel\Renderer\Renderer2D.h" />
     <ClInclude Include="Vender\glm\glm\common.hpp" />

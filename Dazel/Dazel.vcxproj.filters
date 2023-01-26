@@ -1418,6 +1418,7 @@
     </ClInclude>
     <ClInclude Include="src\Dazel\Renderer\Renderer2D.h" />
     <ClInclude Include="src\Dazel\Debug\Instrumentation.h" />
+    <ClInclude Include="src\Dazel\Core\Random.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Vender\stb_image\stb_image.cpp">

@@ -16,9 +16,12 @@ namespace DAZEL
 		virtual UINT GetWidth() const override { return m_uiWidth; }
 		virtual UINT GetHeight() const override { return m_uiHeight; }
 
-
 		virtual void SetData(void* data, UINT uiSize) override;
-		virtual void Bind(const int nSlot) const override;		
+		virtual void Bind(const int nSlot) const override;
+
+		virtual UINT GetId() const override;
+
+		virtual bool operator==(const Texture& otherTexture) const override { return m_uiId == otherTexture.GetId(); }
 	private:
 		std::string m_strPath;
 		UINT m_uiWidth;
@@ -27,5 +30,7 @@ namespace DAZEL
 
 		GLenum m_eInternalFormat;
 		GLenum m_eDataFormat;
+
+		std::map<UINT, Ref<Texture>> m_mapTextures;
 	};
 }

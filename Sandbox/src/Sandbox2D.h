@@ -24,5 +24,4 @@ private:
 	DAZEL::Ref<DAZEL::Texture2D> m_Texture;
 	int m_nTextureTileCoef = 1;
 	glm::vec3 m_SquareColor = glm::vec3(1.f);
-
 };

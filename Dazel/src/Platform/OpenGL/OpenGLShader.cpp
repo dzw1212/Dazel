@@ -86,6 +86,11 @@ namespace DAZEL
 		UploadUniformIVec1(strName, glm::ivec1(nVal));
 	}
 
+	void OpenGLShader::SetIntArray(const std::string& strName, int* pnVal, UINT uiCount)
+	{
+		UploadUniformIntArray(strName, pnVal, uiCount);
+	}
+
 	const std::string& OpenGLShader::GetName() const
 	{
 		return m_strName;
@@ -161,6 +166,12 @@ namespace DAZEL
 		glUniform4ui(location, uvec4.x, uvec4.y, uvec4.z, uvec4.w);
 	}
 
+	void OpenGLShader::UploadUniformIntArray(const std::string& strName, int* pnVal, UINT uiCount)
+	{
+		auto location = glGetUniformLocation(m_uiRendererProgramId, strName.c_str());
+		glUniform1iv(location, uiCount, pnVal);
+	}
+
 	std::unordered_map<GLenum, std::string> OpenGLShader::SplitShaderSource(const std::string& strShaderSrc)
 	{
 		PROFILE_FUNCTION();
@@ -226,7 +237,7 @@ namespace DAZEL
 				glDeleteShader(shaderId);
 
 				// Use the infoLog as you see fit.
-				CORE_ASSERT(false, "Compile {} Shader Failed, Info is {}", ShaderTypeToString(shaderType), infoLog.data());
+				CORE_ASSERT(false, std::format("Compile {} Shader Failed, Info is {}", ShaderTypeToString(shaderType), infoLog.data()));
 
 				break;
 			}
@@ -259,7 +270,7 @@ namespace DAZEL
 				glDeleteShader(shaderId);
 
 			// Use the infoLog as you see fit.
-			CORE_ASSERT(false, "Link Shader Failed, Info is {}", infoLog.data());
+			CORE_ASSERT(false, std::format("Link Shader Failed, Info is {}", infoLog.data()));
 		}
 
 		// Always detach shaders after a successful link.

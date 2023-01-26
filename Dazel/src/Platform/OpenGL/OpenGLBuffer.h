@@ -8,6 +8,7 @@ namespace DAZEL
 	{
 	public:
 		OpenGLVertexBuffer(float* pfVertices, UINT uiSize);
+		OpenGLVertexBuffer(UINT uiSize);
 		virtual ~OpenGLVertexBuffer();
 
 		virtual void Bind() const override;
@@ -15,6 +16,8 @@ namespace DAZEL
 
 		virtual void SetLayout(const BufferLayout& layout) override { m_Layout = layout; };
 		virtual const BufferLayout& GetLayout() override { return m_Layout; };
+
+		virtual void SetData(const void* data, UINT uiSize) override;
 
 	private:
 		UINT m_uiId;
@@ -25,6 +28,7 @@ namespace DAZEL
 	{
 	public:
 		OpenGLIndexBuffer(UINT* puiIndices, UINT uiCount);
+		OpenGLIndexBuffer(UINT uiCount);
 		virtual ~OpenGLIndexBuffer();
 
 		virtual void Bind() const override;

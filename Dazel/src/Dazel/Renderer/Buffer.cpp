@@ -18,6 +18,18 @@ namespace DAZEL
 		CORE_ASSERT(false, "RendererAPI {0} is currently not support", (int)Renderer::GetAPI());
 		return nullptr;
 	}
+	Ref<VertexBuffer> VertexBuffer::Create(UINT uiSize)
+	{
+		switch (Renderer::GetAPI())
+		{
+		case RendererAPI::API::OpenGL:
+		{
+			return std::make_shared<OpenGLVertexBuffer>(uiSize);
+		}
+		}
+		CORE_ASSERT(false, "RendererAPI {0} is currently not support", (int)Renderer::GetAPI());
+		return nullptr;
+	}
 	Ref<IndexBuffer> IndexBuffer::Create(UINT* puiIndices, UINT uiCount)
 	{
 		switch (Renderer::GetAPI())
@@ -25,6 +37,18 @@ namespace DAZEL
 		case RendererAPI::API::OpenGL:
 			{
 				return std::make_shared<OpenGLIndexBuffer>(puiIndices, uiCount);
+			}
+		}
+		CORE_ASSERT(false, "RendererAPI {0} is currently not support", (int)Renderer::GetAPI());
+		return nullptr;
+	}
+	Ref<IndexBuffer> IndexBuffer::Create(UINT uiCount)
+	{
+		switch (Renderer::GetAPI())
+		{
+		case RendererAPI::API::OpenGL:
+			{
+				return std::make_shared<OpenGLIndexBuffer>(uiCount);
 			}
 		}
 		CORE_ASSERT(false, "RendererAPI {0} is currently not support", (int)Renderer::GetAPI());

@@ -18,13 +18,17 @@ namespace DAZEL
 {
 	Application* Application::s_Inst = nullptr;
 
-	Application::Application()
+	Application::Application(const std::string& strAppName)
 	{
 		PROFILE_FUNCTION();
 
 		CORE_ASSERT(s_Inst == nullptr, "Create Application failed. Already exist.");
 		s_Inst = this;
-		m_Window = Window::Create();
+		sWindowProps props;
+		props.strTitle = strAppName;
+		props.uiWidth = 1920;
+		props.uiHeight = 1080;
+		m_Window = Window::Create(props);
 		m_Window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 
 		Renderer::Init();

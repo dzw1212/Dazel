@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_ENABLE_ASSERTS;_CRT_SECURE_NOT_WARNINGS;DAZEL_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Dazel\src;..\Dazel\Vender\spdlog\include;..\Dazel\Vender\GLFW\include;..\Dazel\Vender\GLAD\include;..\Dazel\Vender\ImGui;..\Dazel\Vender\glm;..\Dazel\Vender\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Dazel\src;..\Dazel\Vender\spdlog\include;..\Dazel\Vender\GLFW\include;..\Dazel\Vender\GLAD\include;..\Dazel\Vender\ImGui;..\Dazel\Vender\glm;..\Dazel\Vender\stb_image;..\Dazel\Vender\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -95,7 +95,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_ENABLE_ASSERTS;_CRT_SECURE_NOT_WARNINGS;DAZEL_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Dazel\src;..\Dazel\Vender\spdlog\include;..\Dazel\Vender\GLFW\include;..\Dazel\Vender\GLAD\include;..\Dazel\Vender\ImGui;..\Dazel\Vender\glm;..\Dazel\Vender\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Dazel\src;..\Dazel\Vender\spdlog\include;..\Dazel\Vender\GLFW\include;..\Dazel\Vender\GLAD\include;..\Dazel\Vender\ImGui;..\Dazel\Vender\glm;..\Dazel\Vender\stb_image;..\Dazel\Vender\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -115,7 +115,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_ENABLE_ASSERTS;_CRT_SECURE_NOT_WARNINGS;DAZEL_PUBLISH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Dazel\src;..\Dazel\Vender\spdlog\include;..\Dazel\Vender\GLFW\include;..\Dazel\Vender\GLAD\include;..\Dazel\Vender\ImGui;..\Dazel\Vender\glm;..\Dazel\Vender\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Dazel\src;..\Dazel\Vender\spdlog\include;..\Dazel\Vender\GLFW\include;..\Dazel\Vender\GLAD\include;..\Dazel\Vender\ImGui;..\Dazel\Vender\glm;..\Dazel\Vender\stb_image;..\Dazel\Vender\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -131,6 +131,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Sandbox2D.h" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="src\Sandbox2D.cpp" />
     <ClCompile Include="src\SandboxApp.cpp" />
   </ItemGroup>
@@ -138,9 +141,6 @@
     <ProjectReference Include="..\Dazel\Dazel.vcxproj">
       <Project>{95C7040D-01DC-2CBE-CA5D-D01D363129EF}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\Sandbox2D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

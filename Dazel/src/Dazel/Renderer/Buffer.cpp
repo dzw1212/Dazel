@@ -12,7 +12,7 @@ namespace DAZEL
 		{
 		case RendererAPI::API::OpenGL :
 			{
-				return std::make_shared<OpenGLVertexBuffer>(pfVertices, uiSize);
+				return CreateRef<OpenGLVertexBuffer>(pfVertices, uiSize);
 			}
 		}
 		CORE_ASSERT(false, "RendererAPI {0} is currently not support", (int)Renderer::GetAPI());
@@ -24,7 +24,7 @@ namespace DAZEL
 		{
 		case RendererAPI::API::OpenGL:
 		{
-			return std::make_shared<OpenGLVertexBuffer>(uiSize);
+			return CreateRef<OpenGLVertexBuffer>(uiSize);
 		}
 		}
 		CORE_ASSERT(false, "RendererAPI {0} is currently not support", (int)Renderer::GetAPI());
@@ -36,7 +36,7 @@ namespace DAZEL
 		{
 		case RendererAPI::API::OpenGL:
 			{
-				return std::make_shared<OpenGLIndexBuffer>(puiIndices, uiCount);
+				return CreateRef<OpenGLIndexBuffer>(puiIndices, uiCount);
 			}
 		}
 		CORE_ASSERT(false, "RendererAPI {0} is currently not support", (int)Renderer::GetAPI());
@@ -48,7 +48,7 @@ namespace DAZEL
 		{
 		case RendererAPI::API::OpenGL:
 			{
-				return std::make_shared<OpenGLIndexBuffer>(uiCount);
+				return CreateRef<OpenGLIndexBuffer>(uiCount);
 			}
 		}
 		CORE_ASSERT(false, "RendererAPI {0} is currently not support", (int)Renderer::GetAPI());

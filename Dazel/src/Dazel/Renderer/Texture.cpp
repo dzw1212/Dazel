@@ -12,10 +12,10 @@ namespace DAZEL
 		{
 		case RendererAPI::API::OpenGL:
 		{
-			return std::make_shared<OpenGLTexture2D>(strPath);
+			return CreateRef<OpenGLTexture2D>(strPath);
 		}
 		}
-		CORE_ASSERT(false, "RendererAPI {0} is currently not support", (int)Renderer::GetAPI());
+		CORE_ASSERT(false, std::format("RendererAPI {0} is currently not support", (int)Renderer::GetAPI()));
 		return nullptr;
 	}
 	Ref<Texture2D> Texture2D::Create(UINT uiWidth, UINT uiHeight)
@@ -24,10 +24,10 @@ namespace DAZEL
 		{
 		case RendererAPI::API::OpenGL:
 		{
-			return std::make_shared<OpenGLTexture2D>(uiWidth, uiHeight);
+			return CreateRef<OpenGLTexture2D>(uiWidth, uiHeight);
 		}
 		}
-		CORE_ASSERT(false, "RendererAPI {0} is currently not support", (int)Renderer::GetAPI());
+		CORE_ASSERT(false, std::format("RendererAPI {0} is currently not support", (int)Renderer::GetAPI()));
 		return nullptr;
 	}
 }

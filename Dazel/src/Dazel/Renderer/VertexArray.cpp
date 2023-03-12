@@ -12,7 +12,7 @@ namespace DAZEL
 		{
 		case RendererAPI::API::OpenGL:
 		{
-			return std::make_shared<OpenGLVertexArray>();
+			return CreateRef<OpenGLVertexArray>();
 		}
 		}
 		CORE_ASSERT(false, "RendererAPI {0} is currently not support", (int)Renderer::GetAPI());

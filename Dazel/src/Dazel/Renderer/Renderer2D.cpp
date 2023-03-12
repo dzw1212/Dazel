@@ -7,10 +7,11 @@
 #include "RendererCommand.h"
 
 #include "glm/gtc/matrix_transform.hpp"
+#include "glm/glm.hpp"
 
 namespace DAZEL
 {
-	Renderer2D::Renderer2DData Renderer2D::s_SquareData;
+	Renderer2DData Renderer2D::s_SquareData;
 
 	void Renderer2D::Init()
 	{
@@ -24,6 +25,7 @@ namespace DAZEL
 			{ShaderDataType::VEC4,		"color"},
 			{ShaderDataType::FLOAT,		"texIndex"},
 			{ShaderDataType::FLOAT,		"tilingFactor"},
+			{ShaderDataType::INT,		"entityId"},
 		};
 
 		s_SquareData.SquareVertexBuffer = VertexBuffer::Create(s_SquareData.uiMaxVertices * sizeof(QuadVertex));
@@ -74,6 +76,24 @@ namespace DAZEL
 		PROFILE_FUNCTION();
 
 	}
+	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& cameraTransform)
+	{
+		PROFILE_FUNCTION();
+
+		s_SquareData.TextureShader->Bind();
+		s_SquareData.TextureShader->SetMat4("u_ViewProjMat", camera.GetProjection() * glm::inverse(cameraTransform));
+
+		StartBatch();
+	}
+	void Renderer2D::BeginScene(const EditorCamera& camera)
+	{
+		PROFILE_FUNCTION();
+
+		s_SquareData.TextureShader->Bind();
+		s_SquareData.TextureShader->SetMat4("u_ViewProjMat", camera.GetViewProjMatrix());
+
+		StartBatch();
+	}
 	void Renderer2D::BeginScene(const OrthographicCamera& camera)
 	{
 		PROFILE_FUNCTION();
@@ -81,16 +101,22 @@ namespace DAZEL
 		s_SquareData.TextureShader->Bind();
 		s_SquareData.TextureShader->SetMat4("u_ViewProjMat", camera.GetViewProjMatrix());
 
-		s_SquareData.uiQuadIndexCount = 0;
-		s_SquareData.pQuadVertexBufferPointer = s_SquareData.pQuadVertexBufferBase;
+		StartBatch();
+	}
+	void Renderer2D::BeginScene(const glm::mat4& viewProjMat)
+	{
+		PROFILE_FUNCTION();
 
-		s_SquareData.uiTextureSlotIndex = 1; //0已被白色贴图占据
+		s_SquareData.TextureShader->Bind();
+		s_SquareData.TextureShader->SetMat4("u_ViewProjMat", viewProjMat);
+
+		StartBatch();
 	}
 	void Renderer2D::EndScene()
 	{
 		PROFILE_FUNCTION();
 
-		UINT uiDataSize = (s_SquareData.pQuadVertexBufferPointer - s_SquareData.pQuadVertexBufferBase) * sizeof(QuadVertex);
+		UINT uiDataSize = (s_SquareData.pQuadVertexBufferPointer - s_SquareData.pQuadVertexBufferBase) * (UINT)sizeof(QuadVertex);
 		s_SquareData.SquareVertexBuffer->SetData(s_SquareData.pQuadVertexBufferBase, uiDataSize);
 		
 		Flush();
@@ -101,22 +127,43 @@ namespace DAZEL
 
 		s_SquareData.SquareVertexArray->Bind();
 
-		for (int i = 0; i < s_SquareData.uiTextureSlotIndex; ++i)
+		for (UINT i = 0; i < s_SquareData.uiTextureSlotIndex; ++i)
 		{
 			s_SquareData.TextureSlots[i]->Bind(i);
 		}
 
-		RendererCommand::DrawIndexed(s_SquareData.SquareVertexArray, s_SquareData.uiQuadIndexCount);
-		s_SquareData.Stat.uiDrawCalls++;
+		if (s_SquareData.uiQuadIndexCount > 0)
+		{
+			RendererCommand::DrawIndexed(s_SquareData.SquareVertexArray, s_SquareData.uiQuadIndexCount);
+			s_SquareData.Stat.uiDrawCalls++;
+		}
 	}
-	void Renderer2D::FlushAndReset()
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, int nEntityId)
 	{
-		EndScene();
+		PROFILE_FUNCTION();
 
-		s_SquareData.uiQuadIndexCount = 0;
-		s_SquareData.pQuadVertexBufferPointer = s_SquareData.pQuadVertexBufferBase;
+		if (s_SquareData.uiQuadIndexCount >= s_SquareData.uiMaxIndices)
+		{
+			NextBatch();
+		}
 
-		s_SquareData.uiTextureSlotIndex = 1; //0已被白色贴图占据
+		constexpr float fWhiteTextureSlot = 0.f;
+		constexpr float fPureColorTilingFactor = 1.f;
+
+		for (int i = 0; i < 4; ++i)
+		{
+			s_SquareData.pQuadVertexBufferPointer->Pos = transform * s_SquareData.SquareVertexPosData[i];
+			s_SquareData.pQuadVertexBufferPointer->TexCoord = s_SquareData.SquareVertexTexCoordData[i];
+			s_SquareData.pQuadVertexBufferPointer->Color = color;
+			s_SquareData.pQuadVertexBufferPointer->fTexIndex = fWhiteTextureSlot;
+			s_SquareData.pQuadVertexBufferPointer->fTilingFactor = fPureColorTilingFactor;
+			s_SquareData.pQuadVertexBufferPointer->nEntityId = nEntityId;
+			s_SquareData.pQuadVertexBufferPointer++;
+		}
+
+		s_SquareData.uiQuadIndexCount += 6;
+
+		s_SquareData.Stat.uiQuadCount++;
 	}
 	void Renderer2D::DrawQuad(const glm::vec2& pos2, const glm::vec2& size, const glm::vec4& color)
 	{
@@ -126,32 +173,13 @@ namespace DAZEL
 	{
 		PROFILE_FUNCTION();
 
-		if (s_SquareData.uiQuadIndexCount >= s_SquareData.uiMaxIndices)
-		{
-			FlushAndReset();
-		}
-
-		constexpr float fWhiteTextureSlot = 0.f;
-		constexpr float fPureColorTilingFactor = 1.f;
-
 		auto translateMat = glm::translate(glm::mat4(1.f), pos3);
 		auto scaleMat = glm::scale(glm::mat4(1.f), glm::vec3(size, 1.f));
 		auto transform = translateMat * scaleMat;
 
-		for (int i = 0; i < 4; ++i)
-		{
-			s_SquareData.pQuadVertexBufferPointer->Pos = transform * s_SquareData.SquareVertexPosData[i];
-			s_SquareData.pQuadVertexBufferPointer->TexCoord = s_SquareData.SquareVertexTexCoordData[i];
-			s_SquareData.pQuadVertexBufferPointer->Color = color;
-			s_SquareData.pQuadVertexBufferPointer->fTexIndex = fWhiteTextureSlot;
-			s_SquareData.pQuadVertexBufferPointer->fTilingFactor = fPureColorTilingFactor;
-			s_SquareData.pQuadVertexBufferPointer++;
-		}
-
-		s_SquareData.uiQuadIndexCount += 6;
-
-		s_SquareData.Stat.uiQuadCount++;
+		DrawQuad(transform, color);
 	}
+
 	void Renderer2D::DrawQuad(const glm::vec2& pos2, const glm::vec2& size, const Ref<Texture2D>& texture, int nTileCoef, const glm::vec3& tintColor)
 	{
 		DrawQuad(glm::vec3(pos2, 0.f), size, texture, nTileCoef, tintColor);
@@ -162,11 +190,11 @@ namespace DAZEL
 
 		if (s_SquareData.uiQuadIndexCount >= s_SquareData.uiMaxIndices)
 		{
-			FlushAndReset();
+			NextBatch();
 		}
 
 		int nFindSlot = 0;
-		for (int i = 1; i < s_SquareData.uiTextureSlotIndex; ++i)
+		for (UINT i = 1; i < s_SquareData.uiTextureSlotIndex; ++i)
 		{
 			if (s_SquareData.TextureSlots[i]->GetId() == texture->GetId())
 			{
@@ -192,8 +220,56 @@ namespace DAZEL
 			s_SquareData.pQuadVertexBufferPointer->Pos = transform * s_SquareData.SquareVertexPosData[i];
 			s_SquareData.pQuadVertexBufferPointer->TexCoord = s_SquareData.SquareVertexTexCoordData[i];
 			s_SquareData.pQuadVertexBufferPointer->Color = whiteColor;
-			s_SquareData.pQuadVertexBufferPointer->fTexIndex = nFindSlot;
-			s_SquareData.pQuadVertexBufferPointer->fTilingFactor = nTileCoef;
+			s_SquareData.pQuadVertexBufferPointer->fTexIndex = (float)nFindSlot;
+			s_SquareData.pQuadVertexBufferPointer->fTilingFactor = (float)nTileCoef;
+			s_SquareData.pQuadVertexBufferPointer++;
+		}
+
+		s_SquareData.uiQuadIndexCount += 6;
+
+		s_SquareData.Stat.uiQuadCount++;
+	}
+	void Renderer2D::DrawQuad(const glm::vec3& pos3, const glm::vec2& size, const Ref<SubTexture2D>& subTexture, int nTileCoef, const glm::vec3& tintColor)
+	{
+		PROFILE_FUNCTION();
+
+		if (s_SquareData.uiQuadIndexCount >= s_SquareData.uiMaxIndices)
+		{
+			NextBatch();
+		}
+
+		auto texture = subTexture->GetTexture();
+		auto texCoords = subTexture->GetTexCoords();
+
+		int nFindSlot = 0;
+		for (UINT i = 1; i < s_SquareData.uiTextureSlotIndex; ++i)
+		{
+			if (s_SquareData.TextureSlots[i]->GetId() == texture->GetId())
+			{
+				nFindSlot = i;
+				break;
+			}
+		}
+		if (nFindSlot == 0)
+		{
+			nFindSlot = s_SquareData.uiTextureSlotIndex;
+			s_SquareData.TextureSlots[s_SquareData.uiTextureSlotIndex] = texture;
+			s_SquareData.uiTextureSlotIndex++;
+		}
+
+		constexpr glm::vec4 whiteColor = glm::vec4(1.f);
+
+		auto translateMat = glm::translate(glm::mat4(1.f), pos3);
+		auto scaleMat = glm::scale(glm::mat4(1.f), glm::vec3(size, 1.f));
+		auto transform = translateMat * scaleMat;
+
+		for (int i = 0; i < 4; ++i)
+		{
+			s_SquareData.pQuadVertexBufferPointer->Pos = transform * s_SquareData.SquareVertexPosData[i];
+			s_SquareData.pQuadVertexBufferPointer->TexCoord = texCoords[i];
+			s_SquareData.pQuadVertexBufferPointer->Color = whiteColor;
+			s_SquareData.pQuadVertexBufferPointer->fTexIndex = (float)nFindSlot;
+			s_SquareData.pQuadVertexBufferPointer->fTilingFactor = (float)nTileCoef;
 			s_SquareData.pQuadVertexBufferPointer++;
 		}
 
@@ -217,7 +293,7 @@ namespace DAZEL
 
 		if (s_SquareData.uiQuadIndexCount >= s_SquareData.uiMaxIndices)
 		{
-			FlushAndReset();
+			NextBatch();
 		}
 
 		constexpr float fWhiteTextureSlot = 0.f;
@@ -247,11 +323,11 @@ namespace DAZEL
 
 		if (s_SquareData.uiQuadIndexCount >= s_SquareData.uiMaxIndices)
 		{
-			FlushAndReset();
+			NextBatch();
 		}
 
 		int nFindSlot = 0;
-		for (int i = 1; i < s_SquareData.uiTextureSlotIndex; ++i)
+		for (UINT i = 1; i < s_SquareData.uiTextureSlotIndex; ++i)
 		{
 			if (s_SquareData.TextureSlots[i]->GetId() == texture->GetId())
 			{
@@ -279,13 +355,25 @@ namespace DAZEL
 			s_SquareData.pQuadVertexBufferPointer->Pos = transform * s_SquareData.SquareVertexPosData[i];
 			s_SquareData.pQuadVertexBufferPointer->TexCoord = s_SquareData.SquareVertexTexCoordData[i];
 			s_SquareData.pQuadVertexBufferPointer->Color = whiteColor;
-			s_SquareData.pQuadVertexBufferPointer->fTexIndex = nFindSlot;
-			s_SquareData.pQuadVertexBufferPointer->fTilingFactor = nTileCoef;
+			s_SquareData.pQuadVertexBufferPointer->fTexIndex = (float)nFindSlot;
+			s_SquareData.pQuadVertexBufferPointer->fTilingFactor = (float)nTileCoef;
 			s_SquareData.pQuadVertexBufferPointer++;
 		}
 
 		s_SquareData.uiQuadIndexCount += 6;
 
 		s_SquareData.Stat.uiQuadCount++;
+	}
+	void Renderer2D::StartBatch()
+	{
+		s_SquareData.uiQuadIndexCount = 0;
+		s_SquareData.pQuadVertexBufferPointer = s_SquareData.pQuadVertexBufferBase;
+
+		s_SquareData.uiTextureSlotIndex = 1; //0已被白色贴图占据
+	}
+	void Renderer2D::NextBatch()
+	{
+		Flush();
+		StartBatch();
 	}
 }

@@ -17,11 +17,15 @@ namespace DAZEL
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
 		virtual void OnUpdate(Timestep timeStep) override;
+		virtual void OnEvent(Event& event) override;
 		virtual void OnImGuiRender() override;
 	public:
 		void Begin();
 		void End();
+
+		void BlockEvents(bool bBlock) { m_bBlockEvents = bBlock; }
 	private:
 		float m_fTime = 0.f;
+		bool m_bBlockEvents = false;
 	};
 }

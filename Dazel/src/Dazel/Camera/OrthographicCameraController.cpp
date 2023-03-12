@@ -12,6 +12,7 @@ namespace DAZEL
 	OrthographicCameraController::OrthographicCameraController(float fAspectRatio, bool bRotation)
 		: m_fAspectRatio(fAspectRatio), m_fZoomLevel(1.0),
 		  m_Camera(-m_fAspectRatio * m_fZoomLevel, m_fAspectRatio * m_fZoomLevel, -m_fZoomLevel, m_fZoomLevel), 
+		  m_Bounds(-m_fAspectRatio * m_fZoomLevel, m_fAspectRatio* m_fZoomLevel, -m_fZoomLevel, m_fZoomLevel),
 		  m_bRotation(bRotation)
 	{
 		PROFILE_FUNCTION();
@@ -56,17 +57,32 @@ namespace DAZEL
 		dispatcher.Dispatch<MouseScrolledEvent>(BIND_EVENT_FN(OrthographicCameraController::OnMouseScrolled));
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));
 	}
+	void OrthographicCameraController::SetZoomLevel(float fLevel)
+	{
+		m_fZoomLevel = fLevel;
+		CalculateView();
+	}
+	void OrthographicCameraController::SetAspectRatio(float fRatio)
+	{
+		m_fAspectRatio = fRatio;
+		CalculateView();
+	}
+	void OrthographicCameraController::CalculateView()
+	{
+		m_Bounds = { -m_fAspectRatio * m_fZoomLevel, m_fAspectRatio * m_fZoomLevel, -m_fZoomLevel, m_fZoomLevel };
+		m_Camera.SetProjectionMatrix(-m_fAspectRatio * m_fZoomLevel, m_fAspectRatio * m_fZoomLevel, -m_fZoomLevel, m_fZoomLevel);
+	}
 	bool OrthographicCameraController::OnWindowResized(WindowResizeEvent& event)
 	{
 		m_fAspectRatio = (float)event.GetWidth() / (float)event.GetHeight();
-		m_Camera.SetProjectionMatrix(-m_fAspectRatio * m_fZoomLevel, m_fAspectRatio * m_fZoomLevel, -m_fZoomLevel, m_fZoomLevel);
+		CalculateView();
 		return false;
 	}
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& event)
 	{
 		m_fZoomLevel -= event.GetOffsetY();
 		m_fZoomLevel = std::clamp(m_fZoomLevel, 0.25f, 10.f);
-		m_Camera.SetProjectionMatrix(-m_fAspectRatio * m_fZoomLevel, m_fAspectRatio * m_fZoomLevel, -m_fZoomLevel, m_fZoomLevel);
+		CalculateView();
 		return false;
 	}
 }

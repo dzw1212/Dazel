@@ -5,11 +5,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sandbox", "Sandbox\Sandbox.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dazel", "Dazel\Dazel.vcxproj", "{95C7040D-01DC-2CBE-CA5D-D01D363129EF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DazelEditor", "DazelEditor\DazelEditor.vcxproj", "{1C7924BB-882E-9DB0-1123-97877DD793B4}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLAD", "Dazel\Vender\GLAD\GLAD.vcxproj", "{5D4A857C-4981-860D-F26D-6C10DE83020F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLFW", "Dazel\Vender\GLFW\GLFW.vcxproj", "{154B857C-0182-860D-AA6E-6C109684020F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGui", "Dazel\Vender\ImGui\ImGui.vcxproj", "{C0FF640D-2C14-8DBE-F595-301E616989EF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "yaml-cpp", "Dazel\Vender\yaml-cpp\yaml-cpp.vcxproj", "{88F1A057-74BE-FB62-9DD7-E90A890331F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +34,12 @@ Global
 		{95C7040D-01DC-2CBE-CA5D-D01D363129EF}.Publish|x64.Build.0 = Publish|x64
 		{95C7040D-01DC-2CBE-CA5D-D01D363129EF}.Release|x64.ActiveCfg = Release|x64
 		{95C7040D-01DC-2CBE-CA5D-D01D363129EF}.Release|x64.Build.0 = Release|x64
+		{1C7924BB-882E-9DB0-1123-97877DD793B4}.Debug|x64.ActiveCfg = Debug|x64
+		{1C7924BB-882E-9DB0-1123-97877DD793B4}.Debug|x64.Build.0 = Debug|x64
+		{1C7924BB-882E-9DB0-1123-97877DD793B4}.Publish|x64.ActiveCfg = Publish|x64
+		{1C7924BB-882E-9DB0-1123-97877DD793B4}.Publish|x64.Build.0 = Publish|x64
+		{1C7924BB-882E-9DB0-1123-97877DD793B4}.Release|x64.ActiveCfg = Release|x64
+		{1C7924BB-882E-9DB0-1123-97877DD793B4}.Release|x64.Build.0 = Release|x64
 		{5D4A857C-4981-860D-F26D-6C10DE83020F}.Debug|x64.ActiveCfg = Debug|x64
 		{5D4A857C-4981-860D-F26D-6C10DE83020F}.Debug|x64.Build.0 = Debug|x64
 		{5D4A857C-4981-860D-F26D-6C10DE83020F}.Publish|x64.ActiveCfg = Publish|x64
@@ -48,6 +58,12 @@ Global
 		{C0FF640D-2C14-8DBE-F595-301E616989EF}.Publish|x64.Build.0 = Publish|x64
 		{C0FF640D-2C14-8DBE-F595-301E616989EF}.Release|x64.ActiveCfg = Release|x64
 		{C0FF640D-2C14-8DBE-F595-301E616989EF}.Release|x64.Build.0 = Release|x64
+		{88F1A057-74BE-FB62-9DD7-E90A890331F1}.Debug|x64.ActiveCfg = Debug|x64
+		{88F1A057-74BE-FB62-9DD7-E90A890331F1}.Debug|x64.Build.0 = Debug|x64
+		{88F1A057-74BE-FB62-9DD7-E90A890331F1}.Publish|x64.ActiveCfg = Publish|x64
+		{88F1A057-74BE-FB62-9DD7-E90A890331F1}.Publish|x64.Build.0 = Publish|x64
+		{88F1A057-74BE-FB62-9DD7-E90A890331F1}.Release|x64.ActiveCfg = Release|x64
+		{88F1A057-74BE-FB62-9DD7-E90A890331F1}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

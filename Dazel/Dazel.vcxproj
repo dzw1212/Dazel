@@ -77,7 +77,7 @@
       <PrecompiledHeaderFile>DazelPCH.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_BUILD_DLL;DAZEL_ENABLE_ASSERTS;GLFW_INCLUDE_NONE;_CRT_SECURE_NOT_WARNINGS;DAZEL_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;Vender\spdlog\include;Vender\GLFW\include;Vender\GLAD\include;Vender\ImGui;Vender\glm;Vender\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;Vender\spdlog\include;Vender\GLFW\include;Vender\GLAD\include;Vender\ImGui;Vender\glm;Vender\stb_image;Vender\entt\include;Vender\yaml-cpp\include;Vender\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -97,7 +97,7 @@
       <PrecompiledHeaderFile>DazelPCH.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_BUILD_DLL;DAZEL_ENABLE_ASSERTS;GLFW_INCLUDE_NONE;_CRT_SECURE_NOT_WARNINGS;DAZEL_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;Vender\spdlog\include;Vender\GLFW\include;Vender\GLAD\include;Vender\ImGui;Vender\glm;Vender\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;Vender\spdlog\include;Vender\GLFW\include;Vender\GLAD\include;Vender\ImGui;Vender\glm;Vender\stb_image;Vender\entt\include;Vender\yaml-cpp\include;Vender\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -121,7 +121,7 @@
       <PrecompiledHeaderFile>DazelPCH.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_BUILD_DLL;DAZEL_ENABLE_ASSERTS;GLFW_INCLUDE_NONE;_CRT_SECURE_NOT_WARNINGS;DAZEL_PUBLISH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;Vender\spdlog\include;Vender\GLFW\include;Vender\GLAD\include;Vender\ImGui;Vender\glm;Vender\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;Vender\spdlog\include;Vender\GLFW\include;Vender\GLAD\include;Vender\ImGui;Vender\glm;Vender\stb_image;Vender\entt\include;Vender\yaml-cpp\include;Vender\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -140,9 +140,9 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Dazel\Core\Random.h" />
-    <ClInclude Include="src\Dazel\Debug\Instrumentation.h" />
-    <ClInclude Include="src\Dazel\Renderer\Renderer2D.h" />
+    <ClInclude Include="src\Dazel\Camera\EditorCamera.h" />
+    <ClInclude Include="Vender\ImGuizmo\ImGuizmo.h" />
+    <ClInclude Include="Vender\entt\include\entt.hpp" />
     <ClInclude Include="Vender\glm\glm\common.hpp" />
     <ClInclude Include="Vender\glm\glm\detail\_features.hpp" />
     <ClInclude Include="Vender\glm\glm\detail\_fixes.hpp" />
@@ -561,6 +561,7 @@
     <ClInclude Include="Vender\glm\glm\vector_relational.hpp" />
     <ClInclude Include="Vender\stb_image\stb_image.h" />
     <ClInclude Include="src\Dazel.h" />
+    <ClInclude Include="src\Dazel\Camera\Camera.h" />
     <ClInclude Include="src\Dazel\Camera\OrthographicCamera.h" />
     <ClInclude Include="src\Dazel\Camera\OrthographicCameraController.h" />
     <ClInclude Include="src\Dazel\Core\Application.h" />
@@ -572,33 +573,51 @@
     <ClInclude Include="src\Dazel\Core\LayerStack.h" />
     <ClInclude Include="src\Dazel\Core\Log.h" />
     <ClInclude Include="src\Dazel\Core\MouseButtonCodes.h" />
+    <ClInclude Include="src\Dazel\Core\Random.h" />
     <ClInclude Include="src\Dazel\Core\Timestep.h" />
     <ClInclude Include="src\Dazel\Core\Window.h" />
+    <ClInclude Include="src\Dazel\Debug\Instrumentation.h" />
     <ClInclude Include="src\Dazel\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Dazel\Events\Event.h" />
     <ClInclude Include="src\Dazel\Events\KeyEvent.h" />
     <ClInclude Include="src\Dazel\Events\MouseEvent.h" />
     <ClInclude Include="src\Dazel\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Dazel\Renderer\Buffer.h" />
+    <ClInclude Include="src\Dazel\Renderer\FrameBuffer.h" />
     <ClInclude Include="src\Dazel\Renderer\GraphicsContext.h" />
+    <ClInclude Include="src\Dazel\Renderer\ParticleSystem.h" />
     <ClInclude Include="src\Dazel\Renderer\Renderer.h" />
+    <ClInclude Include="src\Dazel\Renderer\Renderer2D.h" />
     <ClInclude Include="src\Dazel\Renderer\RendererAPI.h" />
     <ClInclude Include="src\Dazel\Renderer\RendererCommand.h" />
     <ClInclude Include="src\Dazel\Renderer\Shader.h" />
+    <ClInclude Include="src\Dazel\Renderer\SubTexture2D.h" />
     <ClInclude Include="src\Dazel\Renderer\Texture.h" />
     <ClInclude Include="src\Dazel\Renderer\VertexArray.h" />
+    <ClInclude Include="src\Dazel\Scene\Components.h" />
+    <ClInclude Include="src\Dazel\Scene\Entity.h" />
+    <ClInclude Include="src\Dazel\Scene\Scene.h" />
+    <ClInclude Include="src\Dazel\Scene\SceneCamera.h" />
+    <ClInclude Include="src\Dazel\Scene\SceneSerializer.h" />
+    <ClInclude Include="src\Dazel\Scene\ScriptableEntity.h" />
+    <ClInclude Include="src\Dazel\Utils\PlatformUtils.h" />
     <ClInclude Include="src\DazelPCH.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLFrameBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
+    <ClInclude Include="src\Platform\Windows\WindowsPlatformUtils.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Dazel\Renderer\Renderer2D.cpp" />
+    <ClCompile Include="src\Dazel\Camera\EditorCamera.cpp" />
+    <ClCompile Include="Vender\ImGuizmo\ImGuizmo.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Vender\stb_image\stb_image.cpp" />
     <ClCompile Include="src\Dazel\Camera\OrthographicCamera.cpp" />
     <ClCompile Include="src\Dazel\Camera\OrthographicCameraController.cpp" />
@@ -606,20 +625,30 @@
     <ClCompile Include="src\Dazel\Core\Layer.cpp" />
     <ClCompile Include="src\Dazel\Core\LayerStack.cpp" />
     <ClCompile Include="src\Dazel\Core\Log.cpp" />
+    <ClCompile Include="src\Dazel\Core\Random.cpp" />
     <ClCompile Include="src\Dazel\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Dazel\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Dazel\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\Dazel\Renderer\FrameBuffer.cpp" />
+    <ClCompile Include="src\Dazel\Renderer\ParticleSystem.cpp" />
     <ClCompile Include="src\Dazel\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Dazel\Renderer\Renderer2D.cpp" />
     <ClCompile Include="src\Dazel\Renderer\RendererAPI.cpp" />
     <ClCompile Include="src\Dazel\Renderer\RendererCommand.cpp" />
     <ClCompile Include="src\Dazel\Renderer\Shader.cpp" />
+    <ClCompile Include="src\Dazel\Renderer\SubTexture2D.cpp" />
     <ClCompile Include="src\Dazel\Renderer\Texture.cpp" />
     <ClCompile Include="src\Dazel\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\Dazel\Scene\Entity.cpp" />
+    <ClCompile Include="src\Dazel\Scene\Scene.cpp" />
+    <ClCompile Include="src\Dazel\Scene\SceneCamera.cpp" />
+    <ClCompile Include="src\Dazel\Scene\SceneSerializer.cpp" />
     <ClCompile Include="src\DazelPCH.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLFrameBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />
@@ -636,6 +665,9 @@
     </ProjectReference>
     <ProjectReference Include="Vender\ImGui\ImGui.vcxproj">
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Vender\yaml-cpp\yaml-cpp.vcxproj">
+      <Project>{88F1A057-74BE-FB62-9DD7-E90A890331F1}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

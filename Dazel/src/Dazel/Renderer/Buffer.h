@@ -83,7 +83,7 @@ namespace DAZEL
 		UINT uiOffset;
 		bool bNormalized;
 
-		BufferElement() {}
+		BufferElement() {};
 		BufferElement(ShaderDataType eType, const std::string& strName, bool bNormalized = false)
 			: eType(eType), strName(strName), uiSize(GetShaderDataSize(eType)), uiOffset(0), bNormalized(bNormalized)
 		{

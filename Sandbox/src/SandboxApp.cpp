@@ -139,6 +139,7 @@ class SandBox : public DAZEL::Application
 {
 public:
 	SandBox()
+		: Application("Sandbox")
 	{
 		//PushLayer(new ExampleLayer());
 		PushLayer(new Sandbox2D());

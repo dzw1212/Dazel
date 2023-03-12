@@ -1,0 +1,62 @@
+Scene: Untitled
+Entities:
+  - EntityUId: 3
+    Components:
+      TagComponent:
+        Name: Square2
+      TransformComponent:
+        Position: [0.200000003, 1, 0.100000001]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      SpriteRendererComponent:
+        Color: [0.0871775821, 0.791666687, 0.124918081, 1]
+  - EntityUId: 2
+    Components:
+      TagComponent:
+        Name: Clip Space Camera
+      TransformComponent:
+        Position: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      CameraComponent:
+        Main Camera: false
+        Fixed AspectRatio: false
+        Camera:
+          Projection Type: 0
+          AspectRatio: 0.826129675
+          Orthographic Size: 10
+          Orthographic Near Clip: -1
+          Orthographic Far Clip: 1
+          Perspective Vertical FOV: 0.000239245972
+          Perspective Near Clip: 0.00999999978
+          Perspective Far Clip: 1000
+  - EntityUId: 1
+    Components:
+      TagComponent:
+        Name: Camera
+      TransformComponent:
+        Position: [0, 0, 0]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      CameraComponent:
+        Main Camera: true
+        Fixed AspectRatio: false
+        Camera:
+          Projection Type: 0
+          AspectRatio: 0.826129675
+          Orthographic Size: 10
+          Orthographic Near Clip: -1
+          Orthographic Far Clip: 1
+          Perspective Vertical FOV: 45
+          Perspective Near Clip: 0.00999999978
+          Perspective Far Clip: 1000
+  - EntityUId: 0
+    Components:
+      TagComponent:
+        Name: Square1
+      TransformComponent:
+        Position: [-1.10000002, -0.300000012, -0.300000012]
+        Rotation: [0, 0, 0]
+        Scale: [1, 1, 1]
+      SpriteRendererComponent:
+        Color: [1, 0.0588235296, 0, 1]

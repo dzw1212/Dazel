@@ -67,7 +67,6 @@ namespace DAZEL
 
 		inline bool bIsHandled() { return m_bHandled; }
 
-	protected:
 		bool m_bHandled = false; //是否已被处理
 	};
 

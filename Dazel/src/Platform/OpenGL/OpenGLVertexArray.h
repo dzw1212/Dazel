@@ -19,8 +19,9 @@ namespace DAZEL
 		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const override { return m_vecVertexBuffer; }
 		virtual const Ref<IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
 	private:
+		UINT m_uiId;
+		UINT m_uiVertexBufferIdx = 0;
 		std::vector<Ref<VertexBuffer>> m_vecVertexBuffer;
 		Ref<IndexBuffer> m_IndexBuffer;
-		UINT m_uiId;
 	};
 }

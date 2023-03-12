@@ -17,7 +17,7 @@ namespace DAZEL
 	class DAZEL_API Application
 	{
 	public:
-		Application();
+		Application(const std::string& strAppName);
 		virtual ~Application();
 
 		void Run();
@@ -29,13 +29,17 @@ namespace DAZEL
 
 		inline static Application& Get() { return *s_Inst; }
 		inline Window& GetWindow() { return *m_Window; }
+
+		inline ImGuiLayer* GetImGuiLayer() const { return m_ImGuiLayer; }
+
+		inline void Close() { m_bRunning = false; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& event);
 		bool OnWindowResize(WindowResizeEvent& event);
 
 	private:
 		Scope<Window> m_Window;
-		ImGuiLayer* m_ImGuiLayer;
+		ImGuiLayer* m_ImGuiLayer; //最底层的GUI层级，最先收到event
 		bool m_bRunning = true;
 		LayerStack m_LayerStack;
 		static Application* s_Inst;

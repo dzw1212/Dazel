@@ -37,16 +37,65 @@ namespace DAZEL
 
 		const auto& layout = vertexBuffer->GetLayout();
 		CORE_ASSERT(layout.GetElements().size() > 0, "VertexBuffer need set layout first");
-		for (BYTE idx = 0; idx < layout.GetElements().size(); ++idx)
+		for (auto& element : layout.GetElements())
 		{
-			auto& element = layout.GetElements()[idx];
-			glEnableVertexAttribArray(idx);
-			glVertexAttribPointer(idx,
-				element.GetComponentCount(),
-				ShaderDataTypeToOpenGLBaseType(element.eType),
-				element.bNormalized ? GL_TRUE : GL_FALSE,
-				layout.GetStride(),
-				(const void*)element.uiOffset);
+			switch (element.eType)
+			{
+			case ShaderDataType::FLOAT:
+			case ShaderDataType::VEC2:
+			case ShaderDataType::VEC3:
+			case ShaderDataType::VEC4:
+			{
+				glEnableVertexAttribArray(m_uiVertexBufferIdx);
+				glVertexAttribPointer(m_uiVertexBufferIdx,
+					element.GetComponentCount(),
+					ShaderDataTypeToOpenGLBaseType(element.eType),
+					element.bNormalized ? GL_TRUE : GL_FALSE,
+					layout.GetStride(),
+					(const void*)element.uiOffset);
+
+				m_uiVertexBufferIdx++;
+				break;
+			}
+			case ShaderDataType::INT:
+			case ShaderDataType::INT2:
+			case ShaderDataType::INT3:
+			case ShaderDataType::INT4:
+			case ShaderDataType::BOOL:
+			{
+				glEnableVertexAttribArray(m_uiVertexBufferIdx);
+				glVertexAttribIPointer(m_uiVertexBufferIdx,
+					element.GetComponentCount(),
+					ShaderDataTypeToOpenGLBaseType(element.eType),
+					layout.GetStride(),
+					(const void*)element.uiOffset);
+
+				m_uiVertexBufferIdx++;
+				break;
+			}
+			case ShaderDataType::MAT3:
+			case ShaderDataType::MAT4:
+			{
+				UINT uiCount = element.GetComponentCount();
+				for (UINT i = 0; i < uiCount; ++i)
+				{
+					glEnableVertexAttribArray(m_uiVertexBufferIdx);
+					glVertexAttribPointer(m_uiVertexBufferIdx,
+						element.GetComponentCount(),
+						ShaderDataTypeToOpenGLBaseType(element.eType),
+						element.bNormalized ? GL_TRUE : GL_FALSE,
+						layout.GetStride(),
+						(const void*)element.uiOffset);
+					glVertexAttribDivisor(m_uiVertexBufferIdx, 1);
+					m_uiVertexBufferIdx++;
+				}
+				break;
+			}
+
+			default:
+				CORE_ASSERT(false, "Unknown Shader Data Type");
+				break;
+			}
 		}
 
 		m_vecVertexBuffer.push_back(vertexBuffer);

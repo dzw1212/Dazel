@@ -4,6 +4,15 @@
     <Filter Include="Vender">
       <UniqueIdentifier>{495EDCD7-3500-07AE-1EBB-1A020AFC8DFE}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Vender\ImGuizmo">
+      <UniqueIdentifier>{C9F2F2AD-357E-6072-3E8F-E366AA99BC72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vender\entt">
+      <UniqueIdentifier>{33791B14-9F2E-9409-2823-8EE094D78A0D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vender\entt\include">
+      <UniqueIdentifier>{A623DCFF-1285-B90D-9BF2-FFBF0753F0CC}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Vender\glm">
       <UniqueIdentifier>{18E51F10-049D-615D-6DA4-3AB9597BFC4D}</UniqueIdentifier>
     </Filter>
@@ -37,6 +46,9 @@
     <Filter Include="src\Dazel\Core">
       <UniqueIdentifier>{C48D2998-B05B-1D9E-99EF-8DC4855CF902}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Dazel\Debug">
+      <UniqueIdentifier>{62A1679D-CE2C-D561-D73D-585643483162}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Dazel\Events">
       <UniqueIdentifier>{5020E64D-3C19-05A0-654B-EA2451A3E4AB}</UniqueIdentifier>
     </Filter>
@@ -45,6 +57,12 @@
     </Filter>
     <Filter Include="src\Dazel\Renderer">
       <UniqueIdentifier>{1283EA56-FE66-ABAC-67C7-A5FF53CA952E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Dazel\Scene">
+      <UniqueIdentifier>{0904769E-758F-E362-7EA0-6657EAAA3F63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Dazel\Utils">
+      <UniqueIdentifier>{4C98A39E-B823-1163-C134-94572D3F6D63}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Platform">
       <UniqueIdentifier>{21CA02E5-0D2D-9289-B6B2-CA3FA2F45D0C}</UniqueIdentifier>
@@ -57,6 +75,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Vender\ImGuizmo\ImGuizmo.h">
+      <Filter>Vender\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Vender\entt\include\entt.hpp">
+      <Filter>Vender\entt\include</Filter>
+    </ClInclude>
     <ClInclude Include="Vender\glm\glm\common.hpp">
       <Filter>Vender\glm\glm</Filter>
     </ClInclude>
@@ -1311,6 +1335,9 @@
     <ClInclude Include="src\Dazel.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\Dazel\Camera\Camera.h">
+      <Filter>src\Dazel\Camera</Filter>
+    </ClInclude>
     <ClInclude Include="src\Dazel\Camera\OrthographicCamera.h">
       <Filter>src\Dazel\Camera</Filter>
     </ClInclude>
@@ -1344,11 +1371,17 @@
     <ClInclude Include="src\Dazel\Core\MouseButtonCodes.h">
       <Filter>src\Dazel\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Dazel\Core\Random.h">
+      <Filter>src\Dazel\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Dazel\Core\Timestep.h">
       <Filter>src\Dazel\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Dazel\Core\Window.h">
       <Filter>src\Dazel\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\Debug\Instrumentation.h">
+      <Filter>src\Dazel\Debug</Filter>
     </ClInclude>
     <ClInclude Include="src\Dazel\Events\ApplicationEvent.h">
       <Filter>src\Dazel\Events</Filter>
@@ -1368,10 +1401,19 @@
     <ClInclude Include="src\Dazel\Renderer\Buffer.h">
       <Filter>src\Dazel\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Dazel\Renderer\FrameBuffer.h">
+      <Filter>src\Dazel\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Dazel\Renderer\GraphicsContext.h">
       <Filter>src\Dazel\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Dazel\Renderer\ParticleSystem.h">
+      <Filter>src\Dazel\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Dazel\Renderer\Renderer.h">
+      <Filter>src\Dazel\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\Renderer\Renderer2D.h">
       <Filter>src\Dazel\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Dazel\Renderer\RendererAPI.h">
@@ -1383,11 +1425,35 @@
     <ClInclude Include="src\Dazel\Renderer\Shader.h">
       <Filter>src\Dazel\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Dazel\Renderer\SubTexture2D.h">
+      <Filter>src\Dazel\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Dazel\Renderer\Texture.h">
       <Filter>src\Dazel\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Dazel\Renderer\VertexArray.h">
       <Filter>src\Dazel\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\Scene\Components.h">
+      <Filter>src\Dazel\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\Scene\Entity.h">
+      <Filter>src\Dazel\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\Scene\Scene.h">
+      <Filter>src\Dazel\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\Scene\SceneCamera.h">
+      <Filter>src\Dazel\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\Scene\SceneSerializer.h">
+      <Filter>src\Dazel\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\Scene\ScriptableEntity.h">
+      <Filter>src\Dazel\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dazel\Utils\PlatformUtils.h">
+      <Filter>src\Dazel\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\DazelPCH.h">
       <Filter>src</Filter>
@@ -1396,6 +1462,9 @@
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLFrameBuffer.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h">
@@ -1413,14 +1482,18 @@
     <ClInclude Include="src\Platform\Windows\WindowsInput.h">
       <Filter>src\Platform\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\Windows\WindowsPlatformUtils.h">
+      <Filter>src\Platform\Windows</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
       <Filter>src\Platform\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="src\Dazel\Renderer\Renderer2D.h" />
-    <ClInclude Include="src\Dazel\Debug\Instrumentation.h" />
-    <ClInclude Include="src\Dazel\Core\Random.h" />
+    <ClInclude Include="src\Dazel\Camera\EditorCamera.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Vender\ImGuizmo\ImGuizmo.cpp">
+      <Filter>Vender\ImGuizmo</Filter>
+    </ClCompile>
     <ClCompile Include="Vender\stb_image\stb_image.cpp">
       <Filter>Vender\stb_image</Filter>
     </ClCompile>
@@ -1442,6 +1515,9 @@
     <ClCompile Include="src\Dazel\Core\Log.cpp">
       <Filter>src\Dazel\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Dazel\Core\Random.cpp">
+      <Filter>src\Dazel\Core</Filter>
+    </ClCompile>
     <ClCompile Include="src\Dazel\ImGui\ImGuiBuild.cpp">
       <Filter>src\Dazel\ImGui</Filter>
     </ClCompile>
@@ -1451,7 +1527,16 @@
     <ClCompile Include="src\Dazel\Renderer\Buffer.cpp">
       <Filter>src\Dazel\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Dazel\Renderer\FrameBuffer.cpp">
+      <Filter>src\Dazel\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Dazel\Renderer\ParticleSystem.cpp">
+      <Filter>src\Dazel\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Dazel\Renderer\Renderer.cpp">
+      <Filter>src\Dazel\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Dazel\Renderer\Renderer2D.cpp">
       <Filter>src\Dazel\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Dazel\Renderer\RendererAPI.cpp">
@@ -1463,11 +1548,26 @@
     <ClCompile Include="src\Dazel\Renderer\Shader.cpp">
       <Filter>src\Dazel\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Dazel\Renderer\SubTexture2D.cpp">
+      <Filter>src\Dazel\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Dazel\Renderer\Texture.cpp">
       <Filter>src\Dazel\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Dazel\Renderer\VertexArray.cpp">
       <Filter>src\Dazel\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Dazel\Scene\Entity.cpp">
+      <Filter>src\Dazel\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Dazel\Scene\Scene.cpp">
+      <Filter>src\Dazel\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Dazel\Scene\SceneCamera.cpp">
+      <Filter>src\Dazel\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Dazel\Scene\SceneSerializer.cpp">
+      <Filter>src\Dazel\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\DazelPCH.cpp">
       <Filter>src</Filter>
@@ -1476,6 +1576,9 @@
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLFrameBuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp">
@@ -1496,6 +1599,6 @@
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
       <Filter>src\Platform\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\Dazel\Renderer\Renderer2D.cpp" />
+    <ClCompile Include="src\Dazel\Camera\EditorCamera.cpp" />
   </ItemGroup>
 </Project>

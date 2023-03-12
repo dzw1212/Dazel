@@ -1,9 +1,11 @@
 #include "DazelPCH.h"
 #include "OpenGLTexture.h"
 
+#include "glad/glad.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#include "glad/glad.h"
+
 
 namespace DAZEL
 {
@@ -47,7 +49,7 @@ namespace DAZEL
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_uiId);
 		glTextureStorage2D(m_uiId, 1, m_eInternalFormat, m_uiWidth, m_uiHeight);
 		glTextureParameteri(m_uiId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(m_uiId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTextureParameteri(m_uiId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTextureParameteri(m_uiId, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(m_uiId, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTextureSubImage2D(m_uiId, 0, 0, 0, m_uiWidth, m_uiHeight, m_eDataFormat, GL_UNSIGNED_BYTE, imageData);

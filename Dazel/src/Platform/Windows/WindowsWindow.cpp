@@ -17,7 +17,7 @@ namespace DAZEL
 
 	Scope<Window> Window::Create(const sWindowProps& props)
 	{
-		return std::make_unique<WindowsWindow>(props);
+		return CreateScope<WindowsWindow>(props);
 	}
 
 	WindowsWindow::WindowsWindow(const sWindowProps& props)
@@ -190,7 +190,7 @@ namespace DAZEL
 				sWindowData* pWindowData = (sWindowData*)glfwGetWindowUserPointer(window);
 				CORE_ASSERT(pWindowData, "WindowData is NULL");
 
-				MouseScrolledEvent event(dOffsetX, dOffsetY);
+				MouseScrolledEvent event((float)dOffsetX, (float)dOffsetY);
 				pWindowData->EventCallback(event);
 			}
 		);
@@ -200,7 +200,7 @@ namespace DAZEL
 				sWindowData* pWindowData = (sWindowData*)glfwGetWindowUserPointer(window);
 				CORE_ASSERT(pWindowData, "WindowData is NULL");
 
-				MouseMovedEvent event(dPosX, dPosY);
+				MouseMovedEvent event((float)dPosX, (float)dPosY);
 				pWindowData->EventCallback(event);
 			}
 		);

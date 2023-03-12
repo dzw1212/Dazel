@@ -61,7 +61,7 @@ namespace DAZEL
 		{
 		case RendererAPI::API::OpenGL:
 		{
-			return std::make_shared<OpenGLShader>(strName, strVertexFile, strFragmentFile);
+			return CreateRef<OpenGLShader>(strName, strVertexFile, strFragmentFile);
 		}
 		}
 		CORE_ASSERT(false, "RendererAPI {0} is currently not support", (int)Renderer::GetAPI());
@@ -74,7 +74,7 @@ namespace DAZEL
 		{
 		case RendererAPI::API::OpenGL:
 		{
-			return std::make_shared<OpenGLShader>(strFilePath);
+			return CreateRef<OpenGLShader>(strFilePath);
 		}
 		}
 		CORE_ASSERT(false, "RendererAPI {0} is currently not support", (int)Renderer::GetAPI());

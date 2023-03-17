@@ -25,7 +25,7 @@ public:
 	}
 };
 
-DAZEL::Application* DAZEL::CreateApplication()
+DAZEL::Application* DAZEL::CreateApplication(ApplicationCommandLineArgs args)
 {
 	return new EditorApp();
 }

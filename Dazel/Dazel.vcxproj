@@ -76,11 +76,13 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DazelPCH.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_BUILD_DLL;DAZEL_ENABLE_ASSERTS;GLFW_INCLUDE_NONE;_CRT_SECURE_NOT_WARNINGS;DAZEL_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_BUILD_DLL;DAZEL_ENABLE_ASSERTS;_CRT_SECURE_NOT_WARNINGS;GLFW_INCLUDE_NONE;DAZEL_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;Vender\spdlog\include;Vender\GLFW\include;Vender\GLAD\include;Vender\ImGui;Vender\glm;Vender\stb_image;Vender\entt\include;Vender\yaml-cpp\include;Vender\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -96,7 +98,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DazelPCH.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_BUILD_DLL;DAZEL_ENABLE_ASSERTS;GLFW_INCLUDE_NONE;_CRT_SECURE_NOT_WARNINGS;DAZEL_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_BUILD_DLL;DAZEL_ENABLE_ASSERTS;_CRT_SECURE_NOT_WARNINGS;GLFW_INCLUDE_NONE;DAZEL_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;Vender\spdlog\include;Vender\GLFW\include;Vender\GLAD\include;Vender\ImGui;Vender\glm;Vender\stb_image;Vender\entt\include;Vender\yaml-cpp\include;Vender\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -104,6 +106,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -120,7 +123,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DazelPCH.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_BUILD_DLL;DAZEL_ENABLE_ASSERTS;GLFW_INCLUDE_NONE;_CRT_SECURE_NOT_WARNINGS;DAZEL_PUBLISH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DAZEL_PLATFORM_WINDOWS;DAZEL_BUILD_DLL;DAZEL_ENABLE_ASSERTS;_CRT_SECURE_NOT_WARNINGS;GLFW_INCLUDE_NONE;DAZEL_PUBLISH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;Vender\spdlog\include;Vender\GLFW\include;Vender\GLAD\include;Vender\ImGui;Vender\glm;Vender\stb_image;Vender\entt\include;Vender\yaml-cpp\include;Vender\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -128,6 +131,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -140,7 +144,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Dazel\Camera\EditorCamera.h" />
     <ClInclude Include="Vender\ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="Vender\entt\include\entt.hpp" />
     <ClInclude Include="Vender\glm\glm\common.hpp" />
@@ -562,6 +565,7 @@
     <ClInclude Include="Vender\stb_image\stb_image.h" />
     <ClInclude Include="src\Dazel.h" />
     <ClInclude Include="src\Dazel\Camera\Camera.h" />
+    <ClInclude Include="src\Dazel\Camera\EditorCamera.h" />
     <ClInclude Include="src\Dazel\Camera\OrthographicCamera.h" />
     <ClInclude Include="src\Dazel\Camera\OrthographicCameraController.h" />
     <ClInclude Include="src\Dazel\Core\Application.h" />
@@ -593,6 +597,7 @@
     <ClInclude Include="src\Dazel\Renderer\Shader.h" />
     <ClInclude Include="src\Dazel\Renderer\SubTexture2D.h" />
     <ClInclude Include="src\Dazel\Renderer\Texture.h" />
+    <ClInclude Include="src\Dazel\Renderer\UniformBuffer.h" />
     <ClInclude Include="src\Dazel\Renderer\VertexArray.h" />
     <ClInclude Include="src\Dazel\Scene\Components.h" />
     <ClInclude Include="src\Dazel\Scene\Entity.h" />
@@ -608,17 +613,18 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsPlatformUtils.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Dazel\Camera\EditorCamera.cpp" />
     <ClCompile Include="Vender\ImGuizmo\ImGuizmo.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Vender\stb_image\stb_image.cpp" />
+    <ClCompile Include="src\Dazel\Camera\EditorCamera.cpp" />
     <ClCompile Include="src\Dazel\Camera\OrthographicCamera.cpp" />
     <ClCompile Include="src\Dazel\Camera\OrthographicCameraController.cpp" />
     <ClCompile Include="src\Dazel\Core\Application.cpp" />
@@ -638,6 +644,7 @@
     <ClCompile Include="src\Dazel\Renderer\Shader.cpp" />
     <ClCompile Include="src\Dazel\Renderer\SubTexture2D.cpp" />
     <ClCompile Include="src\Dazel\Renderer\Texture.cpp" />
+    <ClCompile Include="src\Dazel\Renderer\UniformBuffer.cpp" />
     <ClCompile Include="src\Dazel\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Dazel\Scene\Entity.cpp" />
     <ClCompile Include="src\Dazel\Scene\Scene.cpp" />
@@ -652,6 +659,7 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLUniformBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />

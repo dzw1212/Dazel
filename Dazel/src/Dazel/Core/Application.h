@@ -13,11 +13,23 @@
 
 namespace DAZEL
 {
+	struct ApplicationCommandLineArgs
+	{
+		int nCount = 0;
+		char** Args = nullptr;
+
+		const char* operator[](int nIdx) const
+		{
+			CORE_ASSERT(nIdx < nCount, "Application Commandline Args Idx Out of Range");
+			return Args[nIdx];
+		}
+	};
 
 	class DAZEL_API Application
 	{
 	public:
-		Application(const std::string& strAppName);
+		Application(const std::string& strAppName, 
+			ApplicationCommandLineArgs args = ApplicationCommandLineArgs());
 		virtual ~Application();
 
 		void Run();
@@ -33,6 +45,10 @@ namespace DAZEL
 		inline ImGuiLayer* GetImGuiLayer() const { return m_ImGuiLayer; }
 
 		inline void Close() { m_bRunning = false; }
+
+		inline ApplicationCommandLineArgs GetCommandLineArgs() const { return m_CommandLineArgs; }
+
+
 	private:
 		bool OnWindowClose(WindowCloseEvent& event);
 		bool OnWindowResize(WindowResizeEvent& event);
@@ -45,9 +61,11 @@ namespace DAZEL
 		static Application* s_Inst;
 		float m_fLastFrameTime = 0.f;
 		bool m_bMinimized = false;
+
+		ApplicationCommandLineArgs m_CommandLineArgs;
 	};
 
-	Application* CreateApplication();
+	Application* CreateApplication(ApplicationCommandLineArgs args);
 }
 
 

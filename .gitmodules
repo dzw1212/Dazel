@@ -10,7 +10,7 @@
 [submodule "Dazel/Vender/glm"]
 	path = Dazel/Vender/glm
 	url = https://github.com/g-truc/glm
-[submodule "Dazel/Vender/yaml"]
+[submodule "Dazel/Vender/yaml-cpp"]
 	path = Dazel/Vender/yaml-cpp
 	url = https://github.com/TheCherno/yaml-cpp
 [submodule "Dazel/Vender/ImGuizmo"]

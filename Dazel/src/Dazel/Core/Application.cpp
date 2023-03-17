@@ -18,7 +18,8 @@ namespace DAZEL
 {
 	Application* Application::s_Inst = nullptr;
 
-	Application::Application(const std::string& strAppName)
+	Application::Application(const std::string& strAppName, ApplicationCommandLineArgs args)
+		: m_CommandLineArgs(args)
 	{
 		PROFILE_FUNCTION();
 

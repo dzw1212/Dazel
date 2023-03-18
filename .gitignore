@@ -1,7 +1,9 @@
 # Binaries
 **/bin/
+**/bin_int/
+**/bin-int/
 !Vender/premake/bin/
-bin_int
+
 
 # Misc files
 *.log

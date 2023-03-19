@@ -1,18 +1,18 @@
-[submodule "Vender/spdlog"]
-	path = Vender/spdlog
-	url = https://github.com/gabime/spdlog
-[submodule "Dazel/Vender/GLFW"]
-	path = Dazel/Vender/GLFW
-	url = https://github.com/TheCherno/glfw
-[submodule "Dazel/Vender/ImGui"]
-	path = Dazel/Vender/ImGui
-	url = https://github.com/TheCherno/imgui
+[submodule "Dazel/Vender/spdlog"]
+	path = Dazel/Vender/spdlog
+	url = https://github.com/gabime/spdlog.git
 [submodule "Dazel/Vender/glm"]
 	path = Dazel/Vender/glm
-	url = https://github.com/g-truc/glm
+	url = https://github.com/dzw1212/glm.git
+[submodule "Dazel/Vender/GLFW"]
+	path = Dazel/Vender/GLFW
+	url = https://github.com/dzw1212/glfw.git
+[submodule "Dazel/Vender/ImGui"]
+	path = Dazel/Vender/ImGui
+	url = https://github.com/dzw1212/imgui.git
 [submodule "Dazel/Vender/yaml-cpp"]
 	path = Dazel/Vender/yaml-cpp
-	url = https://github.com/TheCherno/yaml-cpp
+	url = https://github.com/dzw1212/yaml-cpp.git
 [submodule "Dazel/Vender/ImGuizmo"]
 	path = Dazel/Vender/ImGuizmo
-	url = https://github.com/TheCherno/ImGuizmo
+	url = https://github.com/dzw1212/ImGuizmo.git

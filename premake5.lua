@@ -1,4 +1,5 @@
 include "./Vender/premake/premake_customization/solution_items.lua"
+include "Dependencies.lua"
 
 outputdir = "%{cfg.longname}_%{cfg.architecture}"
 
@@ -15,17 +16,6 @@ workspace "Dazel"
     defines 
     {
         "DAZEL_PLATFORM_WINDOWS",
-    }
-
-    IncludeDir = {
-        ["GLFW"] = "%{wks.location}/Dazel/Vender/GLFW/include",
-        ["GLAD"] = "%{wks.location}/Dazel/Vender/GLAD/include",
-        ["ImGui"] = "%{wks.location}/Dazel/Vender/ImGui",
-        ["glm"] = "%{wks.location}/Dazel/Vender/glm",
-        ["stb_image"] = "%{wks.location}/Dazel/Vender/stb_image",
-        ["entt"] = "%{wks.location}/Dazel/Vender/entt/include",
-        ["yaml_cpp"] = "%{wks.location}/Dazel/Vender/yaml-cpp/include",
-        ["ImGuizmo"] = "%{wks.location}/Dazel/Vender/ImGuizmo",
     }
 
     group "Dependencies"

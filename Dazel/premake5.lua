@@ -1,7 +1,7 @@
 project "Dazel"
     kind "StaticLib"
     language "C++"
-    staticruntime "on"
+    staticruntime "off"
     cppdialect "C++latest"
 
     targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
@@ -44,6 +44,7 @@ project "Dazel"
         "%{IncludeDir.entt}",
         "%{IncludeDir.yaml_cpp}",
         "%{IncludeDir.ImGuizmo}",
+        "%{IncludeDir.VulkanSDK}",
     }
 
     links
@@ -66,12 +67,33 @@ project "Dazel"
         runtime "Debug"
         symbols "on"
 
+        links
+        {
+            "%{Library.ShaderC_Debug}",
+            "%{Library.SPIRV_Cross_Debug}",
+			"%{Library.SPIRV_Cross_GLSL_Debug}",
+        }
+
     filter "configurations:Release"
         defines "DAZEL_RELEASE"
         runtime "Release"
         optimize "on"
 
+        links
+		{
+			"%{Library.ShaderC_Release}",
+			"%{Library.SPIRV_Cross_Release}",
+			"%{Library.SPIRV_Cross_GLSL_Release}"
+		}
+
     filter "configurations:Publish"
         defines "DAZEL_PUBLISH"
         runtime "Release"
         optimize "on"
+
+        links
+		{
+			"%{Library.ShaderC_Release}",
+			"%{Library.SPIRV_Cross_Release}",
+			"%{Library.SPIRV_Cross_GLSL_Release}"
+		}

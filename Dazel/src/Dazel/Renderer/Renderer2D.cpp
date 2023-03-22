@@ -5,8 +5,10 @@
 #include "VertexArray.h"
 #include "Shader.h"
 #include "RendererCommand.h"
+#include "UniformBuffer.h"
 
 #include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 #include "glm/glm.hpp"
 
 namespace DAZEL
@@ -55,7 +57,8 @@ namespace DAZEL
 
 		delete[] QuadIndices;
 
-		s_SquareData.TextureShader = Shader::Create("assert/shader/TextureShader.glsl");
+		s_SquareData.TextureShader = Shader::Create("assert/shader/TextureShader_common.glsl");
+
 
 		s_SquareData.WhiteTexture = Texture2D::Create(1, 1);
 		UINT whiteColor = 0xffffffff;
@@ -66,10 +69,12 @@ namespace DAZEL
 		{
 			samplers[i] = i;
 		}
-		s_SquareData.TextureShader->Bind();
-		s_SquareData.TextureShader->SetIntArray("u_TextureArray", samplers, s_SquareData.uiMaxTextureSlots);
+		//s_SquareData.TextureShader->Bind();
+		//s_SquareData.TextureShader->SetIntArray("u_TextureArray", samplers, s_SquareData.uiMaxTextureSlots);
 
 		s_SquareData.TextureSlots[0] = s_SquareData.WhiteTexture;
+
+		s_SquareData.CameraUniformBuffer = UniformBuffer::Create(sizeof(s_SquareData.CameraBufferData), 0);
 	}
 	void Renderer2D::Shutdown()
 	{
@@ -80,8 +85,8 @@ namespace DAZEL
 	{
 		PROFILE_FUNCTION();
 
-		s_SquareData.TextureShader->Bind();
-		s_SquareData.TextureShader->SetMat4("u_ViewProjMat", camera.GetProjection() * glm::inverse(cameraTransform));
+		s_SquareData.CameraBufferData.ViewProjMat = camera.GetProjection() * glm::inverse(cameraTransform);
+		s_SquareData.CameraUniformBuffer->SetData(&s_SquareData.CameraBufferData, sizeof(s_SquareData.CameraBufferData));
 
 		StartBatch();
 	}
@@ -89,8 +94,8 @@ namespace DAZEL
 	{
 		PROFILE_FUNCTION();
 
-		s_SquareData.TextureShader->Bind();
-		s_SquareData.TextureShader->SetMat4("u_ViewProjMat", camera.GetViewProjMatrix());
+		s_SquareData.CameraBufferData.ViewProjMat = camera.GetViewProjMatrix();
+		s_SquareData.CameraUniformBuffer->SetData(&s_SquareData.CameraBufferData, sizeof(s_SquareData.CameraBufferData));
 
 		StartBatch();
 	}
@@ -98,8 +103,8 @@ namespace DAZEL
 	{
 		PROFILE_FUNCTION();
 
-		s_SquareData.TextureShader->Bind();
-		s_SquareData.TextureShader->SetMat4("u_ViewProjMat", camera.GetViewProjMatrix());
+		s_SquareData.CameraBufferData.ViewProjMat = camera.GetViewProjMatrix();
+		s_SquareData.CameraUniformBuffer->SetData(&s_SquareData.CameraBufferData, sizeof(s_SquareData.CameraBufferData));
 
 		StartBatch();
 	}
@@ -107,8 +112,8 @@ namespace DAZEL
 	{
 		PROFILE_FUNCTION();
 
-		s_SquareData.TextureShader->Bind();
-		s_SquareData.TextureShader->SetMat4("u_ViewProjMat", viewProjMat);
+		s_SquareData.CameraBufferData.ViewProjMat = viewProjMat;
+		s_SquareData.CameraUniformBuffer->SetData(&s_SquareData.CameraBufferData, sizeof(s_SquareData.CameraBufferData));
 
 		StartBatch();
 	}
@@ -134,6 +139,7 @@ namespace DAZEL
 
 		if (s_SquareData.uiQuadIndexCount > 0)
 		{
+			s_SquareData.TextureShader->Bind();
 			RendererCommand::DrawIndexed(s_SquareData.SquareVertexArray, s_SquareData.uiQuadIndexCount);
 			s_SquareData.Stat.uiDrawCalls++;
 		}

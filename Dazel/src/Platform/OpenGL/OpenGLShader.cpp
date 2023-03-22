@@ -4,6 +4,7 @@
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
 
+
 namespace DAZEL
 {
 	GLenum ShaderTypeFromString(const std::string& strType)

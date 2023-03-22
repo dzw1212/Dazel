@@ -37,6 +37,8 @@ namespace DAZEL
 	}
 	void SceneCamera::SetViewportSize(UINT uiWidth, UINT uiHeight)
 	{
+		CORE_ASSERT(uiWidth > 0 && uiHeight > 0, "Width or Height cant be 0");
+
 		m_fAspectRatio = (float)uiWidth / (float)uiHeight;
 
 		RecalculateProjection();

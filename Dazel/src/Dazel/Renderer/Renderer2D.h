@@ -12,6 +12,11 @@
 
 namespace DAZEL
 {
+	struct CameraData
+	{
+		glm::mat4 ViewProjMat;
+	};
+
 	struct QuadVertex
 	{
 		glm::vec3 Pos;
@@ -81,6 +86,9 @@ namespace DAZEL
 			glm::vec2(1.f, 1.f),
 			glm::vec2(0.f, 1.f),
 		};
+
+		CameraData CameraBufferData;
+		Ref<UniformBuffer> CameraUniformBuffer;
 	};
 
 	class Renderer2D

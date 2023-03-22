@@ -116,7 +116,8 @@ namespace DAZEL
 	template<>
 	void Scene::OnComponentAdd<CameraComponent>(Entity entity, CameraComponent& component)
 	{
-		component.m_Camera.SetViewportSize(m_uiViewportWidth, m_uiViewportHeight);
+		if (m_uiViewportWidth > 0 && m_uiViewportHeight > 0)
+			component.m_Camera.SetViewportSize(m_uiViewportWidth, m_uiViewportHeight);
 	}
 	template<>
 	void Scene::OnComponentAdd<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)

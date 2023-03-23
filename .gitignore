@@ -18,5 +18,7 @@
 
 #Directories
 Dazel/Vender/VulkanSDK
+Dazel/Vender/shaderc
+Dazel/Vender/SPIRV_Cross
 DazelEditor/asset/cache
 scripts/__pycache__

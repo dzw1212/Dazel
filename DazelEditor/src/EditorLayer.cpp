@@ -65,6 +65,14 @@ void EditorLayer::OnAttach()
 	//Scene
 	m_ActiveScene = DAZEL::CreateRef<DAZEL::Scene>();
 
+	auto commandLineArgs = DAZEL::Application::Get().GetCommandLineArgs();
+	if (commandLineArgs.nCount > 1)
+	{
+		auto sceneFilePath = commandLineArgs[1];
+		DAZEL::SceneSerializer serializer(m_ActiveScene);
+		serializer.Deserialize(sceneFilePath);
+	}
+
 #if 0
 	m_SquareEntity = m_ActiveScene->CreateEntity("Square");
 

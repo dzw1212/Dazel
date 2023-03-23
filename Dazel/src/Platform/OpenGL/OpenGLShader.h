@@ -46,8 +46,20 @@ namespace DAZEL
 		std::unordered_map<GLenum, std::string> SplitShaderSource(const std::string& strShaderSrc);
 		void CompileShader(const std::unordered_map<GLenum, std::string>& mapShaderSrc);
 
+		void CompileOrGetVulkanBinaries(const std::unordered_map<GLenum, std::string>& mapShaderSrc);
+		void CompileOrGetOpenGLBinaries();
+
+		void CreateProgram();
+		void Reflect(GLenum eStage, const std::vector<UINT>& vecShaderData);
+
 	private:
 		UINT m_uiRendererProgramId = 0;
 		std::string m_strName;
+
+		std::string m_strFilePath;
+		std::unordered_map<GLenum, std::vector<UINT>> m_mapVulkanSPIRV;
+		std::unordered_map<GLenum, std::vector<UINT>> m_mapOpenGLSPIRV;
+
+		std::unordered_map<GLenum, std::string> m_mapOpenGLSrcCode;
 	};
 }

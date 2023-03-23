@@ -1,7 +1,8 @@
 #pragma once
+
 #include <chrono>
 
-namespace Dazel 
+namespace DAZEL
 {
 	class Timer
 	{
@@ -29,5 +30,4 @@ namespace Dazel
 	private:
 		std::chrono::time_point<std::chrono::high_resolution_clock> m_Start;
 	};
-
 }

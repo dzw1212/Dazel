@@ -10,6 +10,8 @@
 #include "Texture.h"
 #include "SubTexture2D.h"
 
+#include "UniformBuffer.h"
+
 namespace DAZEL
 {
 	struct CameraData

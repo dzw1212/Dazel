@@ -13,8 +13,8 @@
 class EditorApp : public DAZEL::Application
 {
 public:
-	EditorApp()
-		: Application("Dazel Editor")
+	EditorApp(DAZEL::ApplicationCommandLineArgs args)
+		: Application("Dazel Editor", args)
 	{
 		PushLayer(new EditorLayer());
 	}
@@ -27,5 +27,5 @@ public:
 
 DAZEL::Application* DAZEL::CreateApplication(ApplicationCommandLineArgs args)
 {
-	return new EditorApp();
+	return new EditorApp(args);
 }

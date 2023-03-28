@@ -2,10 +2,17 @@
 
 #include "Dazel.h"
 
+#include "Panels/ContentBrowserPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Dazel/Camera/EditorCamera.h"
 
 #include "ImGuizmo.h"
+
+enum class SceneState
+{
+	PLAY,
+	EDIT,
+};
 
 class EditorLayer : public DAZEL::Layer
 {
@@ -20,7 +27,12 @@ public:
 public:
 	void NewScene();
 	void OpenScene();
+	void OpenScene(const std::filesystem::path& path);
 	void SaveScene();
+public:
+	void UI_Tools();
+	void OnScenePlay();
+	void OnSceneStop();
 public:
 	bool OnKeyPressed(DAZEL::KeyPressedEvent& event);
 	bool OnMousePressed(DAZEL::MouseButtonPressedEvent& event);
@@ -56,11 +68,17 @@ private:
 	DAZEL::SceneHierarchyPanel m_SceneHierarchyPanel;
 	DAZEL::SceneSerializer m_SceneSerializer;
 
+	DAZEL::ContentBrowserPanel m_ContentBrowserPanel;
+
 	//Gizmo
 	ImGuizmo::OPERATION m_curGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 	ImGuizmo::MODE m_curGizmoMode = ImGuizmo::MODE::LOCAL;
 
 	//EditorCamera
 	DAZEL::EditorCamera m_EditorCamera;
-	bool m_bEnableEditorCamera = false;
+
+	//Scene State
+	SceneState m_SceneState = SceneState::EDIT;
+	DAZEL::Ref<DAZEL::Texture2D> m_PlayIcon;
+	DAZEL::Ref<DAZEL::Texture2D> m_StopIcon;
 };

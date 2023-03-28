@@ -16,20 +16,20 @@ struct VertexOutput
 {
     vec4 Color;
     vec2 TexCoord;
-    float TexIndex;
     float TilingFactor;
 };
 
 layout(location = 0) out VertexOutput Output;
+layout(location = 3) out flat float v_TexIndex; //结构体中的变量默认插值，因此从VertexOutput中提出
 layout(location = 4) out flat int v_EntityId;
 
 void main()
 {
     Output.Color = color;
     Output.TexCoord = texCoord;
-    Output.TexIndex = texIndex;
     Output.TilingFactor = tilingFactor;
 
+	v_TexIndex = texIndex;
     v_EntityId = entityId;
 
     gl_Position = u_ViewProjMat * vec4(vertPos, 1.0);
@@ -44,11 +44,11 @@ struct VertexOutput
 {
     vec4 Color;
     vec2 TexCoord;
-    float TexIndex;
     float TilingFactor;
 };
 
 layout(location = 0) in VertexOutput Input;
+layout(location = 3) in flat float v_TexIndex;
 layout(location = 4) in flat int v_EntityId;
 
 layout(binding = 0) uniform sampler2D u_TextureArray[32];
@@ -57,7 +57,7 @@ void main()
 {
     vec4 texColor = Input.Color;
 
-	switch(int(Input.TexIndex))
+	switch(int(v_TexIndex))
 	{
 		case  0: texColor *= texture(u_TextureArray[ 0], Input.TexCoord * Input.TilingFactor); break;
 		case  1: texColor *= texture(u_TextureArray[ 1], Input.TexCoord * Input.TilingFactor); break;

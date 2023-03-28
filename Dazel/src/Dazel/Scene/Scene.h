@@ -1,13 +1,14 @@
 #pragma once
 
-#include "Dazel/Core/Timestep.h"
-#include "Dazel/Camera/EditorCamera.h"
-
 #include "entt.hpp"
+
+class b2World;
 
 namespace DAZEL
 {
 	class Entity;
+	class Timestep;
+	class EditorCamera;
 
 	class Scene
 	{
@@ -21,8 +22,6 @@ namespace DAZEL
 
 		Entity GetPrimaryCameraEntity();
 
-
-
 		void OnUpdateEditor(Timestep timeStep, EditorCamera& camera);
 		void OnUpdateRuntime(Timestep timeStep);
 		void OnViewportResize(UINT uiWidth, UINT uiHeight);
@@ -31,9 +30,14 @@ namespace DAZEL
 	public:
 		template<typename T>
 		void OnComponentAdd(Entity entity, T& component);
+	public:
+		void OnRuntimePlay();
+		void OnRuntimeStop();
 	private:
 		entt::registry m_Registry;
 		UINT m_uiViewportWidth;
 		UINT m_uiViewportHeight;
+
+		b2World* m_PhysicalWorld;
 	};
 }

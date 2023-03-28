@@ -8,6 +8,7 @@
 #include "imgui.h"
 
 #include "EditorLayer.h"
+#include "Dazel/Scene/Components.h"
 
 glm::vec2 CurMousePosTo2DPos(const glm::vec2& mousePos, const glm::vec2& viewPortSize, 
 	const glm::vec2& bounds, const glm::vec3& cameraPos)
@@ -36,6 +37,9 @@ void EditorLayer::OnAttach()
 	//m_ShaderLibrary.Load("assert/shader/SquareShader.glsl");
 	m_Texture = DAZEL::Texture2D::Create("assert/texture/icon.png");
 	m_SpriteSheet = DAZEL::Texture2D::Create("assert/game/texture/tilemap_packed.png");
+
+	m_PlayIcon = DAZEL::Texture2D::Create("Resource/Icon/Scene/PlayIcon.png");
+	m_StopIcon = DAZEL::Texture2D::Create("Resource/Icon/Scene/StopIcon.png");
 
 
 	//CameraComtroller
@@ -114,20 +118,9 @@ void EditorLayer::OnUpdate(DAZEL::Timestep timeStep)
 			m_FrameBuffer->Resize((UINT)m_ViewportPanelSize.x, (UINT)m_ViewportPanelSize.y);
 			m_CameraController.SetAspectRatio(m_ViewportPanelSize.x / m_ViewportPanelSize.y);
 
-			if (m_bEnableEditorCamera)
-				m_ActiveScene->OnViewportResize((UINT)m_ViewportPanelSize.x, (UINT)m_ViewportPanelSize.y);
+			m_ActiveScene->OnViewportResize((UINT)m_ViewportPanelSize.x, (UINT)m_ViewportPanelSize.y);
 		
 			m_EditorCamera.SetViewportSize(m_ViewportPanelSize.x, m_ViewportPanelSize.y);
-		}
-	}
-
-	{
-		PROFILE_SCOPE("CameraController");
-		if (m_bIsViewportPanelFocused)
-		{
-			m_CameraController.OnUpdate(timeStep);
-			if (m_bEnableEditorCamera)
-				m_EditorCamera.OnUpdate(timeStep);
 		}
 	}
 
@@ -156,21 +149,26 @@ void EditorLayer::OnUpdate(DAZEL::Timestep timeStep)
 		//DAZEL::Renderer2D::DrawQuad(glm::vec3(0.f, 0.f, -0.1), {1, 2}, subTexture);
 
 		//DAZEL::Renderer2D::DrawQuad(glm::vec2(0.f, 0.f), glm::vec2(5.f, 5.f), glm::vec4(1.f, 0.f, 0.f, 1.f));
+			
 
-		if (m_bEnableEditorCamera)
-			m_ActiveScene->OnUpdateEditor(timeStep, m_EditorCamera);
-		else
-			m_ActiveScene->OnUpdateRuntime(timeStep);
-
-		//for (float x = -5.f; x < 5.f; x += 0.5)
-		//{
-		//	for (float y = -5.f; y < 5.f; y += 0.5)
-		//	{
-		//		DAZEL::Renderer2D::DrawRotateQuad(glm::vec3(x, y, -0.1), glm::vec2(0.45, 0.45), glm::radians(fAngle), glm::vec4((x + 5.f) / 10.f, (y + 5.f) / 10.f, 1.f, 1.f));
-		//	}
-		//}
-
-		//DAZEL::Renderer2D::EndScene();
+		switch (m_SceneState)
+		{
+			case SceneState::PLAY:
+			{
+				m_ActiveScene->OnUpdateRuntime(timeStep);
+				break;
+			}
+			case SceneState::EDIT:
+			{
+				m_EditorCamera.OnUpdate(timeStep);
+				m_ActiveScene->OnUpdateEditor(timeStep, m_EditorCamera);
+				//if (m_bIsViewportPanelFocused)
+				//{
+				//	m_CameraController.OnUpdate(timeStep);
+				//}
+				break;
+			}
+		}
 		
 		//if (DAZEL::Input::IsMouseButtonPressed(DAZEL_MOUSE_BUTTON_LEFT))
 		//{
@@ -289,11 +287,6 @@ void EditorLayer::OnImGuiRender()
 	ImGui::Text("Draw call:%d", RendererStata.uiDrawCalls);
 
 	ImGui::Separator();
-	if (ImGui::Checkbox("Enable EditorCamera", &m_bEnableEditorCamera))
-	{
-		m_EditorCamera.UpdateView();
-		m_EditorCamera.UpdateProjection();
-	}
 
 	ImGui::Text("Viewport MousePos: (%.2f, %.2f)", m_ViewportRegionMousePos.x, m_ViewportRegionMousePos.y);
 	ImGui::End();
@@ -312,6 +305,29 @@ void EditorLayer::OnImGuiRender()
 		m_ViewportPanelSize = { viewportPanelSize.x, viewportPanelSize.y };
 	}
 	ImGui::Image((ImTextureID)(m_FrameBuffer->GetColorAttachmentId(0)), viewportPanelSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ASSERT_PATH"))
+		{
+			auto data = (const char*)payload->Data;
+			auto path = std::filesystem::path(data);
+			auto fileExtension = path.filename().extension();
+			if (fileExtension == ".dazel")
+			{
+				OpenScene(path);
+			}
+			else if (fileExtension == ".png")
+			{
+				if (m_MouseHoverEntity != -1)
+				{
+					auto& sprite = m_MouseHoverEntity.GetComponent<DAZEL::SpriteRendererComponent>();
+					sprite.Texture = DAZEL::Texture2D::Create(path.string());
+				}
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
 
 	ImVec2 minBound = ImGui::GetWindowPos();
 
@@ -347,7 +363,7 @@ void EditorLayer::OnImGuiRender()
 		auto windowPos = ImGui::GetWindowPos();
 		ImGuizmo::SetRect(windowPos.x, windowPos.y, fWindowWidth, fWindowHeight);
 
-		if (m_bEnableEditorCamera)
+		if (m_SceneState == SceneState::EDIT)
 		{
 			auto viewMat = m_EditorCamera.GetViewMatrix();
 			auto projectionMat = m_EditorCamera.GetProjection();
@@ -399,6 +415,9 @@ void EditorLayer::OnImGuiRender()
 	ImGui::PopStyleVar();
 
 	m_SceneHierarchyPanel.OnImGuiRender();
+	m_ContentBrowserPanel.OnImGuiRender();
+
+	UI_Tools();
 }
 
 void EditorLayer::NewScene()
@@ -422,6 +441,20 @@ void EditorLayer::OpenScene()
 	}
 }
 
+void EditorLayer::OpenScene(const std::filesystem::path& path)
+{
+	auto strFilePath = path.string();
+	if (!strFilePath.empty())
+	{
+		m_ActiveScene = DAZEL::CreateRef<DAZEL::Scene>();
+		m_ActiveScene->OnViewportResize((UINT)m_ViewportPanelSize.x, (UINT)m_ViewportPanelSize.y);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+		m_SceneSerializer.SetScene(m_ActiveScene);
+		m_SceneSerializer.Deserialize(strFilePath);
+	}
+}
+
 void EditorLayer::SaveScene()
 {
 	auto strFilepath = DAZEL::FileDialogs::SaveFile("Dazel Scene (*.dazel)\0*.dazel\0");
@@ -429,6 +462,57 @@ void EditorLayer::SaveScene()
 	{
 		m_SceneSerializer.Serialize(strFilepath);
 	}
+}
+
+void EditorLayer::UI_Tools()
+{
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2)); //´°¿ÚÌî³ä£¬xÖá0ÏñËØ£¬yÖá2ÏñËØ
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0)); //ÄÚ²¿¼ä¾à
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(15.f / 255.f, 15.f / 255.f, 15.f / 255.f, 1.f)); //°´Å¥µÄÑÕÉ«
+
+	auto& colors = ImGui::GetStyle().Colors;
+	const auto& buttonHovered = colors[ImGuiCol_ButtonHovered];
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f));
+	const auto& buttonActive = colors[ImGuiCol_ButtonActive];
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonActive.x, buttonActive.y, buttonActive.z, 0.5f));
+
+	ImGui::Begin("##ToolBar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+	bool toolbarEnabled = (bool)m_ActiveScene;
+
+	ImVec4 tintColor = ImVec4(1.f, 1.f, 1.f, 1.f);
+	if (!toolbarEnabled)
+		tintColor.w = 0.5f;
+
+	float fSize = ImGui::GetWindowHeight() - 4.0f;
+	ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (fSize * 0.5f)); //¾ÓÖÐ
+
+	auto icon = m_SceneState == SceneState::PLAY ? m_StopIcon : m_PlayIcon;
+
+	if (ImGui::ImageButton((ImTextureID)icon->GetId(), { fSize, fSize }))
+	{
+		if (m_SceneState == SceneState::PLAY)
+			OnSceneStop();
+		else if (m_SceneState == SceneState::EDIT)
+			OnScenePlay();
+	}
+
+	ImGui::PopStyleVar(2);
+	ImGui::PopStyleColor(3);
+
+	ImGui::End();
+}
+
+void EditorLayer::OnScenePlay()
+{
+	m_SceneState = SceneState::PLAY;
+	m_ActiveScene->OnRuntimePlay();
+}
+
+void EditorLayer::OnSceneStop()
+{
+	m_SceneState = SceneState::EDIT;
+	m_ActiveScene->OnRuntimeStop();
 }
 
 bool EditorLayer::OnKeyPressed(DAZEL::KeyPressedEvent& event)

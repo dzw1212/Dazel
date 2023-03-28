@@ -1,9 +1,12 @@
 #include "DazelPCH.h"
 
+#include "box2d/b2_world.h"
+
 #include "Components.h"
 #include "Entity.h"
 #include "Scene.h"
 #include "Dazel/Renderer/Renderer2D.h"
+
 
 
 namespace DAZEL
@@ -25,7 +28,10 @@ namespace DAZEL
 		for (auto entity : quadView)
 		{
 			auto [transform, sprite] = quadView.get<TransformComponent, SpriteRendererComponent>(entity);
-			Renderer2D::DrawQuad(transform.GetTransform(), sprite, (int)entity);
+			if (sprite.Texture)
+				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Texture, sprite.nTileFacotr, sprite.m_Color, (int)entity);
+			else
+				Renderer2D::DrawQuad(transform.GetTransform(), sprite.m_Color, (int)entity);
 		}
 
 		Renderer2D::EndScene();
@@ -54,7 +60,10 @@ namespace DAZEL
 			for (auto entity : quadView)
 			{
 				auto [transform, sprite] = quadView.get<TransformComponent, SpriteRendererComponent>(entity);
-				Renderer2D::DrawQuad(transform.GetTransform(), sprite, (int)entity);
+				if (sprite.Texture)
+					Renderer2D::DrawQuad(transform.GetTransform(), sprite.Texture, sprite.nTileFacotr, sprite.m_Color, (int)entity);
+				else
+					Renderer2D::DrawQuad(transform.GetTransform(), sprite.m_Color, (int)entity);
 			}
 
 			Renderer2D::EndScene();
@@ -97,6 +106,18 @@ namespace DAZEL
 				cameraComponent.m_Camera.SetViewportSize(uiWidth, uiHeight);
 			}
 		}
+	}
+
+	void Scene::OnRuntimePlay()
+	{
+		b2Vec2 gravity(0.0f, -10.0f); //定义重力矢量
+		m_PhysicalWorld = new b2World(gravity);
+	}
+
+	void Scene::OnRuntimeStop()
+	{
+		delete m_PhysicalWorld;
+		m_PhysicalWorld = nullptr;
 	}
 
 	template<typename T>

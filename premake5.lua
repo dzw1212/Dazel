@@ -24,6 +24,7 @@ workspace "Dazel"
         include "Dazel/Vender/GLAD"
         include "Dazel/Vender/ImGui"
         include "Dazel/Vender/yaml-cpp"
+        include "Dazel/Vender/Box2D"
     group ""
 
     include "Dazel"

@@ -109,6 +109,7 @@ namespace DAZEL
 		static void Flush();
 
 		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color, int nEntityId = -1);
+		static void DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, int nTileCoef = 1, const glm::vec3& tintColor = glm::vec3(1.f), int nEntityId = -1);
 
 		static void DrawQuad(const glm::vec2& pos2, const glm::vec2& size, const glm::vec4& color);
 		static void DrawQuad(const glm::vec3& pos3, const glm::vec2& size, const glm::vec4& color);

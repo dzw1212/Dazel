@@ -5,7 +5,7 @@ project "Dazel"
     cppdialect "C++latest"
 
     targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("%{wks.location}/bin_int/" .. outputdir .. "/%{prj.name}")
+    objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 
     pchheader "DazelPCH.h"
     pchsource "src/DazelPCH.cpp"
@@ -45,6 +45,7 @@ project "Dazel"
         "%{IncludeDir.yaml_cpp}",
         "%{IncludeDir.ImGuizmo}",
         "%{IncludeDir.VulkanSDK}",
+        "%{IncludeDir.Box2D}",
     }
 
     links
@@ -53,6 +54,7 @@ project "Dazel"
         "GLAD",
         "ImGui",
         "yaml-cpp",
+        "Box2D",
         "opengl32.lib",
     }
 

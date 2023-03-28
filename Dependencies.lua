@@ -12,6 +12,7 @@ IncludeDir = {
     ["shaderc"] = "%{wks.location}/Dazel/Vender/shaderc/include",
     ["SPIRV_Cross"] = "%{wks.location}/Dazel/Vender/SPIRV_Cross",
     ["VulkanSDK"] = "%{VULKAN_SDK}/Include",
+    ["Box2D"] = "%{wks.location}/Dazel/Vender/Box2D/include",
 }
 
 LibraryDir = {

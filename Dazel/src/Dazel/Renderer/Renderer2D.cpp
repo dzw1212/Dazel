@@ -171,29 +171,8 @@ namespace DAZEL
 
 		s_SquareData.Stat.uiQuadCount++;
 	}
-	void Renderer2D::DrawQuad(const glm::vec2& pos2, const glm::vec2& size, const glm::vec4& color)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, int nTileCoef, const glm::vec3& tintColor, int nEntityId)
 	{
-		DrawQuad(glm::vec3(pos2, 0.f), size, color);
-	}
-	void Renderer2D::DrawQuad(const glm::vec3& pos3, const glm::vec2& size, const glm::vec4& color)
-	{
-		PROFILE_FUNCTION();
-
-		auto translateMat = glm::translate(glm::mat4(1.f), pos3);
-		auto scaleMat = glm::scale(glm::mat4(1.f), glm::vec3(size, 1.f));
-		auto transform = translateMat * scaleMat;
-
-		DrawQuad(transform, color);
-	}
-
-	void Renderer2D::DrawQuad(const glm::vec2& pos2, const glm::vec2& size, const Ref<Texture2D>& texture, int nTileCoef, const glm::vec3& tintColor)
-	{
-		DrawQuad(glm::vec3(pos2, 0.f), size, texture, nTileCoef, tintColor);
-	}
-	void Renderer2D::DrawQuad(const glm::vec3& pos3, const glm::vec2& size, const Ref<Texture2D>& texture, int nTileCoef, const glm::vec3& tintColor)
-	{
-		PROFILE_FUNCTION();
-
 		if (s_SquareData.uiQuadIndexCount >= s_SquareData.uiMaxIndices)
 		{
 			NextBatch();
@@ -217,10 +196,6 @@ namespace DAZEL
 
 		constexpr glm::vec4 whiteColor = glm::vec4(1.f);
 
-		auto translateMat = glm::translate(glm::mat4(1.f), pos3);
-		auto scaleMat = glm::scale(glm::mat4(1.f), glm::vec3(size, 1.f));
-		auto transform = translateMat * scaleMat;
-
 		for (int i = 0; i < 4; ++i)
 		{
 			s_SquareData.pQuadVertexBufferPointer->Pos = transform * s_SquareData.SquareVertexPosData[i];
@@ -228,12 +203,42 @@ namespace DAZEL
 			s_SquareData.pQuadVertexBufferPointer->Color = whiteColor;
 			s_SquareData.pQuadVertexBufferPointer->fTexIndex = (float)nFindSlot;
 			s_SquareData.pQuadVertexBufferPointer->fTilingFactor = (float)nTileCoef;
+			s_SquareData.pQuadVertexBufferPointer->nEntityId = nEntityId;
 			s_SquareData.pQuadVertexBufferPointer++;
 		}
 
 		s_SquareData.uiQuadIndexCount += 6;
 
 		s_SquareData.Stat.uiQuadCount++;
+	}
+	void Renderer2D::DrawQuad(const glm::vec2& pos2, const glm::vec2& size, const glm::vec4& color)
+	{
+		DrawQuad(glm::vec3(pos2, 0.f), size, color);
+	}
+	void Renderer2D::DrawQuad(const glm::vec3& pos3, const glm::vec2& size, const glm::vec4& color)
+	{
+		PROFILE_FUNCTION();
+
+		auto translateMat = glm::translate(glm::mat4(1.f), pos3);
+		auto scaleMat = glm::scale(glm::mat4(1.f), glm::vec3(size, 1.f));
+		auto transform = translateMat * scaleMat;
+
+		DrawQuad(transform, color);
+	}
+
+	void Renderer2D::DrawQuad(const glm::vec2& pos2, const glm::vec2& size, const Ref<Texture2D>& texture, int nTileCoef, const glm::vec3& tintColor)
+	{
+		DrawQuad(glm::vec3(pos2, 0.f), size, texture, nTileCoef, tintColor);
+	}
+	void Renderer2D::DrawQuad(const glm::vec3& pos3, const glm::vec2& size, const Ref<Texture2D>& texture, int nTileCoef, const glm::vec3& tintColor)
+	{
+		PROFILE_FUNCTION();
+
+		auto translateMat = glm::translate(glm::mat4(1.f), pos3);
+		auto scaleMat = glm::scale(glm::mat4(1.f), glm::vec3(size, 1.f));
+		auto transform = translateMat * scaleMat;
+
+		DrawQuad(transform, texture, nTileCoef, tintColor);
 	}
 	void Renderer2D::DrawQuad(const glm::vec3& pos3, const glm::vec2& size, const Ref<SubTexture2D>& subTexture, int nTileCoef, const glm::vec3& tintColor)
 	{

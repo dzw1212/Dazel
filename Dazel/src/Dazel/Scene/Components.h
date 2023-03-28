@@ -9,6 +9,8 @@
 #include "SceneCamera.h"
 #include "ScriptableEntity.h"
 
+#include "Dazel/Renderer/Texture.h"
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/quaternion.hpp"
 
@@ -39,6 +41,8 @@ namespace DAZEL
 	struct SpriteRendererComponent
 	{
 		glm::vec4 m_Color{ 1.f };
+		Ref<Texture2D> Texture;
+		int nTileFacotr = 1;
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
@@ -94,6 +98,41 @@ namespace DAZEL
 			InstanceNewFunc = [&]() { m_Instance = new T(); };
 			InstanceDeleteFunc = [&]() { delete (T*)m_Instance; m_Instance = nullptr; };
 		}
+	};
+
+	struct RigidBody2DComponent
+	{
+		enum class BodyType
+		{
+			STATIC,
+			DYNAMIC,
+			KINEMATIC,
+		};
+		BodyType m_Type = BodyType::STATIC;
+		bool m_bFixedRotation = false;
+
+		void* m_RuntimeBody = nullptr;
+
+		RigidBody2DComponent() = default;
+		RigidBody2DComponent(const RigidBody2DComponent&) = default;
+
+	};
+
+	struct BoxCollider2DComponent
+	{
+		glm::vec2 m_Offset = { 0.f, 0.f };
+		glm::vec2 m_Size = { 0.5f, 0.5f };
+		float m_fDensity = 1.f;
+		float m_fFriction = 0.5f;
+		float m_fRestitution = 0.f;
+		float m_fRestitutionThreshold = 0.5f;
+
+
+		void* m_RuntimeFixture = nullptr;
+
+
+		BoxCollider2DComponent() = default;
+		BoxCollider2DComponent(const BoxCollider2DComponent&) = default;
 	};
 
 

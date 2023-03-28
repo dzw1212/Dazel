@@ -1,3 +1,4 @@
+#include <filesystem>
 #include "Dazel.h"
 
 #include "SceneHierarchyPanel.h"
@@ -346,6 +347,24 @@ namespace DAZEL
 				{
 					auto& color = component.m_Color;
 					ImGui::ColorEdit4("Color", glm::value_ptr(color));
+					ImGui::Separator();
+					if (ImGui::Button("Texture", ImVec2(200.f, 0.f)))
+					{
+						component.Texture = {};
+					}
+					if (ImGui::BeginDragDropTarget())
+					{
+						if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ASSERT_PATH"))
+						{
+							auto data = (const char*)payload->Data;
+							auto path = std::filesystem::path(data);
+							auto fileExtension = path.filename().extension();
+							if (fileExtension == ".png")
+								component.Texture = DAZEL::Texture2D::Create(path.string());
+						}
+						ImGui::EndDragDropTarget();
+					}
+					ImGui::DragInt("TileFactor", &component.nTileFacotr, 1.f, 1.f, 100.f);
 				}, true);
 		}
 	}

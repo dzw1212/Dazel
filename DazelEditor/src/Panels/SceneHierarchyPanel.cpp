@@ -8,6 +8,7 @@
 #include "glm/gtc/type_ptr.hpp"
 
 
+
 namespace DAZEL
 {
 	static void DrawVec3Control(const std::string& strLabel, glm::vec3& values, float fResetValue = 0.f, float fColumnWidth = 100.f)
@@ -74,6 +75,63 @@ namespace DAZEL
 		ImGui::SameLine();
 		ImGui::DragFloat("##Z", &values.z, 0.1f, 0.f, 0.f, "%.2f");
 		ImGui::PopItemWidth();
+
+		ImGui::PopStyleVar();
+
+		ImGui::Columns(1);
+
+		ImGui::PopID();
+	}
+
+	static void DrawVec2Control(const std::string& strLabel, glm::vec2& values, float fResetValue = 0.f, float fColumnWidth = 100.f)
+	{
+		auto& io = ImGui::GetIO();
+		auto BoldFont = io.Fonts->Fonts[0];
+
+		ImGui::PushID(strLabel.c_str());
+
+		ImGui::Columns(2);
+		ImGui::SetColumnWidth(0, fColumnWidth);
+		ImGui::Text(strLabel.c_str());
+		ImGui::NextColumn();
+
+		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0.f, 0.f });
+
+		float fLineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.f;
+		ImVec2 buttonSize = { fLineHeight + 3.f, fLineHeight };
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.f });
+		ImGui::PushFont(BoldFont);
+		if (ImGui::Button("X", buttonSize))
+		{
+			values.x = fResetValue;
+		}
+		ImGui::PopFont();
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine();
+		ImGui::DragFloat("##X", &values.x, 0.1f, 0.f, 0.f, "%.2f");
+		ImGui::PopItemWidth();
+		ImGui::SameLine();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.f });
+		ImGui::PushFont(BoldFont);
+		if (ImGui::Button("Y", buttonSize))
+		{
+			values.y = fResetValue;
+		}
+		ImGui::PopFont();
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine();
+		ImGui::DragFloat("##Y", &values.y, 0.1f, 0.f, 0.f, "%.2f");
+		ImGui::PopItemWidth();
+		ImGui::SameLine();
 
 		ImGui::PopStyleVar();
 
@@ -236,6 +294,16 @@ namespace DAZEL
 				m_SelectedEntity.AddComponent<SpriteRendererComponent>();
 				ImGui::CloseCurrentPopup();
 			}
+			if (ImGui::MenuItem("Rigid Body"))
+			{
+				m_SelectedEntity.AddComponent<RigidBody2DComponent>();
+				ImGui::CloseCurrentPopup();
+			}
+			if (ImGui::MenuItem("Box Collider"))
+			{
+				m_SelectedEntity.AddComponent<BoxCollider2DComponent>();
+				ImGui::CloseCurrentPopup();
+			}
 			ImGui::EndPopup();
 		}
 		ImGui::PopItemWidth();
@@ -347,7 +415,7 @@ namespace DAZEL
 				{
 					auto& color = component.m_Color;
 					ImGui::ColorEdit4("Color", glm::value_ptr(color));
-					ImGui::Separator();
+
 					if (ImGui::Button("Texture", ImVec2(200.f, 0.f)))
 					{
 						component.Texture = {};
@@ -365,6 +433,54 @@ namespace DAZEL
 						ImGui::EndDragDropTarget();
 					}
 					ImGui::DragInt("TileFactor", &component.nTileFacotr, 1.f, 1.f, 100.f);
+				}, true);
+		}
+
+		if (entity.HasComponent<RigidBody2DComponent>())
+		{
+			DrawComponent<RigidBody2DComponent>("Rigid Body", entity, [](RigidBody2DComponent& component)
+				{
+
+					const char* BodyTypeString[(int)BodyType::MAX] = {
+						"Static",
+						"Dynamic",
+						"Kinematic"
+					};
+					const char* CurrentTypeString = BodyTypeString[(int)component.m_Type];
+
+					if (ImGui::BeginCombo("Body Type", CurrentTypeString))
+					{
+						for (int i = 0; i < (int)SceneCamera::ProjectionType::Max; ++i)
+						{
+							bool bIsSelected = CurrentTypeString == BodyTypeString[i];
+							if (ImGui::Selectable(BodyTypeString[i], bIsSelected))
+							{
+								component.m_Type = (BodyType)i;
+								CurrentTypeString = BodyTypeString[i];
+							}
+
+							if (bIsSelected)
+							{
+								ImGui::SetItemDefaultFocus();
+							}
+						}
+						ImGui::EndCombo();
+					}
+					ImGui::Checkbox("Fixed Rotation", &component.m_bFixedRotation);
+				}, true);
+		}
+
+		if (entity.HasComponent<BoxCollider2DComponent>())
+		{
+			DrawComponent<BoxCollider2DComponent>("Box Collider", entity, [](BoxCollider2DComponent& component)
+				{
+					DrawVec2Control("Size", component.m_Size);
+					DrawVec2Control("Offset", component.m_Offset);
+					
+					ImGui::DragFloat("Density", &component.m_fDensity, 0.01f, 0.f, 1.f);
+					ImGui::DragFloat("Friction", &component.m_fFriction, 0.01f, 0.f, 1.f);
+					ImGui::DragFloat("Restitution", &component.m_fRestitution, 0.01f, 0.f, 1.f);
+					ImGui::DragFloat("Restitution Threshold", &component.m_fRestitutionThreshold, 0.01f, 0.f, 10.f);
 				}, true);
 		}
 	}

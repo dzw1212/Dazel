@@ -1,16 +1,37 @@
 #include "DazelPCH.h"
 
-#include "box2d/b2_world.h"
-
 #include "Components.h"
 #include "Entity.h"
 #include "Scene.h"
 #include "Dazel/Renderer/Renderer2D.h"
+#include "Dazel/Core/UUID.h"
 
+#include "box2d/b2_world.h"
+#include "box2d/b2_body.h"
+#include "box2d/b2_polygon_shape.h"
+#include "box2d/b2_fixture.h"
 
 
 namespace DAZEL
 {
+
+	static b2BodyType BodyTypeToB2BodyType(BodyType eType)
+	{
+		switch (eType)
+		{
+		case BodyType::STATIC:
+			return b2BodyType::b2_staticBody;
+		case BodyType::DYNAMIC:
+			return b2BodyType::b2_dynamicBody;
+		case BodyType::KINEMATIC:
+			return b2BodyType::b2_kinematicBody;
+		default:
+			CORE_ASSERT(false, "Unsupport Body Type");
+			break;
+		}
+
+		return b2BodyType::b2_staticBody;
+	}
 
 	Scene::Scene()
 	{
@@ -38,6 +59,24 @@ namespace DAZEL
 	}
 	void Scene::OnUpdateRuntime(Timestep timeStep)
 	{
+		//Physical
+		const int nVelocityIterations = 6;
+		const int nPositionIterations = 2;
+		m_PhysicalWorld->Step(timeStep.GetSeconds(), nVelocityIterations, nPositionIterations);
+		
+		auto rigidBodyView = m_Registry.view<RigidBody2DComponent>();
+		for (auto entity : rigidBodyView)
+		{
+			Entity rigidBodyEntity = { entity, this };
+			b2Body* body = (b2Body*)rigidBodyEntity.GetComponent<RigidBody2DComponent>().m_RuntimeBody;
+
+			auto& transformComponent = rigidBodyEntity.GetComponent<TransformComponent>();
+			transformComponent.m_Position.x = body->GetPosition().x;
+			transformComponent.m_Position.y = body->GetPosition().y;
+			transformComponent.m_Rotation.z = body->GetAngle();
+		}
+
+		//Render 2D
 		Camera* mainCamera = nullptr;
 		glm::mat4 mainCameraTransform;
 		auto cameraView = m_Registry.view<TransformComponent, CameraComponent>();
@@ -71,10 +110,15 @@ namespace DAZEL
 	}
 	Entity Scene::CreateEntity(const std::string& strName)
 	{
-		 Entity entity(m_Registry.create(), this);
-		 entity.AddComponent<TagComponent>(strName);
-		 entity.AddComponent<TransformComponent>();
-		 return entity;
+		return CreateEntityWithUUID(UUID(), strName);
+	}
+	Entity Scene::CreateEntityWithUUID(const UINT64& uuid, const std::string& strName)
+	{
+		Entity entity(m_Registry.create(), this);
+		entity.AddComponent<IDComponent>(uuid);
+		entity.AddComponent<TagComponent>(strName);
+		entity.AddComponent<TransformComponent>();
+		return entity;
 	}
 	void Scene::DestroyEntity(Entity entity)
 	{
@@ -108,10 +152,45 @@ namespace DAZEL
 		}
 	}
 
-	void Scene::OnRuntimePlay()
+	void Scene::OnRuntimeStart()
 	{
 		b2Vec2 gravity(0.0f, -10.0f); //定义重力矢量
 		m_PhysicalWorld = new b2World(gravity);
+
+		auto rigidBodyView = m_Registry.view<RigidBody2DComponent>();
+		for (auto entity : rigidBodyView)
+		{
+			Entity rigidBodyEntity = { entity, this };
+			auto& transformComponent = rigidBodyEntity.GetComponent<TransformComponent>();
+			auto& rigidBodyComponent = rigidBodyEntity.GetComponent<RigidBody2DComponent>();
+
+			b2BodyDef bodyDef;
+			bodyDef.type = BodyTypeToB2BodyType(rigidBodyComponent.m_Type);
+			bodyDef.fixedRotation = rigidBodyComponent.m_bFixedRotation;
+			bodyDef.position.Set(transformComponent.m_Position.x, transformComponent.m_Position.y);
+			bodyDef.angle = transformComponent.m_Rotation.z;
+			b2Body* body = m_PhysicalWorld->CreateBody(&bodyDef);
+			rigidBodyComponent.m_RuntimeBody = body;
+
+			if (rigidBodyEntity.HasComponent<BoxCollider2DComponent>())
+			{
+				auto& boxColliderComponent = rigidBodyEntity.GetComponent<BoxCollider2DComponent>();
+
+				b2PolygonShape boxShape;
+				boxShape.SetAsBox(transformComponent.m_Scale.x * boxColliderComponent.m_Size.x, transformComponent.m_Scale.y * boxColliderComponent.m_Size.y);
+
+				b2FixtureDef fixtureDef;
+				fixtureDef.shape = &boxShape;
+				fixtureDef.density = boxColliderComponent.m_fDensity;
+				fixtureDef.friction = boxColliderComponent.m_fFriction;
+				fixtureDef.restitution = boxColliderComponent.m_fRestitution;
+				fixtureDef.restitutionThreshold = boxColliderComponent.m_fRestitutionThreshold;
+				b2Fixture* fixture = body->CreateFixture(&fixtureDef);
+				boxColliderComponent.m_RuntimeFixture = fixture;
+			}
+
+			
+		}
 	}
 
 	void Scene::OnRuntimeStop()
@@ -124,6 +203,11 @@ namespace DAZEL
 	void Scene::OnComponentAdd(Entity entity, T& component)
 	{
 		static_assert(false);
+	}
+
+	template<>
+	void Scene::OnComponentAdd<IDComponent>(Entity entity, IDComponent& component)
+	{
 	}
 
 	template<>
@@ -142,6 +226,14 @@ namespace DAZEL
 	}
 	template<>
 	void Scene::OnComponentAdd<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
+	{
+	}
+	template<>
+	void Scene::OnComponentAdd<RigidBody2DComponent>(Entity entity, RigidBody2DComponent& component)
+	{
+	}
+	template<>
+	void Scene::OnComponentAdd<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component)
 	{
 	}
 }

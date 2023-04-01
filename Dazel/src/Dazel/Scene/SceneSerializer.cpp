@@ -8,6 +8,30 @@
 
 namespace YAML 
 {
+	template<>
+	struct convert<glm::vec2>
+	{
+		static Node encode(const glm::vec2& rhs)
+		{
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::vec2& rhs)
+		{
+			if (!node.IsSequence() || node.size() != 2)
+			{
+				return false;
+			}
+
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			return true;
+		}
+	};
+
     template<>
     struct convert<glm::vec3>
     {
@@ -65,6 +89,12 @@ namespace YAML
 
 namespace DAZEL
 {
+	YAML::Emitter& operator << (YAML::Emitter& out, const glm::vec2& v) {
+		out << YAML::Flow;
+		out << YAML::BeginSeq << v.x << v.y << YAML::EndSeq;
+		return out;
+	}
+
     YAML::Emitter& operator << (YAML::Emitter& out, const glm::vec3& v) {
         out << YAML::Flow;
         out << YAML::BeginSeq << v.x << v.y << v.z << YAML::EndSeq;
@@ -79,13 +109,14 @@ namespace DAZEL
 
     static bool SerializeEntity(YAML::Emitter& out, Entity entity)
     {
+		CORE_ASSERT(entity.HasComponent<IDComponent>(), "Entity must have IDComponent");
+
         out << YAML::BeginMap;
         out << YAML::Key << "EntityUId";
-        out << YAML::Value << entity.GetId();
+        out << YAML::Value << entity.GetComponent<IDComponent>().m_UUId;
+        //out << YAML::Value << DAZEL::UUID();
         out << YAML::Key << "Components";
         out << YAML::BeginMap;
-
-        std::string strEntityName;
 
         if (entity.HasComponent<TagComponent>())
         {
@@ -95,11 +126,9 @@ namespace DAZEL
             out << YAML::Key << "Name";
             out << YAML::Value << tagComponent.m_strTag;
             out << YAML::EndMap;
-
-            strEntityName = tagComponent.m_strTag;
         }
 
-        LOG_INFO("Deserialize entity Id:{}, name:{}", entity.GetId(), strEntityName);
+        LOG_INFO("Serialize entity UId:{}, name:{}", entity.GetComponent<IDComponent>().m_UUId, entity.GetComponent<TagComponent>().m_strTag);
 
         if (entity.HasComponent<TransformComponent>())
         {
@@ -160,6 +189,38 @@ namespace DAZEL
             out << YAML::Value << spriteRendererComponent.m_Color;
             out << YAML::EndMap;
         }
+
+		if (entity.HasComponent<RigidBody2DComponent>())
+		{
+			auto& rigidBodyComponent = entity.GetComponent<RigidBody2DComponent>();
+			out << YAML::Key << "RigidBody2DComponent";
+			out << YAML::Value << YAML::BeginMap;
+			out << YAML::Key << "Body Type";
+			out << YAML::Value << (int)rigidBodyComponent.m_Type;
+			out << YAML::Key << "Fixed Rotation";
+			out << YAML::Value << rigidBodyComponent.m_bFixedRotation;
+			out << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<BoxCollider2DComponent>())
+		{
+			auto& boxColliderComponent = entity.GetComponent<BoxCollider2DComponent>();
+			out << YAML::Key << "BoxCollider2DComponent";
+			out << YAML::Value << YAML::BeginMap;
+			out << YAML::Key << "Offset";
+			out << YAML::Value << boxColliderComponent.m_Offset;
+			out << YAML::Key << "Size";
+			out << YAML::Value << boxColliderComponent.m_Size;
+			out << YAML::Key << "Density";
+			out << YAML::Value << boxColliderComponent.m_fDensity;
+			out << YAML::Key << "Friction";
+			out << YAML::Value << boxColliderComponent.m_fFriction;
+			out << YAML::Key << "Restitution";
+			out << YAML::Value << boxColliderComponent.m_fRestitution;
+			out << YAML::Key << "Restitution Threshold";
+			out << YAML::Value << boxColliderComponent.m_fRestitutionThreshold;
+			out << YAML::EndMap;
+		}
 
         out << YAML::EndMap;
         out << YAML::EndMap;
@@ -223,9 +284,9 @@ namespace DAZEL
         {
             for (auto entity : entities)
             {
-                auto deserializeEntity = m_Scene->CreateEntity();
+				UINT64 uuid = entity["EntityUId"].as<UINT64>();
+                auto deserializeEntity = m_Scene->CreateEntityWithUUID(uuid);
 
-                UINT uid = entity["EntityUId"].as<UINT>();
                 auto componentsNode = entity["Components"];
                 
                 auto tagComponentNode = componentsNode["TagComponent"];
@@ -262,6 +323,26 @@ namespace DAZEL
                 {
                     deserializeEntity.AddComponent<SpriteRendererComponent>(spriteRendererComponentNode["Color"].as<glm::vec4>());
                 }
+
+				auto rigidBodyComponentNode = componentsNode["RigidBody2DComponent"];
+				if (rigidBodyComponentNode)
+				{
+					auto& rigidBodyComponent = deserializeEntity.AddComponent<RigidBody2DComponent>();
+					rigidBodyComponent.m_Type = (BodyType)rigidBodyComponentNode["Body Type"].as<int>();
+					rigidBodyComponent.m_bFixedRotation = rigidBodyComponentNode["Fixed Rotation"].as<bool>();
+				}
+
+				auto boxColliderComponentNode = componentsNode["BoxCollider2DComponent"];
+				if (boxColliderComponentNode)
+				{
+					auto& boxColliderComponent = deserializeEntity.AddComponent<BoxCollider2DComponent>();
+					boxColliderComponent.m_Offset = boxColliderComponentNode["Offset"].as<glm::vec2>();
+					boxColliderComponent.m_Size = boxColliderComponentNode["Size"].as<glm::vec2>();
+					boxColliderComponent.m_fDensity = boxColliderComponentNode["Density"].as<float>();
+					boxColliderComponent.m_fFriction = boxColliderComponentNode["Friction"].as<float>();
+					boxColliderComponent.m_fRestitution = boxColliderComponentNode["Restitution"].as<float>();
+					boxColliderComponent.m_fRestitutionThreshold = boxColliderComponentNode["Restitution Threshold"].as<float>();
+				}
             }
         }
 

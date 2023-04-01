@@ -1,36 +1,26 @@
 Scene: Untitled
 Entities:
-  - EntityUId: 4
+  - EntityUId: 4528383881609369465
     Components:
       TagComponent:
-        Name: SquareRight
+        Name: SquareLeft
       TransformComponent:
-        Position: [0.349999994, 0, 0.349999994]
-        Rotation: [0, 0.785398185, 0]
+        Position: [-0.349999994, 0, 0.349999994]
+        Rotation: [0, -0.785398185, 0]
         Scale: [1, 1, 1]
       SpriteRendererComponent:
-        Color: [1, 0.0588235296, 0, 1]
-  - EntityUId: 3
+        Color: [0.0853262991, 0.178153947, 0.735119045, 1]
+  - EntityUId: 2303221186257975415
     Components:
       TagComponent:
-        Name: Camera
+        Name: SquareTop
       TransformComponent:
-        Position: [0, 1.70000005, 4]
-        Rotation: [-0.401425719, 0, 0]
+        Position: [0, 0.5, 0]
+        Rotation: [1.57079637, 0.785398185, 0]
         Scale: [1, 1, 1]
-      CameraComponent:
-        Main Camera: true
-        Fixed AspectRatio: false
-        Camera:
-          Projection Type: 1
-          AspectRatio: 0.826129675
-          Orthographic Size: 10
-          Orthographic Near Clip: -1
-          Orthographic Far Clip: 1
-          Perspective Vertical FOV: 45
-          Perspective Near Clip: 0.00999999978
-          Perspective Far Clip: 1000
-  - EntityUId: 2
+      SpriteRendererComponent:
+        Color: [0.0871775821, 0.791666687, 0.124918081, 1]
+  - EntityUId: 5845251573260758907
     Components:
       TagComponent:
         Name: Clip Space Camera
@@ -50,23 +40,33 @@ Entities:
           Perspective Vertical FOV: 0.000239245972
           Perspective Near Clip: 0.00999999978
           Perspective Far Clip: 1000
-  - EntityUId: 1
+  - EntityUId: 5906139680750080915
     Components:
       TagComponent:
-        Name: SquareTop
+        Name: Camera
       TransformComponent:
-        Position: [0, 0.5, 0]
-        Rotation: [1.57079637, 0.785398185, 0]
+        Position: [0, 1.70000005, 4]
+        Rotation: [-0.401425719, 0, 0]
         Scale: [1, 1, 1]
-      SpriteRendererComponent:
-        Color: [0.0871775821, 0.791666687, 0.124918081, 1]
-  - EntityUId: 0
+      CameraComponent:
+        Main Camera: true
+        Fixed AspectRatio: false
+        Camera:
+          Projection Type: 1
+          AspectRatio: 0.826129675
+          Orthographic Size: 10
+          Orthographic Near Clip: -1
+          Orthographic Far Clip: 1
+          Perspective Vertical FOV: 45
+          Perspective Near Clip: 0.00999999978
+          Perspective Far Clip: 1000
+  - EntityUId: 2137676421631974705
     Components:
       TagComponent:
-        Name: SquareLeft
+        Name: SquareRight
       TransformComponent:
-        Position: [-0.349999994, 0, 0.349999994]
-        Rotation: [0, -0.785398185, 0]
+        Position: [0.349999994, 0, 0.349999994]
+        Rotation: [0, 0.785398185, 0]
         Scale: [1, 1, 1]
       SpriteRendererComponent:
-        Color: [0.0853262991, 0.178153947, 0.735119045, 1]
+        Color: [1, 0.0588235296, 0, 1]

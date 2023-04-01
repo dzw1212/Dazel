@@ -19,6 +19,7 @@
 #define BIT(x) (1 << x)
 
 using UINT = uint32_t;
+using UINT64 = uint64_t;
 
 #ifdef DAZEL_ENABLE_ASSERTS
 	#define ASSERT(condition, ...)\

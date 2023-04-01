@@ -65,6 +65,9 @@ namespace DAZEL
 
 		UINT GetId() const { return (UINT)m_EntityHandle; }
 
+		UINT64 GetUUId();
+		void SetUUId(UINT64& uuid);
+
 		operator bool() const { return m_EntityHandle != entt::null; }
 		bool operator==(const Entity& other) const
 		{

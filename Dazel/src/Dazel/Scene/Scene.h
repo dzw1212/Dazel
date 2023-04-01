@@ -18,6 +18,7 @@ namespace DAZEL
 
 
 		Entity CreateEntity(const std::string& strName = std::string());
+		Entity CreateEntityWithUUID(const UINT64& uuid, const std::string& strName = std::string());
 		void DestroyEntity(Entity entity);
 
 		Entity GetPrimaryCameraEntity();
@@ -31,13 +32,13 @@ namespace DAZEL
 		template<typename T>
 		void OnComponentAdd(Entity entity, T& component);
 	public:
-		void OnRuntimePlay();
+		void OnRuntimeStart();
 		void OnRuntimeStop();
 	private:
 		entt::registry m_Registry;
 		UINT m_uiViewportWidth;
 		UINT m_uiViewportHeight;
 
-		b2World* m_PhysicalWorld;
+		b2World* m_PhysicalWorld = nullptr;
 	};
 }

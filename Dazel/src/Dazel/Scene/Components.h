@@ -14,10 +14,44 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/quaternion.hpp"
 
+#include "Dazel/Core/UUID.h"
+#include "Dazel/Core/Core.h"
 #include "Dazel/Core/Timestep.h"
 
 namespace DAZEL
 {
+	enum class BodyType
+	{
+		STATIC,
+		DYNAMIC,
+		KINEMATIC,
+		MAX,
+	};
+
+	struct IDComponent
+	{
+		UUID m_UUId;
+
+		IDComponent() = default;
+		IDComponent(const IDComponent&) = default;
+		IDComponent(const UUID& uuid) : m_UUId(uuid) {}
+		IDComponent(const UINT64& u64Id) : m_UUId(u64Id) {}
+
+		operator UUID& () { return m_UUId; }
+		operator const UUID& () const { return m_UUId; }
+	};
+
+	struct TagComponent
+	{
+		std::string m_strTag;
+
+		TagComponent() = default;
+		TagComponent(const TagComponent&) = default;
+		TagComponent(const std::string& strTag) : m_strTag(strTag) {}
+
+		operator std::string& () { return m_strTag; }
+		operator const std::string& () const { return m_strTag; }
+	};
 
 	struct TransformComponent
 	{
@@ -50,18 +84,6 @@ namespace DAZEL
 
 		operator glm::vec4& () { return m_Color; }
 		operator const glm::vec4& () const { return m_Color; }
-	};
-
-	struct TagComponent
-	{
-		std::string m_strTag;
-
-		TagComponent() = default;
-		TagComponent(const TagComponent&) = default;
-		TagComponent(const std::string& strTag) : m_strTag(strTag) {}
-
-		operator std::string& () { return m_strTag; }
-		operator const std::string& () const { return m_strTag; }
 	};
 
 	struct CameraComponent
@@ -102,12 +124,6 @@ namespace DAZEL
 
 	struct RigidBody2DComponent
 	{
-		enum class BodyType
-		{
-			STATIC,
-			DYNAMIC,
-			KINEMATIC,
-		};
 		BodyType m_Type = BodyType::STATIC;
 		bool m_bFixedRotation = false;
 

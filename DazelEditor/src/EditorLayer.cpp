@@ -506,7 +506,7 @@ void EditorLayer::UI_Tools()
 void EditorLayer::OnScenePlay()
 {
 	m_SceneState = SceneState::PLAY;
-	m_ActiveScene->OnRuntimePlay();
+	m_ActiveScene->OnRuntimeStart();
 }
 
 void EditorLayer::OnSceneStop()

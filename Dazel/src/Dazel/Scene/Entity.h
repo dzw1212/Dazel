@@ -25,6 +25,20 @@ namespace DAZEL
 		}
 
 		template<typename T, typename... Args>
+		void AddOrReplaceComponent(Args&& ... args)
+		{
+			if (HasComponent<T>())
+			{
+				m_Scene->GetRegistry().emplace_or_replace<T>(m_EntityHandle, std::forward<Args>(args)...);
+			}
+			else
+			{
+				T& component = m_Scene->GetRegistry().emplace_or_replace<T>(m_EntityHandle, std::forward<Args>(args)...);
+				m_Scene->OnComponentAdd<T>(*this, component);
+			}
+		}
+
+		template<typename T, typename... Args>
 		T& UpdateComponent(Args&& ... args)
 		{
 			CORE_ASSERT(HasComponent<T>(), "Entity does not have this component");

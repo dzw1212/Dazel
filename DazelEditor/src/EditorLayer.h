@@ -29,6 +29,7 @@ public:
 	void OpenScene();
 	void OpenScene(const std::filesystem::path& path);
 	void SaveScene();
+	void SaveSceneAs();
 public:
 	void UI_Tools();
 	void OnScenePlay();
@@ -60,6 +61,12 @@ private:
 	bool m_bIsViewportPanelHovered = false;
 
 	DAZEL::Ref<DAZEL::Scene> m_ActiveScene;
+
+	DAZEL::Ref<DAZEL::Scene> m_EditorScene;
+	DAZEL::Ref<DAZEL::Scene> m_RuntimeScene;
+
+	std::filesystem::path m_CurrentSceneFilePath;
+
 	DAZEL::Entity m_SquareEntity;
 	DAZEL::Entity m_SquareEntity2;
 	DAZEL::Entity m_CameraEntity;

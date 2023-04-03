@@ -9,7 +9,7 @@ namespace DAZEL
 	{
 	public:
 		UUID();
-		UUID(const UINT64& Id);
+		UUID(UINT64 Id);
 		UUID(const UUID&) = default;
 
 		operator UINT64() const { return m_u64Id; }
@@ -24,9 +24,9 @@ namespace std
 	template<>
 	struct std::hash<DAZEL::UUID>
 	{
-		std::size_t operator()(const DAZEL::UUID& uuid)
+		std::size_t operator()(const DAZEL::UUID& uuid) const
 		{
-			return std::hash<UINT64>()(uuid);
+			return std::hash<UINT64>()((UINT64)uuid);
 		}
 	};
 }

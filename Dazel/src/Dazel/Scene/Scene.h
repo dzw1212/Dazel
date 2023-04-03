@@ -18,7 +18,7 @@ namespace DAZEL
 
 
 		Entity CreateEntity(const std::string& strName = std::string());
-		Entity CreateEntityWithUUID(const UINT64& uuid, const std::string& strName = std::string());
+		Entity CreateEntityWithUUID(UINT64 uuid, const std::string& strName = std::string());
 		void DestroyEntity(Entity entity);
 
 		Entity GetPrimaryCameraEntity();
@@ -28,6 +28,11 @@ namespace DAZEL
 		void OnViewportResize(UINT uiWidth, UINT uiHeight);
 
 		entt::registry& GetRegistry() { return m_Registry; }
+
+		static Ref<Scene> Copy(const Ref<Scene>& origin);
+
+		void CopyEntity(Entity origin);
+
 	public:
 		template<typename T>
 		void OnComponentAdd(Entity entity, T& component);

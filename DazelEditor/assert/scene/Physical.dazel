@@ -1,33 +1,13 @@
 Scene: Untitled
 Entities:
-  - EntityUId: 6940866537440471113
-    Components:
-      TagComponent:
-        Name: ball
-      TransformComponent:
-        Position: [-2.36855674, 3.61553097, 0]
-        Rotation: [0, -0, -0.00680474704]
-        Scale: [0.200000048, 0.999998391, 1]
-      SpriteRendererComponent:
-        Color: [1, 1, 1, 1]
-      RigidBody2DComponent:
-        Body Type: 1
-        Fixed Rotation: false
-      BoxCollider2DComponent:
-        Offset: [0, 0]
-        Size: [0.5, 0.5]
-        Density: 1
-        Friction: 0.5
-        Restitution: 1
-        Restitution Threshold: 1.64999998
   - EntityUId: 16680171766837452907
     Components:
       TagComponent:
-        Name: ground
+        Name: ground2
       TransformComponent:
-        Position: [0.00531876087, -1.43511808, 0]
-        Rotation: [0, -0, 0]
-        Scale: [6.79103088, 0.188757136, 1]
+        Position: [-2.7980442, -0.260113746, 0]
+        Rotation: [0, -0, -0.668885469]
+        Scale: [6.79102945, 0.188757166, 1]
       SpriteRendererComponent:
         Color: [1, 1, 1, 1]
       RigidBody2DComponent:
@@ -38,6 +18,26 @@ Entities:
         Size: [0.5, 0.5]
         Density: 1
         Friction: 0.5
+        Restitution: 0
+        Restitution Threshold: 0.5
+  - EntityUId: 12792036159456597687
+    Components:
+      TagComponent:
+        Name: brick
+      TransformComponent:
+        Position: [-4.48182982e-06, 2.0897305, -1.54784033e-10]
+        Rotation: [-1.4597136e-11, 1.62630313e-19, 2.33122208e-07]
+        Scale: [0.999827385, 0.999827385, 0.999996662]
+      SpriteRendererComponent:
+        Color: [0.440476179, 0.288407028, 0.288407028, 1]
+      RigidBody2DComponent:
+        Body Type: 1
+        Fixed Rotation: false
+      BoxCollider2DComponent:
+        Offset: [0, 0]
+        Size: [0.5, 0.5]
+        Density: 1
+        Friction: 0.439999998
         Restitution: 0
         Restitution Threshold: 0.5
   - EntityUId: 13649471013341756137
@@ -53,23 +53,43 @@ Entities:
         Fixed AspectRatio: false
         Camera:
           Projection Type: 0
-          AspectRatio: 1.18988645
+          AspectRatio: 1.30339324
           Orthographic Size: 10
           Orthographic Near Clip: -1
           Orthographic Far Clip: 1
           Perspective Vertical FOV: 45
           Perspective Near Clip: 0.00999999978
           Perspective Far Clip: 1000
-  - EntityUId: 12792036159456597687
+  - EntityUId: 16680171766837452907
     Components:
       TagComponent:
-        Name: brick
+        Name: ground
       TransformComponent:
-        Position: [-3.80214783e-06, -0.825827479, -1.1222525e-10]
-        Rotation: [-1.4597136e-11, 1.62630313e-19, 2.33122961e-07]
-        Scale: [0.999827385, 0.999827385, 0.999996662]
+        Position: [2.46929574, -0.45193249, 0]
+        Rotation: [0, -0, 0.587482154]
+        Scale: [6.79102993, 0.188757181, 1]
       SpriteRendererComponent:
-        Color: [0.440476179, 0.288407028, 0.288407028, 1]
+        Color: [1, 1, 1, 1]
+      RigidBody2DComponent:
+        Body Type: 0
+        Fixed Rotation: false
+      BoxCollider2DComponent:
+        Offset: [0, 0]
+        Size: [0.5, 0.5]
+        Density: 1
+        Friction: 0.5
+        Restitution: 0
+        Restitution Threshold: 0.5
+  - EntityUId: 6940866537440471113
+    Components:
+      TagComponent:
+        Name: ball
+      TransformComponent:
+        Position: [-2.36855674, 3.61553097, 0]
+        Rotation: [0, -0, -0.699306428]
+        Scale: [0.254286379, 0.999999881, 1]
+      SpriteRendererComponent:
+        Color: [0.144956902, 0.103812382, 0.872023821, 1]
       RigidBody2DComponent:
         Body Type: 1
         Fixed Rotation: false
@@ -77,6 +97,6 @@ Entities:
         Offset: [0, 0]
         Size: [0.5, 0.5]
         Density: 1
-        Friction: 0.439999998
-        Restitution: 0
-        Restitution Threshold: 0.5
+        Friction: 0.5
+        Restitution: 1
+        Restitution Threshold: 1.64999998

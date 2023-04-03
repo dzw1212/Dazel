@@ -15,7 +15,7 @@ namespace DAZEL
 		: m_u64Id(s_UniformDistribution(s_RandomEngine))
 	{
 	}
-	UUID::UUID(const UINT64& Id)
+	UUID::UUID(UINT64 Id)
 		: m_u64Id(Id)
 	{
 	}

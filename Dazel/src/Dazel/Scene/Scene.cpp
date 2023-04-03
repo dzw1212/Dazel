@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "Dazel/Renderer/Renderer2D.h"
 #include "Dazel/Core/UUID.h"
+#include "Dazel/Core/Core.h"
 
 #include "box2d/b2_world.h"
 #include "box2d/b2_body.h"
@@ -112,7 +113,7 @@ namespace DAZEL
 	{
 		return CreateEntityWithUUID(UUID(), strName);
 	}
-	Entity Scene::CreateEntityWithUUID(const UINT64& uuid, const std::string& strName)
+	Entity Scene::CreateEntityWithUUID(UINT64 uuid, const std::string& strName)
 	{
 		Entity entity(m_Registry.create(), this);
 		entity.AddComponent<IDComponent>(uuid);
@@ -150,6 +151,73 @@ namespace DAZEL
 				cameraComponent.m_Camera.SetViewportSize(uiWidth, uiHeight);
 			}
 		}
+	}
+
+	template<typename ComponentType>
+	static void CopyComponent(const Ref<Scene>& dup, const Ref<Scene>& origin, const std::unordered_map<UUID, UINT>& mapDupEntities)
+	{
+		auto componentView = origin->GetRegistry().view<ComponentType>();
+		for (auto entity : componentView)
+		{
+			auto originEntity = Entity(entity, origin.get());
+			UUID uuid = originEntity.GetComponent<IDComponent>().m_UUId;
+			auto iter = mapDupEntities.find(uuid);
+			if (iter == mapDupEntities.end())
+				continue;
+			Entity dupEntity = Entity(static_cast<entt::entity>(iter->second), dup.get());
+			dupEntity.AddOrReplaceComponent<ComponentType>(originEntity.GetComponent<ComponentType>());
+		}
+	}
+
+	template<typename ComponentType>
+	static void CopyComponentIfExists(Entity dup, Entity origin)
+	{
+		if (origin.HasComponent<ComponentType>())
+		{
+			dup.AddOrReplaceComponent<ComponentType>(origin.GetComponent<ComponentType>());
+		}
+	}
+
+	Ref<Scene> Scene::Copy(const Ref<Scene>& origin)
+	{
+		Ref<Scene> dupScene = CreateRef<Scene>();
+
+		dupScene->m_uiViewportWidth = origin->m_uiViewportWidth;
+		dupScene->m_uiViewportHeight = origin->m_uiViewportHeight;
+
+		std::unordered_map<UUID, UINT> mapDupEntities;
+
+		auto idView = origin->m_Registry.view<IDComponent>();
+		for (auto entity : idView)
+		{
+			auto originEntity = Entity(entity, origin.get());
+			auto newEntity = dupScene->CreateEntityWithUUID(originEntity.GetUUId());
+			UUID uuid = newEntity.GetComponent<IDComponent>().m_UUId;
+			UINT entityId = newEntity.GetId();
+			mapDupEntities[uuid] = entityId;
+		}
+
+		CopyComponent<TransformComponent>(dupScene, origin, mapDupEntities);
+		CopyComponent<SpriteRendererComponent>(dupScene, origin, mapDupEntities);
+		CopyComponent<CameraComponent>(dupScene, origin, mapDupEntities);
+		CopyComponent<NativeScriptComponent>(dupScene, origin, mapDupEntities);
+		CopyComponent<RigidBody2DComponent>(dupScene, origin, mapDupEntities);
+		CopyComponent<BoxCollider2DComponent>(dupScene, origin, mapDupEntities);
+
+		return dupScene;
+	}
+
+	void Scene::CopyEntity(Entity origin)
+	{
+		std::string name = origin.GetComponent<TagComponent>().m_strTag;
+		auto newEntity = CreateEntity(name + "_" + std::to_string(origin.GetId()));
+
+		CopyComponentIfExists<TransformComponent>(newEntity, origin);
+		CopyComponentIfExists<SpriteRendererComponent>(newEntity, origin);
+		CopyComponentIfExists<CameraComponent>(newEntity, origin);
+		CopyComponentIfExists<NativeScriptComponent>(newEntity, origin);
+		CopyComponentIfExists<RigidBody2DComponent>(newEntity, origin);
+		CopyComponentIfExists<BoxCollider2DComponent>(newEntity, origin);
 	}
 
 	void Scene::OnRuntimeStart()
@@ -209,7 +277,6 @@ namespace DAZEL
 	void Scene::OnComponentAdd<IDComponent>(Entity entity, IDComponent& component)
 	{
 	}
-
 	template<>
 	void Scene::OnComponentAdd<TagComponent>(Entity entity, TagComponent& component)
 	{
@@ -226,6 +293,10 @@ namespace DAZEL
 	}
 	template<>
 	void Scene::OnComponentAdd<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
+	{
+	}
+	template<>
+	void Scene::OnComponentAdd<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
 	{
 	}
 	template<>

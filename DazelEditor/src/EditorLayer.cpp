@@ -67,7 +67,8 @@ void EditorLayer::OnAttach()
 	m_FrameBuffer = DAZEL::FrameBuffer::Create(frameBufferSpec);
 
 	//Scene
-	m_ActiveScene = DAZEL::CreateRef<DAZEL::Scene>();
+	m_EditorScene = DAZEL::CreateRef<DAZEL::Scene>();
+	m_ActiveScene = m_EditorScene;
 
 	auto commandLineArgs = DAZEL::Application::Get().GetCommandLineArgs();
 	if (commandLineArgs.nCount > 1)
@@ -422,45 +423,65 @@ void EditorLayer::OnImGuiRender()
 
 void EditorLayer::NewScene()
 {
-	m_ActiveScene = DAZEL::CreateRef<DAZEL::Scene>();
+	if (m_SceneState != SceneState::EDIT)
+		return;
+	m_EditorScene = DAZEL::CreateRef<DAZEL::Scene>();
+	m_ActiveScene = m_EditorScene;
+
 	m_ActiveScene->OnViewportResize((UINT)m_ViewportPanelSize.x, (UINT)m_ViewportPanelSize.y);
 	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+	m_CurrentSceneFilePath.clear();
 }
 
 void EditorLayer::OpenScene()
 {
-	auto strFilepath = DAZEL::FileDialogs::OpenFile("Dazel Scene (*.dazel)\0*.dazel\0");
-	if (!strFilepath.empty())
-	{
-		m_ActiveScene = DAZEL::CreateRef<DAZEL::Scene>();
-		m_ActiveScene->OnViewportResize((UINT)m_ViewportPanelSize.x, (UINT)m_ViewportPanelSize.y);
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+	if (m_SceneState != SceneState::EDIT)
+		OnSceneStop();
 
-		m_SceneSerializer.SetScene(m_ActiveScene);
-		m_SceneSerializer.Deserialize(strFilepath);
-	}
+	auto strFilepath = DAZEL::FileDialogs::OpenFile("Dazel Scene (*.dazel)\0*.dazel\0");
+	OpenScene(strFilepath);
 }
 
 void EditorLayer::OpenScene(const std::filesystem::path& path)
 {
+	if (m_SceneState != SceneState::EDIT)
+		OnSceneStop();
+
 	auto strFilePath = path.string();
 	if (!strFilePath.empty())
 	{
-		m_ActiveScene = DAZEL::CreateRef<DAZEL::Scene>();
+		m_EditorScene = DAZEL::CreateRef<DAZEL::Scene>();
+		m_ActiveScene = m_EditorScene;
+
 		m_ActiveScene->OnViewportResize((UINT)m_ViewportPanelSize.x, (UINT)m_ViewportPanelSize.y);
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
 		m_SceneSerializer.SetScene(m_ActiveScene);
 		m_SceneSerializer.Deserialize(strFilePath);
+
+		m_CurrentSceneFilePath = strFilePath;
 	}
 }
 
 void EditorLayer::SaveScene()
 {
+	if (m_CurrentSceneFilePath.empty())
+	{
+		SaveSceneAs();
+	}
+	else
+		m_SceneSerializer.Serialize(m_CurrentSceneFilePath.string());
+	
+}
+
+void EditorLayer::SaveSceneAs()
+{
 	auto strFilepath = DAZEL::FileDialogs::SaveFile("Dazel Scene (*.dazel)\0*.dazel\0");
 	if (!strFilepath.empty())
 	{
 		m_SceneSerializer.Serialize(strFilepath);
+		m_CurrentSceneFilePath = strFilepath;
 	}
 }
 
@@ -506,12 +527,16 @@ void EditorLayer::UI_Tools()
 void EditorLayer::OnScenePlay()
 {
 	m_SceneState = SceneState::PLAY;
+	m_RuntimeScene = DAZEL::Scene::Copy(m_EditorScene);
+
+	m_ActiveScene = m_RuntimeScene;
 	m_ActiveScene->OnRuntimeStart();
 }
 
 void EditorLayer::OnSceneStop()
 {
 	m_SceneState = SceneState::EDIT;
+	m_ActiveScene = m_EditorScene;
 	m_ActiveScene->OnRuntimeStop();
 }
 
@@ -537,6 +562,11 @@ bool EditorLayer::OnKeyPressed(DAZEL::KeyPressedEvent& event)
 		case DAZEL_KEY_S:
 		{
 			SaveScene();
+			break;
+		}
+		case DAZEL_KEY_D:
+		{
+			m_ActiveScene->CopyEntity(m_SceneHierarchyPanel.GetSelectedEntity());
 			break;
 		}
 		default:

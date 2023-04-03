@@ -35,7 +35,7 @@ namespace DAZEL
 		IDComponent() = default;
 		IDComponent(const IDComponent&) = default;
 		IDComponent(const UUID& uuid) : m_UUId(uuid) {}
-		IDComponent(const UINT64& u64Id) : m_UUId(u64Id) {}
+		IDComponent(UINT64 u64Id) : m_UUId(u64Id) {}
 
 		operator UUID& () { return m_UUId; }
 		operator const UUID& () const { return m_UUId; }

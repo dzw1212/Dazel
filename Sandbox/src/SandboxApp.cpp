@@ -24,7 +24,7 @@ public:
 			0.5f, -0.5f, 0.f,		0.f, 0.f, 1.f, 1.f,
 		};
 
-		m_SquareVertexArray.reset(DAZEL::VertexArray::Create());
+		m_QuadVertexArray.reset(DAZEL::VertexArray::Create());
 		float squareVertices[5 * 4] = {
 			-0.5f, 0.5f, 0.f, 0.f, 1.f,
 			0.5f, 0.5f, 0.f, 1.f, 1.f,
@@ -47,10 +47,10 @@ public:
 		vertexBuffer->SetLayout(layout);
 		m_VertexArray->AddVertexBuffer(vertexBuffer);
 
-		DAZEL::Ref<DAZEL::VertexBuffer> squareVertexBuffer;
-		squareVertexBuffer.reset(DAZEL::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
-		squareVertexBuffer->SetLayout(squareLayout);
-		m_SquareVertexArray->AddVertexBuffer(squareVertexBuffer);
+		DAZEL::Ref<DAZEL::VertexBuffer> QuadVertexBuffer;
+		QuadVertexBuffer.reset(DAZEL::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+		QuadVertexBuffer->SetLayout(squareLayout);
+		m_QuadVertexArray->AddVertexBuffer(QuadVertexBuffer);
 
 
 		UINT indices[3] = {
@@ -68,7 +68,7 @@ public:
 
 		DAZEL::Ref<DAZEL::IndexBuffer> squareIndexBuffer;
 		squareIndexBuffer.reset(DAZEL::IndexBuffer::Create(squareIndices, sizeof(squareIndices)/sizeof(UINT)));
-		m_SquareVertexArray->SetIndexBuffer(squareIndexBuffer);
+		m_QuadVertexArray->SetIndexBuffer(squareIndexBuffer);
 		
 		m_ShaderLibrary.Load("assert/shader/triangleShader.glsl");
 		m_ShaderLibrary.Load("assert/shader/squareShader.glsl");
@@ -94,17 +94,17 @@ public:
 		////		auto translateMat = glm::translate(glm::mat4(1.f), glm::vec3(i * 0.11f, j * 0.11f, 0.f));
 		////		auto scaleMat = glm::scale(glm::mat4(1.f), glm::vec3(0.1f));
 		////		std::dynamic_pointer_cast<DAZEL::OpenGLShader>(m_SquareShader)->UploadUniformfVec3("u_Color", glm::vec3(i/15.f, j/15.f, m_TestB));
-		////		DAZEL::Renderer::Submit(m_SquareVertexArray, m_SquareShader, translateMat * scaleMat);
+		////		DAZEL::Renderer::Submit(m_QuadVertexArray, m_SquareShader, translateMat * scaleMat);
 		////	}
 		////}
 
 		//m_Texture->Bind(0);
 		//std::dynamic_pointer_cast<DAZEL::OpenGLShader>(m_ShaderLibrary.Get("textureShader"))->UploadUniformIVec1("u_Texture", glm::ivec1(0));
-		//DAZEL::Renderer::Submit(m_SquareVertexArray, m_ShaderLibrary.Get("textureShader"), glm::scale(glm::mat4(1.f), glm::vec3(2.f)));
+		//DAZEL::Renderer::Submit(m_QuadVertexArray, m_ShaderLibrary.Get("textureShader"), glm::scale(glm::mat4(1.f), glm::vec3(2.f)));
 
 		//m_Texture2->Bind(0);
 		//std::dynamic_pointer_cast<DAZEL::OpenGLShader>(m_ShaderLibrary.Get("textureShader"))->UploadUniformIVec1("u_Texture", glm::ivec1(0));
-		//DAZEL::Renderer::Submit(m_SquareVertexArray, m_ShaderLibrary.Get("textureShader"), glm::scale(glm::mat4(1.f), glm::vec3(2.f)));
+		//DAZEL::Renderer::Submit(m_QuadVertexArray, m_ShaderLibrary.Get("textureShader"), glm::scale(glm::mat4(1.f), glm::vec3(2.f)));
 
 		////DAZEL::Renderer::Submit(m_VertexArray, m_Shader, glm::mat4(1.f));
 
@@ -128,7 +128,7 @@ private:
 
 	DAZEL::Ref<DAZEL::VertexArray> m_VertexArray;
 
-	DAZEL::Ref<DAZEL::VertexArray> m_SquareVertexArray;
+	DAZEL::Ref<DAZEL::VertexArray> m_QuadVertexArray;
 
 	DAZEL::OrthographicCameraController m_CameraController;
 

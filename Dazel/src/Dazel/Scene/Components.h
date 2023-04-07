@@ -75,8 +75,8 @@ namespace DAZEL
 	struct SpriteRendererComponent
 	{
 		glm::vec4 m_Color{ 1.f };
-		Ref<Texture2D> Texture;
-		int nTileFacotr = 1;
+		Ref<Texture2D> m_Texture;
+		int m_nTileFactor = 1;
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
@@ -84,6 +84,16 @@ namespace DAZEL
 
 		operator glm::vec4& () { return m_Color; }
 		operator const glm::vec4& () const { return m_Color; }
+	};
+
+	struct CircleRendererComponent
+	{
+		glm::vec4 m_Color{ 1.f };
+		float m_fThickness = 0.5f;
+		float m_fFade = 0.005f;
+
+		CircleRendererComponent() = default;
+		CircleRendererComponent(const CircleRendererComponent&) = default;
 	};
 
 	struct CameraComponent

@@ -29,6 +29,18 @@ namespace DAZEL
 
 		int nEntityId;
 	};
+
+	struct CircleVertex
+	{
+		glm::vec3 WorldPos;
+		glm::vec3 LocalPos;
+		glm::vec4 Color;
+		float fThickness;
+		float fFade;
+
+		int nEntityId;
+	};
+
 	struct Statistics
 	{
 		void Reset()
@@ -44,19 +56,30 @@ namespace DAZEL
 	};
 	struct Renderer2DData
 	{
-		Ref<VertexArray> SquareVertexArray;
-		Ref<VertexBuffer> SquareVertexBuffer;
-		Ref<Shader> TextureShader;
 		Ref<Texture> WhiteTexture;
 
+		//Quad
+		Ref<VertexArray> QuadVertexArray;
+		Ref<VertexBuffer> QuadVertexBuffer;
+		Ref<Shader> QuadShader;
+
+		UINT uiQuadIndexCount = 0;
+		QuadVertex* pQuadVertexBufferBase = nullptr;
+		QuadVertex* pQuadVertexBufferPointer = nullptr;
+
+		//Circle
+		Ref<VertexArray> CircleVertexArray;
+		Ref<VertexBuffer> CircleVertexBuffer;
+		Ref<Shader> CircleShader;
+
+		UINT uiCircleIndexCount = 0;
+		CircleVertex* pCircleVertexBufferBase = nullptr;
+		CircleVertex* pCircleVertexBufferPointer = nullptr;
+
+		//Limit
 		const UINT uiMaxQuads = 10000;
 		const UINT uiMaxVertices = uiMaxQuads * 4;
 		const UINT uiMaxIndices = uiMaxQuads * 6;
-
-
-		UINT uiQuadIndexCount = 0;
-		QuadVertex* pQuadVertexBufferBase = nullptr;;
-		QuadVertex* pQuadVertexBufferPointer = nullptr;
 
 		static const UINT uiMaxTextureSlots = 32;
 		std::array<Ref<Texture>, uiMaxTextureSlots> TextureSlots;
@@ -64,24 +87,13 @@ namespace DAZEL
 
 		Statistics Stat;
 
-		//std::array<glm::vec4, 4> SquareVertexPosData = {
-		//	glm::vec4(-0.5f, 0.5f, 0.f, 1.f),
-		//	glm::vec4(0.5f, 0.5f, 0.f, 1.f),
-		//	glm::vec4(0.5f, -0.5f, 0.f, 1.f),
-		//	glm::vec4(-0.5f, -0.5f, 0.f, 1.f),
-		//};
 		std::array<glm::vec4, 4> SquareVertexPosData = {
 			glm::vec4(-0.5f, -0.5f, 0.f, 1.f),
 			glm::vec4(0.5f, -0.5f, 0.f, 1.f),
 			glm::vec4(0.5f, 0.5f, 0.f, 1.f),
 			glm::vec4(-0.5f, 0.5f, 0.f, 1.f),
 		};
-		//std::array<glm::vec2, 4> SquareVertexTexCoordData = {
-		//	glm::vec2(0.f, 1.f),
-		//	glm::vec2(1.f, 1.f),
-		//	glm::vec2(1.f, 0.f),
-		//	glm::vec2(0.f, 0.f),
-		//};
+
 		std::array<glm::vec2, 4> SquareVertexTexCoordData = {
 			glm::vec2(0.f, 0.f),
 			glm::vec2(1.f, 0.f),
@@ -118,6 +130,7 @@ namespace DAZEL
 		
 		static void DrawQuad(const glm::vec3& pos3, const glm::vec2& size, const Ref<SubTexture2D>& subTexture, int nTileCoef = 1, const glm::vec3& tintColor = glm::vec3(1.f));
 
+		static void DrawCircle(const glm::mat4& transform, const glm::vec4& color, float fThickness, float fFade, int nEntityId = -1);
 
 		static void DrawRotateQuad(const glm::vec2& pos2, const glm::vec2& size, float fRotationRad, const glm::vec4& color);
 		static void DrawRotateQuad(const glm::vec3& pos3, const glm::vec2& size, float fRotationRad, const glm::vec4& color);
@@ -125,14 +138,14 @@ namespace DAZEL
 		static void DrawRotateQuad(const glm::vec3& pos3, const glm::vec2& size, float fRotationRad, const Ref<Texture2D>& texture, int nTileCoef = 1, const glm::vec3& tintColor = glm::vec3(1.f));
 
 	public:
-		static void ResetStatisticData() { s_SquareData.Stat.Reset(); }
-		static Statistics GetStatisticData() { return s_SquareData.Stat; }
+		static void ResetStatisticData() { s_Renderer2DData.Stat.Reset(); }
+		static Statistics GetStatisticData() { return s_Renderer2DData.Stat; }
 
 	private:
 		static void StartBatch();
 		static void NextBatch();
 
 	public:
-		static Renderer2DData s_SquareData;
+		static Renderer2DData s_Renderer2DData;
 	};
 }

@@ -40,7 +40,7 @@ public:
 
 private:
 	DAZEL::ShaderLibrary m_ShaderLibrary;
-	DAZEL::Ref<DAZEL::VertexArray> m_SquareVertexArray;
+	DAZEL::Ref<DAZEL::VertexArray> m_QuadVertexArray;
 	DAZEL::OrthographicCameraController m_CameraController;
 	DAZEL::Ref<DAZEL::Texture2D> m_Texture;
 	DAZEL::Ref<DAZEL::Texture2D> m_SpriteSheet;

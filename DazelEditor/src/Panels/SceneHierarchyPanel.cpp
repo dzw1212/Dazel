@@ -304,6 +304,11 @@ namespace DAZEL
 				m_SelectedEntity.AddComponent<BoxCollider2DComponent>();
 				ImGui::CloseCurrentPopup();
 			}
+			if (ImGui::MenuItem("Circle Renderer"))
+			{
+				m_SelectedEntity.AddComponent<CircleRendererComponent>();
+				ImGui::CloseCurrentPopup();
+			}
 			ImGui::EndPopup();
 		}
 		ImGui::PopItemWidth();
@@ -418,7 +423,7 @@ namespace DAZEL
 
 					if (ImGui::Button("Texture", ImVec2(200.f, 0.f)))
 					{
-						component.Texture = {};
+						component.m_Texture = {};
 					}
 					if (ImGui::BeginDragDropTarget())
 					{
@@ -428,11 +433,23 @@ namespace DAZEL
 							auto path = std::filesystem::path(data);
 							auto fileExtension = path.filename().extension();
 							if (fileExtension == ".png")
-								component.Texture = DAZEL::Texture2D::Create(path.string());
+								component.m_Texture = DAZEL::Texture2D::Create(path.string());
 						}
 						ImGui::EndDragDropTarget();
 					}
-					ImGui::DragInt("TileFactor", &component.nTileFacotr, 1.f, 1.f, 100.f);
+					ImGui::DragInt("TileFactor", &component.m_nTileFactor, 1.f, 1.f, 100.f);
+				}, true);
+		}
+
+		if (entity.HasComponent<CircleRendererComponent>())
+		{
+			DrawComponent<CircleRendererComponent>("Circle Renderer", entity, [](CircleRendererComponent& component)
+				{
+					auto& color = component.m_Color;
+					ImGui::ColorEdit4("Color", glm::value_ptr(color));
+
+					ImGui::DragFloat("Thickness", &component.m_fThickness, 0.01f, 0.01f, 0.5f);
+					ImGui::DragFloat("Fade", &component.m_fFade, 0.001f, 0.001f, 0.005f);
 				}, true);
 		}
 

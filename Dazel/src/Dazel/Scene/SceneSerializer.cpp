@@ -187,8 +187,24 @@ namespace DAZEL
             out << YAML::Value << YAML::BeginMap;
             out << YAML::Key << "Color";
             out << YAML::Value << spriteRendererComponent.m_Color;
+			out << YAML::Key << "Tile Factor";
+			out << YAML::Value << spriteRendererComponent.m_nTileFactor;
             out << YAML::EndMap;
         }
+
+		if (entity.HasComponent<CircleRendererComponent>())
+		{
+			auto& circleRendererComponent = entity.GetComponent<CircleRendererComponent>();
+			out << YAML::Key << "CircleRendererComponent";
+			out << YAML::Value << YAML::BeginMap;
+			out << YAML::Key << "Color";
+			out << YAML::Value << circleRendererComponent.m_Color;
+			out << YAML::Key << "Thickness";
+			out << YAML::Value << circleRendererComponent.m_fThickness;
+			out << YAML::Key << "Fade";
+			out << YAML::Value << circleRendererComponent.m_fFade;
+			out << YAML::EndMap;
+		}
 
 		if (entity.HasComponent<RigidBody2DComponent>())
 		{
@@ -321,8 +337,19 @@ namespace DAZEL
                 auto spriteRendererComponentNode = componentsNode["SpriteRendererComponent"];
                 if (spriteRendererComponentNode)
                 {
-                    deserializeEntity.AddComponent<SpriteRendererComponent>(spriteRendererComponentNode["Color"].as<glm::vec4>());
+                    auto& spriteRendererComponent = deserializeEntity.AddComponent<SpriteRendererComponent>();
+					spriteRendererComponent.m_Color = spriteRendererComponentNode["Color"].as<glm::vec4>();
+					spriteRendererComponent.m_nTileFactor = spriteRendererComponentNode["Tile Factor"].as<int>();
                 }
+
+				auto circleRendererComponentNode = componentsNode["CircleRendererComponent"];
+				if (circleRendererComponentNode)
+				{
+					auto& circleRendererComponent = deserializeEntity.AddComponent<CircleRendererComponent>();
+					circleRendererComponent.m_Color = circleRendererComponentNode["Color"].as<glm::vec4>();
+					circleRendererComponent.m_fThickness = circleRendererComponentNode["Thickness"].as<float>();
+					circleRendererComponent.m_fFade = circleRendererComponentNode["Fade"].as<float>();
+				}
 
 				auto rigidBodyComponentNode = componentsNode["RigidBody2DComponent"];
 				if (rigidBodyComponentNode)

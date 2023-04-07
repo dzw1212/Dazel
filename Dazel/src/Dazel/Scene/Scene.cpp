@@ -50,10 +50,17 @@ namespace DAZEL
 		for (auto entity : quadView)
 		{
 			auto [transform, sprite] = quadView.get<TransformComponent, SpriteRendererComponent>(entity);
-			if (sprite.Texture)
-				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Texture, sprite.nTileFacotr, sprite.m_Color, (int)entity);
+			if (sprite.m_Texture)
+				Renderer2D::DrawQuad(transform.GetTransform(), sprite.m_Texture, sprite.m_nTileFactor, sprite.m_Color, (int)entity);
 			else
 				Renderer2D::DrawQuad(transform.GetTransform(), sprite.m_Color, (int)entity);
+
+			auto circleView = m_Registry.view<TransformComponent, CircleRendererComponent>();
+			for (auto entity : circleView)
+			{
+				auto [transform, circle] = circleView.get<TransformComponent, CircleRendererComponent>(entity);
+				Renderer2D::DrawCircle(transform.GetTransform(), circle.m_Color, circle.m_fThickness, circle.m_fFade, (int)entity);
+			}
 		}
 
 		Renderer2D::EndScene();
@@ -100,10 +107,17 @@ namespace DAZEL
 			for (auto entity : quadView)
 			{
 				auto [transform, sprite] = quadView.get<TransformComponent, SpriteRendererComponent>(entity);
-				if (sprite.Texture)
-					Renderer2D::DrawQuad(transform.GetTransform(), sprite.Texture, sprite.nTileFacotr, sprite.m_Color, (int)entity);
+				if (sprite.m_Texture)
+					Renderer2D::DrawQuad(transform.GetTransform(), sprite.m_Texture, sprite.m_nTileFactor, sprite.m_Color, (int)entity);
 				else
 					Renderer2D::DrawQuad(transform.GetTransform(), sprite.m_Color, (int)entity);
+			}
+
+			auto circleView = m_Registry.view<TransformComponent, CircleRendererComponent>();
+			for (auto entity : circleView)
+			{
+				auto [transform, circle] = circleView.get<TransformComponent, CircleRendererComponent>(entity);
+				Renderer2D::DrawCircle(transform.GetTransform(), circle.m_Color, circle.m_fThickness, circle.m_fFade, (int)entity);
 			}
 
 			Renderer2D::EndScene();
@@ -199,6 +213,7 @@ namespace DAZEL
 
 		CopyComponent<TransformComponent>(dupScene, origin, mapDupEntities);
 		CopyComponent<SpriteRendererComponent>(dupScene, origin, mapDupEntities);
+		CopyComponent<CircleRendererComponent>(dupScene, origin, mapDupEntities);
 		CopyComponent<CameraComponent>(dupScene, origin, mapDupEntities);
 		CopyComponent<NativeScriptComponent>(dupScene, origin, mapDupEntities);
 		CopyComponent<RigidBody2DComponent>(dupScene, origin, mapDupEntities);
@@ -214,6 +229,7 @@ namespace DAZEL
 
 		CopyComponentIfExists<TransformComponent>(newEntity, origin);
 		CopyComponentIfExists<SpriteRendererComponent>(newEntity, origin);
+		CopyComponentIfExists<CircleRendererComponent>(newEntity, origin);
 		CopyComponentIfExists<CameraComponent>(newEntity, origin);
 		CopyComponentIfExists<NativeScriptComponent>(newEntity, origin);
 		CopyComponentIfExists<RigidBody2DComponent>(newEntity, origin);
@@ -293,6 +309,10 @@ namespace DAZEL
 	}
 	template<>
 	void Scene::OnComponentAdd<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
+	{
+	}
+	template<>
+	void Scene::OnComponentAdd<CircleRendererComponent>(Entity entity, CircleRendererComponent& component)
 	{
 	}
 	template<>

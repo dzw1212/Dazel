@@ -323,7 +323,7 @@ void EditorLayer::OnImGuiRender()
 				if (m_MouseHoverEntity != -1)
 				{
 					auto& sprite = m_MouseHoverEntity.GetComponent<DAZEL::SpriteRendererComponent>();
-					sprite.Texture = DAZEL::Texture2D::Create(path.string());
+					sprite.m_Texture = DAZEL::Texture2D::Create(path.string());
 				}
 			}
 		}

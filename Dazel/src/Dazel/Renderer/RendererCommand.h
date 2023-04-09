@@ -29,6 +29,14 @@ namespace DAZEL
 		{
 			s_RendererAPI->DrawIndexed(vertexArray, uiIndexCount);
 		}
+		inline static void SetLineWidth(float fWidth)
+		{
+			s_RendererAPI->SetLineWidth(fWidth);
+		}
+		inline static void DrawLines(const Ref<VertexArray>& vertexArray, UINT uiVertexCount)
+		{
+			s_RendererAPI->DrawLines(vertexArray, uiVertexCount);
+		}
 	private:
 		static RendererAPI* s_RendererAPI;
 	};

@@ -161,6 +161,21 @@ namespace DAZEL
 		BoxCollider2DComponent(const BoxCollider2DComponent&) = default;
 	};
 
+	struct CircleCollider2DComponent
+	{
+		glm::vec2 m_Offset = { 0.f, 0.f };
+		float m_fRadius = 0.5f;
+		float m_fDensity = 1.f;
+		float m_fFriction = 0.5f;
+		float m_fRestitution = 0.f;
+		float m_fRestitutionThreshold = 0.5f;
+
+		void* m_RuntimeFixture = nullptr;
+
+		CircleCollider2DComponent() = default;
+		CircleCollider2DComponent(const CircleCollider2DComponent&) = default;
+	};
+
 
 
 

@@ -294,6 +294,11 @@ namespace DAZEL
 				m_SelectedEntity.AddComponent<SpriteRendererComponent>();
 				ImGui::CloseCurrentPopup();
 			}
+			if (ImGui::MenuItem("Circle Renderer"))
+			{
+				m_SelectedEntity.AddComponent<CircleRendererComponent>();
+				ImGui::CloseCurrentPopup();
+			}
 			if (ImGui::MenuItem("Rigid Body"))
 			{
 				m_SelectedEntity.AddComponent<RigidBody2DComponent>();
@@ -304,11 +309,12 @@ namespace DAZEL
 				m_SelectedEntity.AddComponent<BoxCollider2DComponent>();
 				ImGui::CloseCurrentPopup();
 			}
-			if (ImGui::MenuItem("Circle Renderer"))
+			if (ImGui::MenuItem("Circle Collider"))
 			{
-				m_SelectedEntity.AddComponent<CircleRendererComponent>();
+				m_SelectedEntity.AddComponent<CircleCollider2DComponent>();
 				ImGui::CloseCurrentPopup();
 			}
+			
 			ImGui::EndPopup();
 		}
 		ImGui::PopItemWidth();
@@ -449,7 +455,7 @@ namespace DAZEL
 					ImGui::ColorEdit4("Color", glm::value_ptr(color));
 
 					ImGui::DragFloat("Thickness", &component.m_fThickness, 0.01f, 0.01f, 0.5f);
-					ImGui::DragFloat("Fade", &component.m_fFade, 0.001f, 0.001f, 0.005f);
+					ImGui::DragFloat("Fade", &component.m_fFade, 0.001f, 0.001f, 0.1f);
 				}, true);
 		}
 
@@ -494,6 +500,20 @@ namespace DAZEL
 					DrawVec2Control("Size", component.m_Size);
 					DrawVec2Control("Offset", component.m_Offset);
 					
+					ImGui::DragFloat("Density", &component.m_fDensity, 0.01f, 0.f, 1.f);
+					ImGui::DragFloat("Friction", &component.m_fFriction, 0.01f, 0.f, 1.f);
+					ImGui::DragFloat("Restitution", &component.m_fRestitution, 0.01f, 0.f, 1.f);
+					ImGui::DragFloat("Restitution Threshold", &component.m_fRestitutionThreshold, 0.01f, 0.f, 10.f);
+				}, true);
+		}
+
+		if (entity.HasComponent<CircleCollider2DComponent>())
+		{
+			DrawComponent<CircleCollider2DComponent>("Circle Collider", entity, [](CircleCollider2DComponent& component)
+				{
+					DrawVec2Control("Offset", component.m_Offset);
+					ImGui::DragFloat("Radius", &component.m_fRadius, 0.1f, 0.01f, 0.5f);
+
 					ImGui::DragFloat("Density", &component.m_fDensity, 0.01f, 0.f, 1.f);
 					ImGui::DragFloat("Friction", &component.m_fFriction, 0.01f, 0.f, 1.f);
 					ImGui::DragFloat("Restitution", &component.m_fRestitution, 0.01f, 0.f, 1.f);

@@ -59,11 +59,16 @@ void main()
 
     float fOuterRadius = fRadius;
     float fInnerRadius = fRadius - Input.Thickness;
+
+	float fFade = min(fInnerRadius, Input.Fade);
         
-    float firstStep = smoothstep(fInnerRadius, fInnerRadius + Input.Fade, fLength);
-    float secondStep = 1.0 - smoothstep(fOuterRadius, fOuterRadius + Input.Fade, fLength);
+    float firstStep = smoothstep(fInnerRadius, fInnerRadius + fFade, fLength);
+    float secondStep = 1.0 - smoothstep(fOuterRadius - fFade, fOuterRadius, fLength);
         
     o_Color = Input.Color * (firstStep * secondStep);
+
+	if (firstStep * secondStep == 0.0)
+		discard;
 
 	o_EntityID = v_EntityID;
 }

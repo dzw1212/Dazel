@@ -238,6 +238,26 @@ namespace DAZEL
 			out << YAML::EndMap;
 		}
 
+		if (entity.HasComponent<CircleCollider2DComponent>())
+		{
+			auto& circleColliderComponent = entity.GetComponent<CircleCollider2DComponent>();
+			out << YAML::Key << "BoxCollider2DComponent";
+			out << YAML::Value << YAML::BeginMap;
+			out << YAML::Key << "Offset";
+			out << YAML::Value << circleColliderComponent.m_Offset;
+			out << YAML::Key << "Radius";
+			out << YAML::Value << circleColliderComponent.m_fRadius;
+			out << YAML::Key << "Density";
+			out << YAML::Value << circleColliderComponent.m_fDensity;
+			out << YAML::Key << "Friction";
+			out << YAML::Value << circleColliderComponent.m_fFriction;
+			out << YAML::Key << "Restitution";
+			out << YAML::Value << circleColliderComponent.m_fRestitution;
+			out << YAML::Key << "Restitution Threshold";
+			out << YAML::Value << circleColliderComponent.m_fRestitutionThreshold;
+			out << YAML::EndMap;
+		}
+
         out << YAML::EndMap;
         out << YAML::EndMap;
         return out.good();
@@ -369,6 +389,18 @@ namespace DAZEL
 					boxColliderComponent.m_fFriction = boxColliderComponentNode["Friction"].as<float>();
 					boxColliderComponent.m_fRestitution = boxColliderComponentNode["Restitution"].as<float>();
 					boxColliderComponent.m_fRestitutionThreshold = boxColliderComponentNode["Restitution Threshold"].as<float>();
+				}
+
+				auto circleColliderComponentNode = componentsNode["CircleCollider2DComponent"];
+				if (circleColliderComponentNode)
+				{
+					auto& circleColliderComponent = deserializeEntity.AddComponent<CircleCollider2DComponent>();
+					circleColliderComponent.m_Offset = boxColliderComponentNode["Offset"].as<glm::vec2>();
+					circleColliderComponent.m_fRadius = boxColliderComponentNode["Radius"].as<float>();
+					circleColliderComponent.m_fDensity = boxColliderComponentNode["Density"].as<float>();
+					circleColliderComponent.m_fFriction = boxColliderComponentNode["Friction"].as<float>();
+					circleColliderComponent.m_fRestitution = boxColliderComponentNode["Restitution"].as<float>();
+					circleColliderComponent.m_fRestitutionThreshold = boxColliderComponentNode["Restitution Threshold"].as<float>();
 				}
             }
         }

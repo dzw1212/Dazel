@@ -41,6 +41,14 @@ namespace DAZEL
 		int nEntityId;
 	};
 
+	struct LineVertex
+	{
+		glm::vec3 Pos;
+		glm::vec4 Color;
+
+		int nEntityId;
+	};
+
 	struct Statistics
 	{
 		void Reset()
@@ -75,6 +83,17 @@ namespace DAZEL
 		UINT uiCircleIndexCount = 0;
 		CircleVertex* pCircleVertexBufferBase = nullptr;
 		CircleVertex* pCircleVertexBufferPointer = nullptr;
+
+		//Line
+		Ref<VertexArray> LineVertexArray;
+		Ref<VertexBuffer> LineVertexBuffer;
+		Ref<Shader> LineShader;
+
+		float fLineWidth = 2.f;
+
+		UINT uiLineVertexCount = 0;
+		LineVertex* pLineVertexBufferBase = nullptr;
+		LineVertex* pLineVertexBufferPointer = nullptr;
 
 		//Limit
 		const UINT uiMaxQuads = 10000;
@@ -131,6 +150,11 @@ namespace DAZEL
 		static void DrawQuad(const glm::vec3& pos3, const glm::vec2& size, const Ref<SubTexture2D>& subTexture, int nTileCoef = 1, const glm::vec3& tintColor = glm::vec3(1.f));
 
 		static void DrawCircle(const glm::mat4& transform, const glm::vec4& color, float fThickness, float fFade, int nEntityId = -1);
+
+		static float GetLineWidth();
+		static void SetLineWidth(float fWidth);
+		static void DrawLine(const glm::vec3& startPoint, const glm::vec3& endPoint, const glm::vec4& color, int nEntityId = -1);
+		static void DrawRect(const glm::mat4& transform, const glm::vec4& color, int nEntityId = -1);
 
 		static void DrawRotateQuad(const glm::vec2& pos2, const glm::vec2& size, float fRotationRad, const glm::vec4& color);
 		static void DrawRotateQuad(const glm::vec3& pos3, const glm::vec2& size, float fRotationRad, const glm::vec4& color);

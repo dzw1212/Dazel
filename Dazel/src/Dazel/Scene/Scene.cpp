@@ -10,6 +10,7 @@
 #include "box2d/b2_world.h"
 #include "box2d/b2_body.h"
 #include "box2d/b2_polygon_shape.h"
+#include "box2d/b2_circle_shape.h"
 #include "box2d/b2_fixture.h"
 
 
@@ -60,8 +61,12 @@ namespace DAZEL
 			{
 				auto [transform, circle] = circleView.get<TransformComponent, CircleRendererComponent>(entity);
 				Renderer2D::DrawCircle(transform.GetTransform(), circle.m_Color, circle.m_fThickness, circle.m_fFade, (int)entity);
+				Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0, 1.0, 0.0, 1.0));
 			}
 		}
+
+		Renderer2D::DrawLine(glm::vec3(-10.f, 0.f, 0.f), glm::vec3(10.f, 0.f, 0.f), glm::vec4(1.f));
+		Renderer2D::DrawLine(glm::vec3(0.f, -10.f, 0.f), glm::vec3(0.f, 10.f, 0.f), glm::vec4(1.f));
 
 		Renderer2D::EndScene();
 	}
@@ -218,6 +223,7 @@ namespace DAZEL
 		CopyComponent<NativeScriptComponent>(dupScene, origin, mapDupEntities);
 		CopyComponent<RigidBody2DComponent>(dupScene, origin, mapDupEntities);
 		CopyComponent<BoxCollider2DComponent>(dupScene, origin, mapDupEntities);
+		CopyComponent<CircleCollider2DComponent>(dupScene, origin, mapDupEntities);
 
 		return dupScene;
 	}
@@ -234,6 +240,7 @@ namespace DAZEL
 		CopyComponentIfExists<NativeScriptComponent>(newEntity, origin);
 		CopyComponentIfExists<RigidBody2DComponent>(newEntity, origin);
 		CopyComponentIfExists<BoxCollider2DComponent>(newEntity, origin);
+		CopyComponentIfExists<CircleCollider2DComponent>(newEntity, origin);
 	}
 
 	void Scene::OnRuntimeStart()
@@ -273,7 +280,23 @@ namespace DAZEL
 				boxColliderComponent.m_RuntimeFixture = fixture;
 			}
 
-			
+			if (rigidBodyEntity.HasComponent<CircleCollider2DComponent>())
+			{
+				auto& circleColliderComponent = rigidBodyEntity.GetComponent<CircleCollider2DComponent>();
+
+				b2CircleShape circleShape;
+				circleShape.m_p.Set(circleColliderComponent.m_Offset.x, circleColliderComponent.m_Offset.y);
+				circleShape.m_radius = circleColliderComponent.m_fRadius;
+
+				b2FixtureDef fixtureDef;
+				fixtureDef.shape = &circleShape;
+				fixtureDef.density = circleColliderComponent.m_fDensity;
+				fixtureDef.friction = circleColliderComponent.m_fFriction;
+				fixtureDef.restitution = circleColliderComponent.m_fRestitution;
+				fixtureDef.restitutionThreshold = circleColliderComponent.m_fRestitutionThreshold;
+				b2Fixture* fixture = body->CreateFixture(&fixtureDef);
+				circleColliderComponent.m_RuntimeFixture = fixture;
+			}
 		}
 	}
 
@@ -325,6 +348,10 @@ namespace DAZEL
 	}
 	template<>
 	void Scene::OnComponentAdd<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component)
+	{
+	}
+	template<>
+	void Scene::OnComponentAdd<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
 	{
 	}
 }

@@ -55,7 +55,19 @@ namespace DAZEL
 		s_Renderer2DData.CircleVertexArray->AddVertexBuffer(s_Renderer2DData.CircleVertexBuffer);
 		s_Renderer2DData.pCircleVertexBufferBase = new CircleVertex[s_Renderer2DData.uiMaxVertices];
 
+		//Line
+		s_Renderer2DData.LineVertexArray = VertexArray::Create();
 
+		BufferLayout lineLayout = {
+			{ShaderDataType::VEC3,		"vertPos"},
+			{ShaderDataType::VEC4,		"color"},
+			{ShaderDataType::INT,		"entityId"},
+		};
+
+		s_Renderer2DData.LineVertexBuffer = VertexBuffer::Create(s_Renderer2DData.uiMaxVertices * sizeof(LineVertex));
+		s_Renderer2DData.LineVertexBuffer->SetLayout(lineLayout);
+		s_Renderer2DData.LineVertexArray->AddVertexBuffer(s_Renderer2DData.LineVertexBuffer);
+		s_Renderer2DData.pLineVertexBufferBase = new LineVertex[s_Renderer2DData.uiMaxVertices];
 
 		UINT* QuadIndices = new UINT[s_Renderer2DData.uiMaxIndices];
 		UINT uiOffset = 0;
@@ -75,12 +87,13 @@ namespace DAZEL
 		Ref<IndexBuffer> squareIndexBuffer;
 		squareIndexBuffer = IndexBuffer::Create(QuadIndices, s_Renderer2DData.uiMaxIndices);
 		s_Renderer2DData.QuadVertexArray->SetIndexBuffer(squareIndexBuffer);
+		s_Renderer2DData.CircleVertexArray->SetIndexBuffer(squareIndexBuffer);
 
 		delete[] QuadIndices;
 
 		s_Renderer2DData.QuadShader = Shader::Create("assert/shader/Quad.glsl");
 		s_Renderer2DData.CircleShader = Shader::Create("assert/shader/Circle.glsl");
-
+		s_Renderer2DData.LineShader = Shader::Create("assert/shader/Line.glsl");
 
 		s_Renderer2DData.WhiteTexture = Texture2D::Create(1, 1);
 		UINT whiteColor = 0xffffffff;
@@ -161,7 +174,6 @@ namespace DAZEL
 				s_Renderer2DData.TextureSlots[i]->Bind(i);
 			}
 
-			s_Renderer2DData.QuadVertexArray->Bind();
 			s_Renderer2DData.QuadShader->Bind();
 			RendererCommand::DrawIndexed(s_Renderer2DData.QuadVertexArray, s_Renderer2DData.uiQuadIndexCount);
 			s_Renderer2DData.Stat.uiDrawCalls++;
@@ -175,6 +187,17 @@ namespace DAZEL
 			s_Renderer2DData.CircleVertexArray->Bind();
 			s_Renderer2DData.CircleShader->Bind();
 			RendererCommand::DrawIndexed(s_Renderer2DData.CircleVertexArray, s_Renderer2DData.uiCircleIndexCount);
+			s_Renderer2DData.Stat.uiDrawCalls++;
+		}
+
+		if (s_Renderer2DData.uiLineVertexCount > 0)
+		{
+			UINT uiDataSize = (s_Renderer2DData.pLineVertexBufferPointer - s_Renderer2DData.pLineVertexBufferBase) * (UINT)sizeof(LineVertex);
+			s_Renderer2DData.LineVertexBuffer->SetData(s_Renderer2DData.pLineVertexBufferBase, uiDataSize);
+
+			s_Renderer2DData.LineShader->Bind();
+			RendererCommand::SetLineWidth(s_Renderer2DData.fLineWidth);
+			RendererCommand::DrawLines(s_Renderer2DData.LineVertexArray, s_Renderer2DData.uiLineVertexCount);
 			s_Renderer2DData.Stat.uiDrawCalls++;
 		}
 	}
@@ -332,7 +355,7 @@ namespace DAZEL
 		for (int i = 0; i < 4; ++i)
 		{
 			s_Renderer2DData.pCircleVertexBufferPointer->WorldPos = transform * s_Renderer2DData.SquareVertexPosData[i];
-			s_Renderer2DData.pCircleVertexBufferPointer->LocalPos = s_Renderer2DData.SquareVertexPosData[i] * 2.f;
+			s_Renderer2DData.pCircleVertexBufferPointer->LocalPos = s_Renderer2DData.SquareVertexPosData[i];
 			s_Renderer2DData.pCircleVertexBufferPointer->Color = color;
 			s_Renderer2DData.pCircleVertexBufferPointer->fThickness = fThickness;
 			s_Renderer2DData.pCircleVertexBufferPointer->fFade = fFade;
@@ -343,6 +366,40 @@ namespace DAZEL
 		s_Renderer2DData.uiCircleIndexCount += 6;
 
 		s_Renderer2DData.Stat.uiQuadCount++;
+	}
+	float Renderer2D::GetLineWidth()
+	{
+		return s_Renderer2DData.fLineWidth;
+	}
+	void Renderer2D::SetLineWidth(float fWidth)
+	{
+		s_Renderer2DData.fLineWidth = fWidth;
+	}
+	void Renderer2D::DrawLine(const glm::vec3& startPoint, const glm::vec3& endPoint, const glm::vec4& color, int nEntityId)
+	{
+		s_Renderer2DData.pLineVertexBufferPointer->Pos = startPoint;
+		s_Renderer2DData.pLineVertexBufferPointer->Color = color;
+		s_Renderer2DData.pLineVertexBufferPointer->nEntityId = nEntityId;
+		s_Renderer2DData.pLineVertexBufferPointer++;
+
+		s_Renderer2DData.pLineVertexBufferPointer->Pos = endPoint;
+		s_Renderer2DData.pLineVertexBufferPointer->Color = color;
+		s_Renderer2DData.pLineVertexBufferPointer->nEntityId = nEntityId;
+		s_Renderer2DData.pLineVertexBufferPointer++;
+
+		s_Renderer2DData.uiLineVertexCount += 2;
+	}
+	void Renderer2D::DrawRect(const glm::mat4& transform, const glm::vec4& color, int nEntityId)
+	{
+		glm::vec3 point[4];
+		for (int i = 0; i < 4; ++i)
+		{
+			point[i] = transform * s_Renderer2DData.SquareVertexPosData[i];
+		}
+		DrawLine(point[0], point[1], color, nEntityId);
+		DrawLine(point[1], point[2], color, nEntityId);
+		DrawLine(point[2], point[3], color, nEntityId);
+		DrawLine(point[3], point[0], color, nEntityId);
 	}
 	void Renderer2D::DrawRotateQuad(const glm::vec2& pos2, const glm::vec2& size, float fRotationRad, const glm::vec4& color)
 	{
@@ -438,6 +495,9 @@ namespace DAZEL
 
 		s_Renderer2DData.uiCircleIndexCount = 0;
 		s_Renderer2DData.pCircleVertexBufferPointer = s_Renderer2DData.pCircleVertexBufferBase;
+
+		s_Renderer2DData.uiLineVertexCount = 0;
+		s_Renderer2DData.pLineVertexBufferPointer = s_Renderer2DData.pLineVertexBufferBase;
 
 		s_Renderer2DData.uiTextureSlotIndex = 1; //0已被白色贴图占据
 	}

@@ -356,7 +356,7 @@ void EditorLayer::OnImGuiRender()
 	DAZEL::Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 	if (selectedEntity)
 	{
-		ImGuizmo::SetOrthographic(false);
+		ImGuizmo::SetOrthographic(true);
 		ImGuizmo::SetDrawlist();
 
 		float fWindowWidth = (float)ImGui::GetWindowWidth();
@@ -530,6 +530,8 @@ void EditorLayer::OnScenePlay()
 	m_RuntimeScene = DAZEL::Scene::Copy(m_EditorScene);
 
 	m_ActiveScene = m_RuntimeScene;
+	m_SceneHierarchyPanel.SetSelectedEntity({});
+
 	m_ActiveScene->OnRuntimeStart();
 }
 
@@ -599,6 +601,9 @@ bool EditorLayer::OnKeyPressed(DAZEL::KeyPressedEvent& event)
 
 bool EditorLayer::OnMousePressed(DAZEL::MouseButtonPressedEvent& event)
 {
+	if (m_SceneState != SceneState::EDIT)
+		return false;
+
 	if (event.GetMouseButton() == DAZEL_MOUSE_BUTTON_LEFT)
 	{
 		if (m_bIsMouseInViewport

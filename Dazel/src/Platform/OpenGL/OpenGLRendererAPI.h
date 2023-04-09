@@ -12,6 +12,10 @@ namespace DAZEL
 		virtual void SetClearColor(const glm::vec4& color) override;
 
 		virtual void SetViewport(int nX, int nY, int nWidth, int nHeight) override;
+
 		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, UINT uiIndexCount = 0) override;
+
+		virtual void SetLineWidth(float fWidth) override;
+		virtual void DrawLines(const Ref<VertexArray>& vertexArray, UINT uiVertexCount) override;
 	};
 }

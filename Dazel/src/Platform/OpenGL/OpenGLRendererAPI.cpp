@@ -14,6 +14,8 @@ namespace DAZEL
 
 		glEnable(GL_DEPTH_TEST);
 
+		glEnable(GL_LINE_SMOOTH);
+
 	}
 	void OpenGLRendererAPI::Clear()
 	{
@@ -36,10 +38,19 @@ namespace DAZEL
 	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, UINT uiIndexCount)
 	{
 		PROFILE_FUNCTION();
-		if (uiIndexCount > 0)
-			glDrawElements(GL_TRIANGLES, uiIndexCount, GL_UNSIGNED_INT, nullptr);
-		else
-			glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-		
+		vertexArray->Bind();
+		UINT tmp = vertexArray->GetIndexBuffer()->GetCount();
+		UINT uiCount = uiIndexCount > 0 ? uiIndexCount : vertexArray->GetIndexBuffer()->GetCount();
+		glDrawElements(GL_TRIANGLES, uiCount, GL_UNSIGNED_INT, nullptr);
+	}
+	void OpenGLRendererAPI::SetLineWidth(float fWidth)
+	{
+		glLineWidth(fWidth);
+	}
+	void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& vertexArray, UINT uiVertexCount)
+	{
+		PROFILE_FUNCTION();
+		vertexArray->Bind();
+		glDrawArrays(GL_LINES, 0, uiVertexCount);
 	}
 }

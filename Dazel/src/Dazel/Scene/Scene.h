@@ -36,6 +36,12 @@ namespace DAZEL
 	public:
 		template<typename T>
 		void OnComponentAdd(Entity entity, T& component);
+
+		template<typename... ComponentTypes>
+		auto GetAllEntities()
+		{
+			return m_Registry.view<ComponentTypes...>();
+		}
 	public:
 		void OnRuntimeStart();
 		void OnRuntimeStop();

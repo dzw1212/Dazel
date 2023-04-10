@@ -184,6 +184,8 @@ void EditorLayer::OnUpdate(DAZEL::Timestep timeStep)
 		
 		//fAngle += timeStep.GetSeconds() * 10;
 
+		OnOverlayRender();
+
 		m_FrameBuffer->Unbind();
 	}
 }
@@ -540,6 +542,50 @@ void EditorLayer::OnSceneStop()
 	m_SceneState = SceneState::EDIT;
 	m_ActiveScene = m_EditorScene;
 	m_ActiveScene->OnRuntimeStop();
+}
+
+void EditorLayer::OnOverlayRender()
+{
+	glm::vec4 wireColor = { 0.0, 1.0, 0.0, 1.0 };
+
+	if (m_SceneState == SceneState::EDIT)
+		DAZEL::Renderer2D::BeginScene(m_EditorCamera);
+	else if (m_SceneState == SceneState::PLAY)
+	{
+		auto cameraEntities = m_ActiveScene->GetAllEntities<DAZEL::TransformComponent, DAZEL::CameraComponent>();
+		for (auto entity : cameraEntities)
+		{
+			auto [transform, camera] = cameraEntities.get<DAZEL::TransformComponent, DAZEL::CameraComponent>(entity);
+			if (camera.m_bIsMainCamera)
+			{
+				DAZEL::Renderer2D::BeginScene(camera.m_Camera, transform.GetTransform());
+				break;
+			}
+		}
+	}
+
+	auto quadEntities = m_ActiveScene->GetAllEntities<DAZEL::TransformComponent, DAZEL::BoxCollider2DComponent>();
+	for (auto entity : quadEntities)
+	{
+		auto [transform, box] = quadEntities.get<DAZEL::TransformComponent, DAZEL::BoxCollider2DComponent>(entity);
+		glm::vec3 boxPos = {
+			transform.m_Position.x + box.m_Offset.x,
+			transform.m_Position.y + box.m_Offset.y,
+			transform.m_Position.z
+		};
+		glm::vec3 boxScale = {
+			transform.m_Scale.x * box.m_Size.x * 2.f,
+			transform.m_Scale.y * box.m_Size.y * 2.f,
+			transform.m_Scale.z
+		};
+		auto trans = glm::translate(glm::mat4(1.f), boxPos)
+			* glm::rotate(glm::mat4(1.f), transform.m_Rotation.z, glm::vec3(0.f, 0.f, 1.f))
+			* glm::scale(glm::mat4(1.f), boxScale);
+
+		DAZEL::Renderer2D::DrawRect(trans, wireColor);
+	}
+
+	DAZEL::Renderer2D::EndScene();
 }
 
 bool EditorLayer::OnKeyPressed(DAZEL::KeyPressedEvent& event)

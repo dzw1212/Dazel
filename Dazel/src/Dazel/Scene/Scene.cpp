@@ -61,12 +61,8 @@ namespace DAZEL
 			{
 				auto [transform, circle] = circleView.get<TransformComponent, CircleRendererComponent>(entity);
 				Renderer2D::DrawCircle(transform.GetTransform(), circle.m_Color, circle.m_fThickness, circle.m_fFade, (int)entity);
-				Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0, 1.0, 0.0, 1.0));
 			}
 		}
-
-		Renderer2D::DrawLine(glm::vec3(-10.f, 0.f, 0.f), glm::vec3(10.f, 0.f, 0.f), glm::vec4(1.f));
-		Renderer2D::DrawLine(glm::vec3(0.f, -10.f, 0.f), glm::vec3(0.f, 10.f, 0.f), glm::vec4(1.f));
 
 		Renderer2D::EndScene();
 	}
@@ -268,7 +264,12 @@ namespace DAZEL
 				auto& boxColliderComponent = rigidBodyEntity.GetComponent<BoxCollider2DComponent>();
 
 				b2PolygonShape boxShape;
-				boxShape.SetAsBox(transformComponent.m_Scale.x * boxColliderComponent.m_Size.x, transformComponent.m_Scale.y * boxColliderComponent.m_Size.y);
+				boxShape.SetAsBox(
+					transformComponent.m_Scale.x * boxColliderComponent.m_Size.x, 
+					transformComponent.m_Scale.y * boxColliderComponent.m_Size.y,
+					b2Vec2(boxColliderComponent.m_Offset.x, boxColliderComponent.m_Offset.y),
+					0.0f
+				);
 
 				b2FixtureDef fixtureDef;
 				fixtureDef.shape = &boxShape;

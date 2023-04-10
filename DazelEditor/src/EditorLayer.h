@@ -34,6 +34,8 @@ public:
 	void UI_Tools();
 	void OnScenePlay();
 	void OnSceneStop();
+
+	void OnOverlayRender();
 public:
 	bool OnKeyPressed(DAZEL::KeyPressedEvent& event);
 	bool OnMousePressed(DAZEL::MouseButtonPressedEvent& event);

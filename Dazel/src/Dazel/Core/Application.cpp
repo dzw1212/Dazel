@@ -27,8 +27,8 @@ namespace DAZEL
 		s_Inst = this;
 		sWindowProps props;
 		props.strTitle = strAppName;
-		props.uiWidth = 1920;
-		props.uiHeight = 1080;
+		props.uiWidth = 2560;
+		props.uiHeight = 1440;
 		m_Window = Window::Create(props);
 		m_Window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 

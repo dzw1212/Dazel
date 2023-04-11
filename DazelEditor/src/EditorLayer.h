@@ -90,4 +90,7 @@ private:
 	SceneState m_SceneState = SceneState::EDIT;
 	DAZEL::Ref<DAZEL::Texture2D> m_PlayIcon;
 	DAZEL::Ref<DAZEL::Texture2D> m_StopIcon;
+
+	//Physical visiable
+	bool m_bPhysicalVisiable = false;
 };

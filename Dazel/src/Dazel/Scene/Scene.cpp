@@ -265,11 +265,9 @@ namespace DAZEL
 
 				b2PolygonShape boxShape;
 				boxShape.SetAsBox(
-					transformComponent.m_Scale.x * boxColliderComponent.m_Size.x, 
+					transformComponent.m_Scale.x * boxColliderComponent.m_Size.x,
 					transformComponent.m_Scale.y * boxColliderComponent.m_Size.y,
-					b2Vec2(boxColliderComponent.m_Offset.x, boxColliderComponent.m_Offset.y),
-					0.0f
-				);
+					b2Vec2(boxColliderComponent.m_Offset.x, boxColliderComponent.m_Offset.y), 0.0f);
 
 				b2FixtureDef fixtureDef;
 				fixtureDef.shape = &boxShape;

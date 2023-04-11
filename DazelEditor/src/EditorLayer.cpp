@@ -184,7 +184,8 @@ void EditorLayer::OnUpdate(DAZEL::Timestep timeStep)
 		
 		//fAngle += timeStep.GetSeconds() * 10;
 
-		OnOverlayRender();
+		if (m_bPhysicalVisiable)
+			OnOverlayRender();
 
 		m_FrameBuffer->Unbind();
 	}
@@ -282,16 +283,19 @@ void EditorLayer::OnImGuiRender()
 		ImGui::End();
 	}
 
-	ImGui::Begin("Setting:");
+	ImGui::Begin("Stat:");
 
 	auto RendererStata = DAZEL::Renderer2D::GetStatisticData();
 	ImGui::Text("Renderer2D statistics:");
 	ImGui::Text("Quad count:%d", RendererStata.uiQuadCount);
 	ImGui::Text("Draw call:%d", RendererStata.uiDrawCalls);
+	ImGui::End();
 
-	ImGui::Separator();
 
+	ImGui::Begin("Setting:");
 	ImGui::Text("Viewport MousePos: (%.2f, %.2f)", m_ViewportRegionMousePos.x, m_ViewportRegionMousePos.y);
+	ImGui::Checkbox("Physical Visiable", &m_bPhysicalVisiable);
+
 	ImGui::End();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f)); //去掉黑色边框，别忘了Pop
@@ -547,9 +551,13 @@ void EditorLayer::OnSceneStop()
 void EditorLayer::OnOverlayRender()
 {
 	glm::vec4 wireColor = { 0.0, 1.0, 0.0, 1.0 };
+	float fCameraZ = 0.f;
 
 	if (m_SceneState == SceneState::EDIT)
+	{
 		DAZEL::Renderer2D::BeginScene(m_EditorCamera);
+		fCameraZ = m_EditorCamera.GetPosition().z;
+	}
 	else if (m_SceneState == SceneState::PLAY)
 	{
 		auto cameraEntities = m_ActiveScene->GetAllEntities<DAZEL::TransformComponent, DAZEL::CameraComponent>();
@@ -559,6 +567,7 @@ void EditorLayer::OnOverlayRender()
 			if (camera.m_bIsMainCamera)
 			{
 				DAZEL::Renderer2D::BeginScene(camera.m_Camera, transform.GetTransform());
+				fCameraZ = transform.m_Position.z;
 				break;
 			}
 		}
@@ -567,23 +576,39 @@ void EditorLayer::OnOverlayRender()
 	auto quadEntities = m_ActiveScene->GetAllEntities<DAZEL::TransformComponent, DAZEL::BoxCollider2DComponent>();
 	for (auto entity : quadEntities)
 	{
-		auto [transform, box] = quadEntities.get<DAZEL::TransformComponent, DAZEL::BoxCollider2DComponent>(entity);
-		glm::vec3 boxPos = {
-			transform.m_Position.x + box.m_Offset.x,
-			transform.m_Position.y + box.m_Offset.y,
-			transform.m_Position.z
-		};
+		auto [transform, boxCollider] = quadEntities.get<DAZEL::TransformComponent, DAZEL::BoxCollider2DComponent>(entity);
+
 		glm::vec3 boxScale = {
-			transform.m_Scale.x * box.m_Size.x * 2.f,
-			transform.m_Scale.y * box.m_Size.y * 2.f,
+			transform.m_Scale.x * boxCollider.m_Size.x * 2.f,
+			transform.m_Scale.y * boxCollider.m_Size.y * 2.f,
 			transform.m_Scale.z
 		};
-		auto trans = glm::translate(glm::mat4(1.f), boxPos)
-			* glm::rotate(glm::mat4(1.f), transform.m_Rotation.z, glm::vec3(0.f, 0.f, 1.f))
-			* glm::scale(glm::mat4(1.f), boxScale);
+
+		float fZOffset = fCameraZ > transform.m_Position.z ? 0.001f : -0.001f;
+
+		auto trans = glm::translate(glm::mat4(1.0f), transform.m_Position)
+			* glm::rotate(glm::mat4(1.0f), transform.m_Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))
+			* glm::scale(glm::mat4(1.0f), boxScale)
+			* glm::translate(glm::mat4(1.0f), glm::vec3(boxCollider.m_Offset, fZOffset));
 
 		DAZEL::Renderer2D::DrawRect(trans, wireColor);
 	}
+
+	auto circleEntities = m_ActiveScene->GetAllEntities<DAZEL::TransformComponent, DAZEL::CircleCollider2DComponent>();
+	for (auto entity : circleEntities)
+	{
+		auto [transform, circleCollider] = circleEntities.get<DAZEL::TransformComponent, DAZEL::CircleCollider2DComponent>(entity);
+
+		float fZOffset = fCameraZ > transform.m_Position.z ? 0.001f : -0.001f;
+
+		auto trans = glm::translate(glm::mat4(1.0f), transform.m_Position)
+			* glm::rotate(glm::mat4(1.0f), transform.m_Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))
+			* glm::scale(glm::mat4(1.0f), transform.m_Scale)
+			* glm::translate(glm::mat4(1.0f), glm::vec3(circleCollider.m_Offset, fZOffset));
+
+		DAZEL::Renderer2D::DrawCircle(trans, wireColor, 0.02f);
+	}
+
 
 	DAZEL::Renderer2D::EndScene();
 }

@@ -149,7 +149,7 @@ namespace DAZEL
 		
 		static void DrawQuad(const glm::vec3& pos3, const glm::vec2& size, const Ref<SubTexture2D>& subTexture, int nTileCoef = 1, const glm::vec3& tintColor = glm::vec3(1.f));
 
-		static void DrawCircle(const glm::mat4& transform, const glm::vec4& color, float fThickness, float fFade, int nEntityId = -1);
+		static void DrawCircle(const glm::mat4& transform, const glm::vec4& color, float fThickness = 0.5f, float fFade = 0.005f, int nEntityId = -1);
 
 		static float GetLineWidth();
 		static void SetLineWidth(float fWidth);

@@ -241,7 +241,7 @@ namespace DAZEL
 		if (entity.HasComponent<CircleCollider2DComponent>())
 		{
 			auto& circleColliderComponent = entity.GetComponent<CircleCollider2DComponent>();
-			out << YAML::Key << "BoxCollider2DComponent";
+			out << YAML::Key << "CircleCollider2DComponent";
 			out << YAML::Value << YAML::BeginMap;
 			out << YAML::Key << "Offset";
 			out << YAML::Value << circleColliderComponent.m_Offset;
@@ -395,12 +395,12 @@ namespace DAZEL
 				if (circleColliderComponentNode)
 				{
 					auto& circleColliderComponent = deserializeEntity.AddComponent<CircleCollider2DComponent>();
-					circleColliderComponent.m_Offset = boxColliderComponentNode["Offset"].as<glm::vec2>();
-					circleColliderComponent.m_fRadius = boxColliderComponentNode["Radius"].as<float>();
-					circleColliderComponent.m_fDensity = boxColliderComponentNode["Density"].as<float>();
-					circleColliderComponent.m_fFriction = boxColliderComponentNode["Friction"].as<float>();
-					circleColliderComponent.m_fRestitution = boxColliderComponentNode["Restitution"].as<float>();
-					circleColliderComponent.m_fRestitutionThreshold = boxColliderComponentNode["Restitution Threshold"].as<float>();
+					circleColliderComponent.m_Offset = circleColliderComponentNode["Offset"].as<glm::vec2>();
+					circleColliderComponent.m_fRadius = circleColliderComponentNode["Radius"].as<float>();
+					circleColliderComponent.m_fDensity = circleColliderComponentNode["Density"].as<float>();
+					circleColliderComponent.m_fFriction = circleColliderComponentNode["Friction"].as<float>();
+					circleColliderComponent.m_fRestitution = circleColliderComponentNode["Restitution"].as<float>();
+					circleColliderComponent.m_fRestitutionThreshold = circleColliderComponentNode["Restitution Threshold"].as<float>();
 				}
             }
         }

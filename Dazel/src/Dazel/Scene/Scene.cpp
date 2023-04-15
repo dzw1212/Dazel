@@ -145,29 +145,72 @@ namespace DAZEL
 		}
 	}
 
-	template<typename ComponentType>
+	//template<typename ComponentType>
+	//static void CopyComponent(const Ref<Scene>& dup, const Ref<Scene>& origin, const std::unordered_map<UUID, UINT>& mapDupEntities)
+	//{
+	//	auto componentView = origin->GetRegistry().view<ComponentType>();
+	//	for (auto entity : componentView)
+	//	{
+	//		auto originEntity = Entity(entity, origin.get());
+	//		UUID uuid = originEntity.GetComponent<IDComponent>().m_UUId;
+	//		auto iter = mapDupEntities.find(uuid);
+	//		if (iter == mapDupEntities.end())
+	//			continue;
+	//		Entity dupEntity = Entity(static_cast<entt::entity>(iter->second), dup.get());
+	//		dupEntity.AddOrReplaceComponent<ComponentType>(originEntity.GetComponent<ComponentType>());
+	//	}
+	//}
+
+	template<typename... ComponentType>
 	static void CopyComponent(const Ref<Scene>& dup, const Ref<Scene>& origin, const std::unordered_map<UUID, UINT>& mapDupEntities)
 	{
-		auto componentView = origin->GetRegistry().view<ComponentType>();
-		for (auto entity : componentView)
+		([&]()
 		{
-			auto originEntity = Entity(entity, origin.get());
-			UUID uuid = originEntity.GetComponent<IDComponent>().m_UUId;
-			auto iter = mapDupEntities.find(uuid);
-			if (iter == mapDupEntities.end())
-				continue;
-			Entity dupEntity = Entity(static_cast<entt::entity>(iter->second), dup.get());
-			dupEntity.AddOrReplaceComponent<ComponentType>(originEntity.GetComponent<ComponentType>());
-		}
+			auto componentView = origin->GetRegistry().view<ComponentType>();
+			for (auto entity : componentView)
+			{
+				auto originEntity = Entity(entity, origin.get());
+				UUID uuid = originEntity.GetComponent<IDComponent>().m_UUId;
+				auto iter = mapDupEntities.find(uuid);
+				if (iter == mapDupEntities.end())
+					continue;
+				Entity dupEntity = Entity(static_cast<entt::entity>(iter->second), dup.get());
+				dupEntity.AddOrReplaceComponent<ComponentType>(originEntity.GetComponent<ComponentType>());
+			}
+		}(), ...);
 	}
 
-	template<typename ComponentType>
+	template<typename... ComponentType>
+	static void CopyComponent(ComponentGroup<ComponentType...>, const Ref<Scene>& dup, const Ref<Scene>& origin, const std::unordered_map<UUID, UINT>& mapDupEntities)
+	{
+		CopyComponent<ComponentType...>(dup, origin, mapDupEntities);
+	}
+
+	//template<typename ComponentType>
+	//static void CopyComponentIfExists(Entity dup, Entity origin)
+	//{
+	//	if (origin.HasComponent<ComponentType>())
+	//	{
+	//		dup.AddOrReplaceComponent<ComponentType>(origin.GetComponent<ComponentType>());
+	//	}
+	//}
+
+	template<typename... ComponentType>
 	static void CopyComponentIfExists(Entity dup, Entity origin)
 	{
-		if (origin.HasComponent<ComponentType>())
+		([&]()
 		{
-			dup.AddOrReplaceComponent<ComponentType>(origin.GetComponent<ComponentType>());
-		}
+			if (origin.HasComponent<ComponentType>())
+			{
+				dup.AddOrReplaceComponent<ComponentType>(origin.GetComponent<ComponentType>());
+			}
+		}(), ...);
+	}
+
+	template<typename... ComponentType>
+	static void CopyComponentIfExists(ComponentGroup<ComponentType...>, Entity dup, Entity origin)
+	{
+		CopyComponentIfExists<ComponentType...>(dup, origin);
 	}
 
 	Ref<Scene> Scene::Copy(const Ref<Scene>& origin)
@@ -189,14 +232,7 @@ namespace DAZEL
 			mapDupEntities[uuid] = entityId;
 		}
 
-		CopyComponent<TransformComponent>(dupScene, origin, mapDupEntities);
-		CopyComponent<SpriteRendererComponent>(dupScene, origin, mapDupEntities);
-		CopyComponent<CircleRendererComponent>(dupScene, origin, mapDupEntities);
-		CopyComponent<CameraComponent>(dupScene, origin, mapDupEntities);
-		CopyComponent<NativeScriptComponent>(dupScene, origin, mapDupEntities);
-		CopyComponent<RigidBody2DComponent>(dupScene, origin, mapDupEntities);
-		CopyComponent<BoxCollider2DComponent>(dupScene, origin, mapDupEntities);
-		CopyComponent<CircleCollider2DComponent>(dupScene, origin, mapDupEntities);
+		CopyComponent(AllComponents{}, dupScene, origin, mapDupEntities);
 
 		return dupScene;
 	}
@@ -206,14 +242,7 @@ namespace DAZEL
 		std::string name = origin.GetComponent<TagComponent>().m_strTag;
 		auto newEntity = CreateEntity(name + "_" + std::to_string(origin.GetId()));
 
-		CopyComponentIfExists<TransformComponent>(newEntity, origin);
-		CopyComponentIfExists<SpriteRendererComponent>(newEntity, origin);
-		CopyComponentIfExists<CircleRendererComponent>(newEntity, origin);
-		CopyComponentIfExists<CameraComponent>(newEntity, origin);
-		CopyComponentIfExists<NativeScriptComponent>(newEntity, origin);
-		CopyComponentIfExists<RigidBody2DComponent>(newEntity, origin);
-		CopyComponentIfExists<BoxCollider2DComponent>(newEntity, origin);
-		CopyComponentIfExists<CircleCollider2DComponent>(newEntity, origin);
+		CopyComponentIfExists(AllComponents{}, newEntity, origin);
 	}
 
 	void Scene::OnRuntimeStart()

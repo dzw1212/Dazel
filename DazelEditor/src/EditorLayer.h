@@ -12,6 +12,7 @@ enum class SceneState
 {
 	PLAY,
 	EDIT,
+	SIMULATE,
 };
 
 class EditorLayer : public DAZEL::Layer
@@ -34,6 +35,7 @@ public:
 	void UI_Tools();
 	void OnScenePlay();
 	void OnSceneStop();
+	void OnSceneSimulate();
 
 	void OnOverlayRender();
 public:
@@ -90,6 +92,7 @@ private:
 	SceneState m_SceneState = SceneState::EDIT;
 	DAZEL::Ref<DAZEL::Texture2D> m_PlayIcon;
 	DAZEL::Ref<DAZEL::Texture2D> m_StopIcon;
+	DAZEL::Ref<DAZEL::Texture2D> m_SimulateIcon;
 
 	//Physical visiable
 	bool m_bPhysicalVisiable = false;

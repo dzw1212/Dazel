@@ -41,49 +41,18 @@ namespace DAZEL
 	}
 	Scene::~Scene()
 	{
-
+		delete m_PhysicalWorld;
 	}
 	void Scene::OnUpdateEditor(Timestep timeStep, EditorCamera& camera)
 	{
-		Renderer2D::BeginScene(camera);
-
-		auto quadView = m_Registry.view<TransformComponent, SpriteRendererComponent>();
-		for (auto entity : quadView)
-		{
-			auto [transform, sprite] = quadView.get<TransformComponent, SpriteRendererComponent>(entity);
-			if (sprite.m_Texture)
-				Renderer2D::DrawQuad(transform.GetTransform(), sprite.m_Texture, sprite.m_nTileFactor, sprite.m_Color, (int)entity);
-			else
-				Renderer2D::DrawQuad(transform.GetTransform(), sprite.m_Color, (int)entity);
-
-			auto circleView = m_Registry.view<TransformComponent, CircleRendererComponent>();
-			for (auto entity : circleView)
-			{
-				auto [transform, circle] = circleView.get<TransformComponent, CircleRendererComponent>(entity);
-				Renderer2D::DrawCircle(transform.GetTransform(), circle.m_Color, circle.m_fThickness, circle.m_fFade, (int)entity);
-			}
-		}
-
-		Renderer2D::EndScene();
+		RenderScene(camera);
 	}
 	void Scene::OnUpdateRuntime(Timestep timeStep)
 	{
-		//Physical
-		const int nVelocityIterations = 6;
-		const int nPositionIterations = 2;
-		m_PhysicalWorld->Step(timeStep.GetSeconds(), nVelocityIterations, nPositionIterations);
-		
-		auto rigidBodyView = m_Registry.view<RigidBody2DComponent>();
-		for (auto entity : rigidBodyView)
-		{
-			Entity rigidBodyEntity = { entity, this };
-			b2Body* body = (b2Body*)rigidBodyEntity.GetComponent<RigidBody2DComponent>().m_RuntimeBody;
+		//Scripts - todo
 
-			auto& transformComponent = rigidBodyEntity.GetComponent<TransformComponent>();
-			transformComponent.m_Position.x = body->GetPosition().x;
-			transformComponent.m_Position.y = body->GetPosition().y;
-			transformComponent.m_Rotation.z = body->GetAngle();
-		}
+		//Physical
+		TickPhysical(timeStep);
 
 		//Render 2D
 		Camera* mainCamera = nullptr;
@@ -123,6 +92,14 @@ namespace DAZEL
 
 			Renderer2D::EndScene();
 		}
+	}
+	void Scene::OnUpdateSimulation(Timestep timeStep, EditorCamera& camera)
+	{
+		//Physical
+		TickPhysical(timeStep);
+
+		//Scene
+		RenderScene(camera);
 	}
 	Entity Scene::CreateEntity(const std::string& strName)
 	{
@@ -241,6 +218,26 @@ namespace DAZEL
 
 	void Scene::OnRuntimeStart()
 	{
+		OnPhysical2DStart();
+	}
+
+	void Scene::OnRuntimeStop()
+	{
+		OnPhysical2DStop();
+	}
+
+	void Scene::OnSimulationStart()
+	{
+		OnPhysical2DStart();
+	}
+
+	void Scene::OnSimulationStop()
+	{
+		OnPhysical2DStop();
+	}
+
+	void Scene::OnPhysical2DStart()
+	{
 		b2Vec2 gravity(0.0f, -10.0f); //定义重力矢量
 		m_PhysicalWorld = new b2World(gravity);
 
@@ -299,10 +296,53 @@ namespace DAZEL
 		}
 	}
 
-	void Scene::OnRuntimeStop()
+	void Scene::OnPhysical2DStop()
 	{
 		delete m_PhysicalWorld;
 		m_PhysicalWorld = nullptr;
+	}
+
+	void Scene::RenderScene(EditorCamera& camera)
+	{
+		Renderer2D::BeginScene(camera);
+
+		auto quadView = m_Registry.view<TransformComponent, SpriteRendererComponent>();
+		for (auto entity : quadView)
+		{
+			auto [transform, sprite] = quadView.get<TransformComponent, SpriteRendererComponent>(entity);
+			if (sprite.m_Texture)
+				Renderer2D::DrawQuad(transform.GetTransform(), sprite.m_Texture, sprite.m_nTileFactor, sprite.m_Color, (int)entity);
+			else
+				Renderer2D::DrawQuad(transform.GetTransform(), sprite.m_Color, (int)entity);
+
+			auto circleView = m_Registry.view<TransformComponent, CircleRendererComponent>();
+			for (auto entity : circleView)
+			{
+				auto [transform, circle] = circleView.get<TransformComponent, CircleRendererComponent>(entity);
+				Renderer2D::DrawCircle(transform.GetTransform(), circle.m_Color, circle.m_fThickness, circle.m_fFade, (int)entity);
+			}
+		}
+
+		Renderer2D::EndScene();
+	}
+
+	void Scene::TickPhysical(Timestep timeStep)
+	{
+		const int nVelocityIterations = 6;
+		const int nPositionIterations = 2;
+		m_PhysicalWorld->Step(timeStep.GetSeconds(), nVelocityIterations, nPositionIterations);
+
+		auto rigidBodyView = m_Registry.view<RigidBody2DComponent>();
+		for (auto entity : rigidBodyView)
+		{
+			Entity rigidBodyEntity = { entity, this };
+			b2Body* body = (b2Body*)rigidBodyEntity.GetComponent<RigidBody2DComponent>().m_RuntimeBody;
+
+			auto& transformComponent = rigidBodyEntity.GetComponent<TransformComponent>();
+			transformComponent.m_Position.x = body->GetPosition().x;
+			transformComponent.m_Position.y = body->GetPosition().y;
+			transformComponent.m_Rotation.z = body->GetAngle();
+		}
 	}
 
 	template<typename T>

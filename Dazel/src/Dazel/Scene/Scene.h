@@ -25,6 +25,7 @@ namespace DAZEL
 
 		void OnUpdateEditor(Timestep timeStep, EditorCamera& camera);
 		void OnUpdateRuntime(Timestep timeStep);
+		void OnUpdateSimulation(Timestep timeStep, EditorCamera& camera);
 		void OnViewportResize(UINT uiWidth, UINT uiHeight);
 
 		entt::registry& GetRegistry() { return m_Registry; }
@@ -45,6 +46,15 @@ namespace DAZEL
 	public:
 		void OnRuntimeStart();
 		void OnRuntimeStop();
+
+		void OnSimulationStart();
+		void OnSimulationStop();
+
+		void OnPhysical2DStart();
+		void OnPhysical2DStop();
+	public:
+		void RenderScene(EditorCamera& camera);
+		void TickPhysical(Timestep timeStep);
 	private:
 		entt::registry m_Registry;
 		UINT m_uiViewportWidth;

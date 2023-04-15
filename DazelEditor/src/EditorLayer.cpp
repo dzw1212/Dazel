@@ -40,6 +40,7 @@ void EditorLayer::OnAttach()
 
 	m_PlayIcon = DAZEL::Texture2D::Create("Resource/Icon/Scene/PlayIcon.png");
 	m_StopIcon = DAZEL::Texture2D::Create("Resource/Icon/Scene/StopIcon.png");
+	m_SimulateIcon = DAZEL::Texture2D::Create("Resource/Icon/Scene/SimulateIcon.png");
 
 
 	//CameraComtroller
@@ -167,6 +168,12 @@ void EditorLayer::OnUpdate(DAZEL::Timestep timeStep)
 				//{
 				//	m_CameraController.OnUpdate(timeStep);
 				//}
+				break;
+			}
+			case SceneState::SIMULATE:
+			{
+				m_EditorCamera.OnUpdate(timeStep);
+				m_ActiveScene->OnUpdateSimulation(timeStep, m_EditorCamera);
 				break;
 			}
 		}
@@ -512,16 +519,29 @@ void EditorLayer::UI_Tools()
 		tintColor.w = 0.5f;
 
 	float fSize = ImGui::GetWindowHeight() - 4.0f;
-	ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (fSize * 0.5f)); //¾ÓÖÐ
-
-	auto icon = m_SceneState == SceneState::PLAY ? m_StopIcon : m_PlayIcon;
-
-	if (ImGui::ImageButton((ImTextureID)icon->GetId(), { fSize, fSize }))
+	
 	{
-		if (m_SceneState == SceneState::PLAY)
-			OnSceneStop();
-		else if (m_SceneState == SceneState::EDIT)
-			OnScenePlay();
+		DAZEL::Ref<DAZEL::Texture2D> icon = (m_SceneState == SceneState::EDIT || m_SceneState == SceneState::SIMULATE) ? m_PlayIcon : m_StopIcon;
+		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (fSize * 0.5f));
+
+		if (ImGui::ImageButton((ImTextureID)icon->GetId(), ImVec2(fSize, fSize), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor) && toolbarEnabled)
+		{
+			if (m_SceneState == SceneState::EDIT || m_SceneState == SceneState::SIMULATE)
+				OnScenePlay();
+			else if (m_SceneState == SceneState::PLAY)
+				OnSceneStop();
+		}
+	}
+	ImGui::SameLine();
+	{
+		DAZEL::Ref<DAZEL::Texture2D> icon = (m_SceneState == SceneState::EDIT || m_SceneState == SceneState::PLAY) ? m_SimulateIcon : m_StopIcon;
+		if (ImGui::ImageButton((ImTextureID)icon->GetId(), ImVec2(fSize, fSize), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor) && toolbarEnabled)
+		{
+			if (m_SceneState == SceneState::EDIT || m_SceneState == SceneState::PLAY)
+				OnSceneSimulate();
+			else if (m_SceneState == SceneState::SIMULATE)
+				OnSceneStop();
+		}
 	}
 
 	ImGui::PopStyleVar(2);
@@ -532,6 +552,9 @@ void EditorLayer::UI_Tools()
 
 void EditorLayer::OnScenePlay()
 {
+	if (m_SceneState == SceneState::SIMULATE)
+		OnSceneStop();
+
 	m_SceneState = SceneState::PLAY;
 	m_RuntimeScene = DAZEL::Scene::Copy(m_EditorScene);
 
@@ -543,9 +566,29 @@ void EditorLayer::OnScenePlay()
 
 void EditorLayer::OnSceneStop()
 {
+	if (m_SceneState == SceneState::PLAY)
+		m_ActiveScene->OnRuntimeStop();
+	else if (m_SceneState == SceneState::SIMULATE)
+		m_ActiveScene->OnSimulationStop();
+	else
+		return;
+
 	m_SceneState = SceneState::EDIT;
 	m_ActiveScene = m_EditorScene;
-	m_ActiveScene->OnRuntimeStop();
+	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+}
+
+void EditorLayer::OnSceneSimulate()
+{
+	if (m_SceneState == SceneState::PLAY)
+		OnSceneStop();
+
+	m_SceneState = SceneState::SIMULATE;
+
+	m_ActiveScene = DAZEL::Scene::Copy(m_EditorScene);
+	m_ActiveScene->OnSimulationStart();
+
+	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 }
 
 void EditorLayer::OnOverlayRender()
@@ -584,7 +627,7 @@ void EditorLayer::OnOverlayRender()
 			transform.m_Scale.z
 		};
 
-		float fZOffset = fCameraZ > transform.m_Position.z ? 0.001f : -0.001f;
+		float fZOffset = fCameraZ >= transform.m_Position.z ? 0.001f : -0.001f;
 
 		auto trans = glm::translate(glm::mat4(1.0f), transform.m_Position)
 			* glm::rotate(glm::mat4(1.0f), transform.m_Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))
@@ -599,7 +642,7 @@ void EditorLayer::OnOverlayRender()
 	{
 		auto [transform, circleCollider] = circleEntities.get<DAZEL::TransformComponent, DAZEL::CircleCollider2DComponent>(entity);
 
-		float fZOffset = fCameraZ > transform.m_Position.z ? 0.001f : -0.001f;
+		float fZOffset = fCameraZ >= transform.m_Position.z ? 0.001f : -0.001f;
 
 		auto trans = glm::translate(glm::mat4(1.0f), transform.m_Position)
 			* glm::rotate(glm::mat4(1.0f), transform.m_Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))

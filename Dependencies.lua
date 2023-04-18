@@ -13,11 +13,13 @@ IncludeDir = {
     ["SPIRV_Cross"] = "%{wks.location}/Dazel/Vender/SPIRV_Cross",
     ["VulkanSDK"] = "%{VULKAN_SDK}/Include",
     ["Box2D"] = "%{wks.location}/Dazel/Vender/Box2D/include",
+    ["mono"] = "%{wks.location}/Dazel/Vender/mono/include",
 }
 
 LibraryDir = {
     ["VulkanSDK"] = "%{VULKAN_SDK}/Lib",
     ["VulkanSDK_Debug"] = "%{wks.location}/Dazel/Vender/VulkanSDK/Lib",
+    ["mono"] = "%{wks.location}/Dazel/Vender/mono/lib/%{cfg.buildcfg}",
 }
 
 Library = {
@@ -32,4 +34,6 @@ Library = {
     ["ShaderC_Release"] = "%{LibraryDir.VulkanSDK}/shaderc_shared.lib",
     ["SPIRV_Cross_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-core.lib",
     ["SPIRV_Cross_GLSL_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsl.lib",
+
+    ["mono"] = "%{LibraryDir.mono}/libmono-static-sgen.lib"
 }

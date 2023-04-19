@@ -22,7 +22,7 @@ project "Dazel"
         "Vender/ImGuizmo/ImGuizmo.h",
         "Vender/ImGuizmo/ImGuizmo.cpp",
     }
-    
+
     defines
     {
         "DAZEL_PLATFORM_WINDOWS",
@@ -46,6 +46,7 @@ project "Dazel"
         "%{IncludeDir.ImGuizmo}",
         "%{IncludeDir.VulkanSDK}",
         "%{IncludeDir.Box2D}",
+        "%{IncludeDir.mono}",
     }
 
     links
@@ -56,6 +57,7 @@ project "Dazel"
         "yaml-cpp",
         "Box2D",
         "opengl32.lib",
+        "%{Library.mono}",
     }
 
     filter "files:Vender/ImGuizmo/**.cpp"
@@ -63,6 +65,14 @@ project "Dazel"
 
     filter "system:windows"
         systemversion "latest"
+
+        links
+		{
+			"%{Library.WinSock}",
+			"%{Library.WinMM}",
+			"%{Library.WinVersion}",
+			"%{Library.BCrypt}",
+		}
 
     filter "configurations:Debug"
         defines "DAZEL_DEBUG"

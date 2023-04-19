@@ -35,5 +35,11 @@ Library = {
     ["SPIRV_Cross_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-core.lib",
     ["SPIRV_Cross_GLSL_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsl.lib",
 
-    ["mono"] = "%{LibraryDir.mono}/libmono-static-sgen.lib"
+    ["mono"] = "%{LibraryDir.mono}/libmono-static-sgen.lib",
+
+    --Windows
+    ["WinSock"] = "Ws2_32.lib",
+    ["WinMM"] = "Winmm.lib",
+    ["WinVersion"] = "Version.lib",
+    ["BCrypt"] = "Bcrypt.lib",
 }

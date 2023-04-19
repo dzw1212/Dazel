@@ -3,6 +3,7 @@
 **/bin_int/
 **/bin-int/
 !Vender/premake/bin/
+Intermediate/
 
 
 # Misc files
@@ -15,6 +16,7 @@
 **.vcxproj
 **.vcxproj.filters
 **.vcxproj.user
+**.csproj
 
 #Directories
 Dazel/Vender/VulkanSDK

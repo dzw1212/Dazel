@@ -12,6 +12,8 @@
 #include "Dazel/Renderer/RendererCommand.h"
 #include "Dazel/Renderer/Renderer.h"
 
+#include "Dazel/Scripting/ScriptEngine.h"
+
 #include "Dazel/Core/Timestep.h"
 
 namespace DAZEL
@@ -33,6 +35,7 @@ namespace DAZEL
 		m_Window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 
 		Renderer::Init();
+		ScriptEngine::Init();
 
 		m_ImGuiLayer = new ImGuiLayer;
 		PushOverlay(m_ImGuiLayer);

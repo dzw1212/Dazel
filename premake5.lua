@@ -27,6 +27,15 @@ workspace "Dazel"
         include "Dazel/Vender/Box2D"
     group ""
 
-    include "Dazel"
-    include "Sandbox"
-    include "DazelEditor"
+    group "Core"
+        include "Dazel"
+        include "Dazel-ScriptCore"
+    group ""
+
+    group "Tools"
+        include "DazelEditor"
+    group ""
+
+    group "Misc"
+        include "Sandbox"
+    group ""

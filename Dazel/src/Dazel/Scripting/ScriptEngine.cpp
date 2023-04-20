@@ -12,7 +12,7 @@ namespace DAZEL
 
 		if (!stream)
 		{
-			// Failed to open the file
+			LOG_ERROR("Fail to open file {}", filepath);
 			return nullptr;
 		}
 
@@ -22,7 +22,7 @@ namespace DAZEL
 
 		if (size == 0)
 		{
-			// File is empty
+			LOG_ERROR("File {} size is 0", filepath);
 			return nullptr;
 		}
 
@@ -46,7 +46,7 @@ namespace DAZEL
 		if (status != MONO_IMAGE_OK)
 		{
 			const char* errorMessage = mono_image_strerror(status);
-			// Log some error message using the errorMessage data
+			LOG_ERROR("Mono read data from assembly {} failed", assemblyPath);
 			return nullptr;
 		}
 
@@ -73,8 +73,24 @@ namespace DAZEL
 			const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
 			const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
 
-			printf("%s.%s\n", nameSpace, name);
+			std::cout << "---row: " << i << std::endl;
+			std::cout << "---namespace: " << nameSpace << std::endl;
+			std::cout << "---name: " <<name << std::endl;
 		}
+	}
+
+	static MonoClass* GetClassInAssembly(MonoAssembly* assembly, const char* namespaceName, const char* className)
+	{
+		MonoImage* image = mono_assembly_get_image(assembly);
+		MonoClass* monoClass = mono_class_from_name(image, namespaceName, className);
+
+		if (monoClass == nullptr)
+		{
+			LOG_ERROR("Get class {}::{} from assembly failed", namespaceName, className);
+			return nullptr;
+		}
+
+		return monoClass;
 	}
 
 	struct ScriptEngineData

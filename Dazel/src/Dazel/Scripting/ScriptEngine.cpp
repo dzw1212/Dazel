@@ -3,6 +3,7 @@
 
 #include "mono/jit/jit.h"
 #include "mono/metadata/assembly.h"
+#include "mono/metadata/attrdefs.h"
 
 namespace DAZEL
 {
@@ -93,6 +94,177 @@ namespace DAZEL
 		return monoClass;
 	}
 
+	enum class Accessibility : uint8_t
+	{
+		None		= 0,
+		Private		= (1 << 0),
+		Internal	= (1 << 1),
+		Protected	= (1 << 2),
+		Public		= (1 << 3),
+	};
+
+	// Gets the accessibility level of the given field
+	static uint8_t GetFieldAccessibility(MonoClassField* field)
+	{
+		uint8_t accessibility = (uint8_t)Accessibility::None;
+		uint32_t accessFlag = mono_field_get_flags(field) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK;
+
+		switch (accessFlag)
+		{
+		case MONO_FIELD_ATTR_PRIVATE:
+			{
+				accessibility = (uint8_t)Accessibility::Private;
+				break;
+			}
+		case MONO_FIELD_ATTR_FAM_AND_ASSEM:
+			{
+				accessibility |= (uint8_t)Accessibility::Protected;
+				accessibility |= (uint8_t)Accessibility::Internal;
+				break;
+			}
+		case MONO_FIELD_ATTR_ASSEMBLY:
+			{
+				accessibility = (uint8_t)Accessibility::Internal;
+				break;
+			}
+		case MONO_FIELD_ATTR_FAMILY:
+			{
+				accessibility = (uint8_t)Accessibility::Protected;
+				break;
+			}
+		case MONO_FIELD_ATTR_FAM_OR_ASSEM:
+			{
+				accessibility |= (uint8_t)Accessibility::Private;
+				accessibility |= (uint8_t)Accessibility::Protected;
+				break;
+			}
+		case MONO_FIELD_ATTR_PUBLIC:
+			{
+				accessibility = (uint8_t)Accessibility::Public;
+				break;
+			}
+		}
+
+		return accessibility;
+	}
+
+	// Gets the accessibility level of the given property
+	static uint8_t GetPropertyAccessbility(MonoProperty* property)
+	{
+		uint8_t accessibility = (uint8_t)Accessibility::None;
+
+		// Get a reference to the property's getter method
+		MonoMethod* propertyGetter = mono_property_get_get_method(property);
+		if (propertyGetter != nullptr)
+		{
+			// Extract the access flags from the getters flags
+			uint32_t accessFlag = mono_method_get_flags(propertyGetter, nullptr) & MONO_METHOD_ATTR_ACCESS_MASK;
+
+			switch (accessFlag)
+			{
+			case MONO_FIELD_ATTR_PRIVATE:
+				{
+					accessibility = (uint8_t)Accessibility::Private;
+					break;
+				}
+			case MONO_FIELD_ATTR_FAM_AND_ASSEM:
+				{
+					accessibility |= (uint8_t)Accessibility::Protected;
+					accessibility |= (uint8_t)Accessibility::Internal;
+					break;
+				}
+			case MONO_FIELD_ATTR_ASSEMBLY:
+				{
+					accessibility = (uint8_t)Accessibility::Internal;
+					break;
+				}
+			case MONO_FIELD_ATTR_FAMILY:
+				{
+					accessibility = (uint8_t)Accessibility::Protected;
+					break;
+				}
+			case MONO_FIELD_ATTR_FAM_OR_ASSEM:
+				{
+					accessibility |= (uint8_t)Accessibility::Private;
+					accessibility |= (uint8_t)Accessibility::Protected;
+					break;
+				}
+			case MONO_FIELD_ATTR_PUBLIC:
+				{
+					accessibility = (uint8_t)Accessibility::Public;
+					break;
+				}
+			}
+		}
+
+		// Get a reference to the property's setter method
+		MonoMethod* propertySetter = mono_property_get_set_method(property);
+		if (propertySetter != nullptr)
+		{
+			// Extract the access flags from the setters flags
+			uint32_t accessFlag = mono_method_get_flags(propertySetter, nullptr) & MONO_METHOD_ATTR_ACCESS_MASK;
+			if (accessFlag != MONO_FIELD_ATTR_PUBLIC)
+				accessibility = (uint8_t)Accessibility::Private;
+		}
+		else
+		{
+			accessibility = (uint8_t)Accessibility::Private;
+		}
+
+		return accessibility;
+	}
+
+	static bool CheckMonoError(MonoError& error)
+	{
+		bool hasError = !mono_error_ok(&error);
+		if (hasError)
+		{
+			unsigned short errorCode = mono_error_get_error_code(&error);
+			const char* errorMessage = mono_error_get_message(&error);
+			std::cout << "Mono Error!" << std::endl;
+			std::cout << "Error Code: "<< errorCode << std::endl;
+			std::cout << "Error Message: " << errorMessage << std::endl;
+			mono_error_cleanup(&error);
+		}
+		return hasError;
+	}
+
+	static std::string MonoStringToUTF8(MonoString* monoString)
+	{
+		if (monoString == nullptr || mono_string_length(monoString) == 0)
+			return "";
+
+		MonoError error;
+		char* utf8 = mono_string_to_utf8_checked(monoString, &error);
+		if (CheckMonoError(error))
+			return "";
+		std::string result(utf8);
+		mono_free(utf8);
+		return result;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	struct ScriptEngineData
 	{
 		MonoDomain* pRootDomain = nullptr;
@@ -111,6 +283,7 @@ namespace DAZEL
 	}
 	void ScriptEngine::Shutdown()
 	{
+		ShutdownMono();
 		delete s_ScriptEngineData;
 	}
 	void ScriptEngine::InitMono()
@@ -133,6 +306,35 @@ namespace DAZEL
 		mono_domain_set(s_ScriptEngineData->pAppDomain, true);
 
 		s_ScriptEngineData->pScriptAssembly = LoadCSharpAssembly("Resource/Script/Dazel-ScriptCore.dll");
-		PrintAssemblyTypes(s_ScriptEngineData->pScriptAssembly);
+		//PrintAssemblyTypes(s_ScriptEngineData->pScriptAssembly);
+
+		MonoImage* image = mono_assembly_get_image(s_ScriptEngineData->pScriptAssembly);
+		MonoClass* monoClass = mono_class_from_name(image, "DAZEL", "Main");
+		MonoObject* classInstance = mono_object_new(s_ScriptEngineData->pAppDomain, monoClass);
+		mono_runtime_object_init(classInstance);
+
+		MonoMethod* method1 = mono_class_get_method_from_name(monoClass, "PrintMessage", 0);
+		if (method1)
+		{
+			mono_runtime_invoke(method1, classInstance, nullptr, nullptr);
+		}
+
+		MonoMethod* method2 = mono_class_get_method_from_name(monoClass, "PrintCustomMessage", 1);
+		if (method2)
+		{
+			std::string strMsg("Go away");
+			void* param = mono_string_new(s_ScriptEngineData->pAppDomain, strMsg.c_str());
+			mono_runtime_invoke(method2, classInstance, &param, nullptr);
+		}
+	}
+	void ScriptEngine::ShutdownMono()
+	{
+		mono_domain_unload(s_ScriptEngineData->pAppDomain);
+		s_ScriptEngineData->pAppDomain = nullptr;
+
+		mono_jit_cleanup(s_ScriptEngineData->pRootDomain);
+		s_ScriptEngineData->pRootDomain = nullptr;
+
+		s_ScriptEngineData->pScriptAssembly = nullptr;
 	}
 }

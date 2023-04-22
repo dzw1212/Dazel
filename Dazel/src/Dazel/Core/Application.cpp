@@ -43,6 +43,8 @@ namespace DAZEL
 
 	Application::~Application()
 	{
+		Renderer::Shutdown();
+		ScriptEngine::Shutdown();
 		s_Inst = nullptr;
 	}
 

@@ -10,7 +10,7 @@ namespace DAZEL
 
 	private:
 		static void InitMono();
-
+		static void ShutdownMono();
 	};
 
 }

@@ -8,7 +8,7 @@ namespace DAZEL
 
 		public Main()
 		{
-			Console.WriteLine("Main constructor");
+			Console.WriteLine("Main default constructor");
 		}
 
 		public void PrintMessage()

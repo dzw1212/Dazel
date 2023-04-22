@@ -16,6 +16,7 @@ namespace DAZEL
 		inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 
 		static void Init();
+		static void Shutdown();
 		static void BeginScene(OrthographicCamera& camera);
 		static void EndScene();
 

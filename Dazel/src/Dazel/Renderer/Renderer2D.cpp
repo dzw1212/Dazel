@@ -115,6 +115,14 @@ namespace DAZEL
 	{
 		PROFILE_FUNCTION();
 
+		delete[] s_Renderer2DData.pQuadVertexBufferBase;
+		s_Renderer2DData.pQuadVertexBufferBase = nullptr;
+
+		delete[] s_Renderer2DData.pCircleVertexBufferBase;
+		s_Renderer2DData.pCircleVertexBufferBase = nullptr;
+
+		delete[] s_Renderer2DData.pLineVertexBufferBase;
+		s_Renderer2DData.pLineVertexBufferBase = nullptr;
 	}
 	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& cameraTransform)
 	{

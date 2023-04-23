@@ -1,6 +1,8 @@
 #include "DazelPCH.h"
 #include "ScriptEngine.h"
 
+#include "glm/glm.hpp"
+
 #include "mono/jit/jit.h"
 #include "mono/metadata/assembly.h"
 #include "mono/metadata/attrdefs.h"
@@ -292,6 +294,11 @@ namespace DAZEL
 		std::cout << "Call CppFunction from C++" << std::endl;
 	}
 
+	static void Log(glm::vec3 *param)
+	{
+		LOG_ERROR("param = {}", param->x);
+	}
+
 	void ScriptEngine::InitMono()
 	{
 		mono_set_assemblies_path("mono/lib/4.5/");
@@ -311,7 +318,8 @@ namespace DAZEL
 		//将s_AppDomain设为当前应用域，第二个参数表示是否强制
 		mono_domain_set(s_ScriptEngineData->pAppDomain, true);
 
-		mono_add_internal_call("DAZEL::CppFunction", CppFunction);
+		mono_add_internal_call("DAZEL.Main::CppFunction", CppFunction);
+		mono_add_internal_call("DAZEL.Main::Log", Log);
 
 		s_ScriptEngineData->pScriptAssembly = LoadCSharpAssembly("Resource/Script/Dazel-ScriptCore.dll");
 		//PrintAssemblyTypes(s_ScriptEngineData->pScriptAssembly);
@@ -338,12 +346,10 @@ namespace DAZEL
 	}
 	void ScriptEngine::ShutdownMono()
 	{
-		mono_domain_unload(s_ScriptEngineData->pAppDomain);
+		mono_jit_cleanup(s_ScriptEngineData->pAppDomain);
+
 		s_ScriptEngineData->pAppDomain = nullptr;
-
-		mono_jit_cleanup(s_ScriptEngineData->pRootDomain);
 		s_ScriptEngineData->pRootDomain = nullptr;
-
 		s_ScriptEngineData->pScriptAssembly = nullptr;
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace DAZEL
 {
@@ -14,12 +15,17 @@ namespace DAZEL
 		public void PrintMessage()
 		{
 			Console.WriteLine("Hello World From C#");
+
+			CppFunction();
 		}
 
 		public void PrintCustomMessage(string msg)
 		{
 			Console.WriteLine($"C# says: {msg}");
 		}
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern static void CppFunction();
 	}
 
 }

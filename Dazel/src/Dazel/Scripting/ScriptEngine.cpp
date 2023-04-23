@@ -286,6 +286,12 @@ namespace DAZEL
 		ShutdownMono();
 		delete s_ScriptEngineData;
 	}
+
+	static void CppFunction()
+	{
+		std::cout << "Call CppFunction from C++" << std::endl;
+	}
+
 	void ScriptEngine::InitMono()
 	{
 		mono_set_assemblies_path("mono/lib/4.5/");
@@ -305,6 +311,8 @@ namespace DAZEL
 		//将s_AppDomain设为当前应用域，第二个参数表示是否强制
 		mono_domain_set(s_ScriptEngineData->pAppDomain, true);
 
+		mono_add_internal_call("DAZEL::CppFunction", CppFunction);
+
 		s_ScriptEngineData->pScriptAssembly = LoadCSharpAssembly("Resource/Script/Dazel-ScriptCore.dll");
 		//PrintAssemblyTypes(s_ScriptEngineData->pScriptAssembly);
 
@@ -312,6 +320,7 @@ namespace DAZEL
 		MonoClass* monoClass = mono_class_from_name(image, "DAZEL", "Main");
 		MonoObject* classInstance = mono_object_new(s_ScriptEngineData->pAppDomain, monoClass);
 		mono_runtime_object_init(classInstance);
+
 
 		MonoMethod* method1 = mono_class_get_method_from_name(monoClass, "PrintMessage", 0);
 		if (method1)

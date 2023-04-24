@@ -15,6 +15,15 @@ namespace DAZEL
 		}
 	}
 
+	public static class InternalCalls
+	{
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		internal extern static void CppFunction();
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern static void Log(ref Vector3 param);
+	}
+
 	public class Main
 	{
 		public float FloatVar { get; set; }
@@ -22,28 +31,18 @@ namespace DAZEL
 		public Main()
 		{
 			Console.WriteLine("Main default constructor");
-
-			Vector3 pos = new Vector3(1, 2, 3);
-			Log(ref pos);
 		}
 
 		public void PrintMessage()
 		{
 			Console.WriteLine("Hello World From C#");
-
-			
+			InternalCalls.CppFunction();
 		}
 
 		public void PrintCustomMessage(string msg)
 		{
 			Console.WriteLine($"C# says: {msg}");
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern static void CppFunction();
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern static void Log(ref Vector3 param);
 	}
 
 }

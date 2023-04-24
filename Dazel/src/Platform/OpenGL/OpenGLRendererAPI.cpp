@@ -38,7 +38,7 @@ namespace DAZEL
 	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, UINT uiIndexCount)
 	{
 		PROFILE_FUNCTION();
-		vertexArray->Bind();
+		//vertexArray->Bind();
 		UINT tmp = vertexArray->GetIndexBuffer()->GetCount();
 		UINT uiCount = uiIndexCount > 0 ? uiIndexCount : vertexArray->GetIndexBuffer()->GetCount();
 		glDrawElements(GL_TRIANGLES, uiCount, GL_UNSIGNED_INT, nullptr);

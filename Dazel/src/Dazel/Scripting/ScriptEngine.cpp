@@ -79,6 +79,14 @@ namespace DAZEL
 				const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
 				const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
 
+				auto pMonoClass = mono_class_from_name(image, nameSpace, name);
+				auto pEntityClass = mono_class_from_name(image, "DAZEL", "Entity");
+
+				if (mono_class_is_subclass_of(pMonoClass, pEntityClass, false))
+				{
+					std::cout << "subClass: " << name << std::endl;
+				}
+
 				std::cout << std::format("namespace={}, name={}", nameSpace, name) << std::endl;
 			}
 		}

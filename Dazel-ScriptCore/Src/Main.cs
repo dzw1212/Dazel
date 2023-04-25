@@ -45,5 +45,15 @@ namespace DAZEL
 		}
 	}
 
+	public class Entity
+	{
+
+	}
+
+	public class CameraEntity : Entity
+	{ }
+
+	public class spriteRendererEntity : Entity
+	{ }
 }
 

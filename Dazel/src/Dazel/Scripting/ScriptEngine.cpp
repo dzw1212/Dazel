@@ -79,9 +79,7 @@ namespace DAZEL
 				const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
 				const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
 
-				std::cout << "---row: " << i << std::endl;
-				std::cout << "---namespace: " << nameSpace << std::endl;
-				std::cout << "---name: " << name << std::endl;
+				std::cout << std::format("namespace={}, name={}", nameSpace, name) << std::endl;
 			}
 		}
 
@@ -271,6 +269,9 @@ namespace DAZEL
 		CORE_ASSERT(LoadAssembly("Resource/Script/Dazel-ScriptCore.dll"), "Load script assembly failed");
 
 		ScriptGlue::RegisterInternalCallFunctions();
+
+		Utils::PrintAssemblyTypes(s_ScriptEngineData->pAssembly);
+
 
 		s_ScriptEngineData->pScriptClass = new ScriptClass("DAZEL", "Main");
 		auto pClassInstance = s_ScriptEngineData->pScriptClass->Instantiate();

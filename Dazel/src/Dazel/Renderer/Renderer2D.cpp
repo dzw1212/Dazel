@@ -87,7 +87,7 @@ namespace DAZEL
 		Ref<IndexBuffer> squareIndexBuffer;
 		squareIndexBuffer = IndexBuffer::Create(QuadIndices, s_Renderer2DData.uiMaxIndices);
 		s_Renderer2DData.QuadVertexArray->SetIndexBuffer(squareIndexBuffer);
-		//s_Renderer2DData.CircleVertexArray->SetIndexBuffer(squareIndexBuffer);
+		s_Renderer2DData.CircleVertexArray->SetIndexBuffer(squareIndexBuffer);
 
 		delete[] QuadIndices;
 

@@ -119,11 +119,23 @@ namespace DAZEL
 		entity.AddComponent<IDComponent>(uuid);
 		entity.AddComponent<TagComponent>(strName);
 		entity.AddComponent<TransformComponent>();
+
+		m_mapAllEntity[uuid] = entity;
+
 		return entity;
 	}
 	void Scene::DestroyEntity(Entity entity)
 	{
 		m_Registry.destroy(entity);
+
+		m_mapAllEntity.erase(entity.GetUUId());
+	}
+	Entity Scene::GetEntityByUUID(UINT64 uuid)
+	{
+		if (m_mapAllEntity.find(uuid) == m_mapAllEntity.end())
+			return {};
+
+		return Entity(m_mapAllEntity.at(uuid), this);
 	}
 	Entity Scene::GetPrimaryCameraEntity()
 	{

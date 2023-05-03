@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DAZEL
 {
-	class Input
+	static class Input
 	{
 		public static bool IsKeyDown(KeyCode keycode)
 		{

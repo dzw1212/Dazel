@@ -10,7 +10,6 @@ namespace DAZEL
 	static std::mt19937_64 s_RandomEngine(s_RandomDevice());
 	static std::uniform_int_distribution<UINT64> s_UniformDistribution;
 
-
 	UUID::UUID()
 		: m_u64Id(s_UniformDistribution(s_RandomEngine))
 	{

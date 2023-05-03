@@ -3,6 +3,7 @@
 #include "ScriptGlue.h"
 
 #include "Dazel/Scene/Components.h"
+#include "Dazel/Scene/Scene.h"
 
 #include "glm/glm.hpp"
 
@@ -249,6 +250,17 @@ namespace DAZEL
 		}
 	}
 
+
+	static void TransformComponent_GetPosition(UUID entityUUId, glm::vec3* outPos)
+	{
+		
+	}
+
+	static void TransformComponent_SetPosition(UUID entityUUId, const glm::vec3& pos)
+	{
+
+	}
+
 	struct ScriptEngineData
 	{
 		MonoDomain* pRootDomain = nullptr;
@@ -257,7 +269,7 @@ namespace DAZEL
 		MonoAssembly* pAssembly = nullptr;
 		MonoImage* pAssemblyImage = nullptr;
 
-		ScriptClass* pScriptClass = nullptr;
+		ScriptClass* pBaseEntityClass = nullptr;
 
 		std::unordered_map<std::string, Ref<ScriptClass>> mapAllEntityClass;
 		std::unordered_map<UUID, Ref<ScriptInstance>> mapAllEntityInstance;
@@ -277,19 +289,15 @@ namespace DAZEL
 
 		ScriptGlue::RegisterInternalCallFunctions();
 
+		s_ScriptEngineData->pBaseEntityClass = new ScriptClass("DAZEL", "Entity");
+
 		CollectAllEntityClasses(s_ScriptEngineData->pAssembly);
-
-		s_ScriptEngineData->pScriptClass = new ScriptClass("DAZEL", "Main");
-		auto pClassInstance = s_ScriptEngineData->pScriptClass->Instantiate();
-
-		auto pMethod = s_ScriptEngineData->pScriptClass->GetMethod("PrintMessage", 0);
-		s_ScriptEngineData->pScriptClass->InvokeMethod(pClassInstance, pMethod, nullptr);
 	}
 	void ScriptEngine::Shutdown()
 	{
 		ShutdownMono();
 
-		delete s_ScriptEngineData->pScriptClass;
+		delete s_ScriptEngineData->pBaseEntityClass;
 		delete s_ScriptEngineData;
 
 		s_ScriptEngineData = nullptr;
@@ -385,6 +393,11 @@ namespace DAZEL
 		instance->InvokeOnUpdate(fTimestep);
 	}
 
+	Scene* ScriptEngine::GetCurrentScene()
+	{
+		return s_ScriptEngineData->pCurrentScene;
+	}
+
 	void ScriptEngine::InitMono()
 	{
 		mono_set_assemblies_path("mono/lib/4.5/");
@@ -434,8 +447,7 @@ namespace DAZEL
 		m_pOnCreateMethod = m_ScriptClass->GetMethod("OnCreate", 0);
 		m_pOnUpdateMethod = m_ScriptClass->GetMethod("OnUpdate", 1);
 	
-		s_ScriptEngineData->pScriptClass
-		m_pConstructor = m_ScriptClass->GetMethod(".ctor", 1);
+		m_pConstructor = s_ScriptEngineData->pBaseEntityClass->GetMethod(".ctor", 1);
 		if (m_pConstructor)
 		{
 			auto uuid = entity.GetUUId();

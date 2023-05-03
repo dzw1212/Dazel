@@ -1,0 +1,35 @@
+Scene: Untitled
+Entities:
+  - EntityUId: 7803301406779588079
+    Components:
+      TagComponent:
+        Name: camera
+      TransformComponent:
+        Position: [0, 0, 0]
+        Rotation: [0, -0, 0]
+        Scale: [1, 1, 1]
+      CameraComponent:
+        Main Camera: true
+        Fixed AspectRatio: false
+        Camera:
+          Projection Type: 0
+          AspectRatio: 1.4765625
+          Orthographic Size: 10
+          Orthographic Near Clip: -1
+          Orthographic Far Clip: 1
+          Perspective Vertical FOV: 45
+          Perspective Near Clip: 0.00999999978
+          Perspective Far Clip: 1000
+  - EntityUId: 8149648233452938979
+    Components:
+      TagComponent:
+        Name: square
+      TransformComponent:
+        Position: [0, 0, 0]
+        Rotation: [0, -0, 0]
+        Scale: [1, 1, 1]
+      SpriteRendererComponent:
+        Color: [1, 1, 1, 1]
+        Tile Factor: 1
+      ScriptComponent:
+        Class: DAZEL.TestEntity

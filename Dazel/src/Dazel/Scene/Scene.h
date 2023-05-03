@@ -2,6 +2,8 @@
 
 #include "entt.hpp"
 
+#include <unordered_map>
+
 class b2World;
 
 namespace DAZEL
@@ -20,6 +22,8 @@ namespace DAZEL
 		Entity CreateEntity(const std::string& strName = std::string());
 		Entity CreateEntityWithUUID(UINT64 uuid, const std::string& strName = std::string());
 		void DestroyEntity(Entity entity);
+
+		Entity GetEntityByUUID(UINT64 uuid);
 
 		Entity GetPrimaryCameraEntity();
 
@@ -61,5 +65,7 @@ namespace DAZEL
 		UINT m_uiViewportHeight;
 
 		b2World* m_PhysicalWorld = nullptr;
+
+		std::unordered_map<UINT64, entt::entity> m_mapAllEntity;
 	};
 }

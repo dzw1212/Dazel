@@ -19,13 +19,19 @@ namespace DAZEL
 
 		public readonly ulong m_Id;
 
-		//public Vector3 Position
-		//{
-		//	get
-		//	{
-		//		InternalCall.TransformComponent_GetPosition(m_Id, out Vector3 pos);
-		//	}
-		//}
+		public Vector3 Position
+		{
+			get
+			{
+				InternalCall.TransformComponent_GetPosition(m_Id, out Vector3 pos);
+				return pos;
+			}
+
+			set
+			{
+				InternalCall.TransformComponent_SetPosition(m_Id, ref value);
+			}
+		}
 	}
 
 	public class TestEntity : Entity
@@ -38,10 +44,16 @@ namespace DAZEL
 
 		public void OnUpdate(float fTimestep)
 		{
-			Console.Write("TextEntity OnUpdate in csharp, delta = {0}\n", fTimestep);
+			float speed = 0.01f;
+			Vector3 pos = Position;
+			if (Input.IsKeyDown(KeyCode.W))
+				pos.Y -= speed;
+			else if (Input.IsKeyDown(KeyCode.S))
+				pos.Y += speed;
+			Position = pos;
 		}
 	}
 
-	public class spriteRendererEntity : Entity
+	public class spriteRendererEntity : Entity                                                                                         
 	{ }
 }

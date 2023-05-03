@@ -25,6 +25,7 @@ namespace DAZEL
 		MonoObject* Instantiate();
 		MonoMethod* GetMethod(const std::string& strName, int nParamCnt);
 		MonoObject* InvokeMethod(MonoObject* pClassInstance, MonoMethod* pMethod, void** params = nullptr);
+
 	private:
 		std::string m_strClassNamespace;
 		std::string m_strClassName;
@@ -71,6 +72,8 @@ namespace DAZEL
 
 		static void OnCreateEntity(Entity entity);
 		static void OnUpdateEntity(Entity entity, float fTimestep);
+
+		static Scene* GetCurrentScene();
 	private:
 		static void InitMono();
 		static void ShutdownMono();

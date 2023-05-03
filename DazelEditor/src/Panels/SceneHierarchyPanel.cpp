@@ -1,6 +1,8 @@
 #include <filesystem>
 #include "Dazel.h"
 
+#include "Dazel/Scripting/ScriptEngine.h"
+
 #include "SceneHierarchyPanel.h"
 
 #include "imgui.h"
@@ -258,6 +260,15 @@ namespace DAZEL
 			m_SelectedEntity = entity;
 		}
 	}
+	template<typename ComponentType>
+	void SceneHierarchyPanel::AddPopupComponent(const std::string& strShowName)
+	{
+		if (ImGui::MenuItem(strShowName.c_str()))
+		{
+			m_SelectedEntity.AddComponent<ComponentType>();
+			ImGui::CloseCurrentPopup();
+		}
+	}
 	void SceneHierarchyPanel::DrawComponents(Entity entity)
 	{
 		if (entity.HasComponent<TagComponent>())
@@ -284,36 +295,13 @@ namespace DAZEL
 		}
 		if (ImGui::BeginPopup("AddComponents"))
 		{
-			if (ImGui::MenuItem("Camera"))
-			{
-				m_SelectedEntity.AddComponent<CameraComponent>();
-				ImGui::CloseCurrentPopup();
-			}
-			if (ImGui::MenuItem("Sprite Renderer"))
-			{
-				m_SelectedEntity.AddComponent<SpriteRendererComponent>();
-				ImGui::CloseCurrentPopup();
-			}
-			if (ImGui::MenuItem("Circle Renderer"))
-			{
-				m_SelectedEntity.AddComponent<CircleRendererComponent>();
-				ImGui::CloseCurrentPopup();
-			}
-			if (ImGui::MenuItem("Rigid Body"))
-			{
-				m_SelectedEntity.AddComponent<RigidBody2DComponent>();
-				ImGui::CloseCurrentPopup();
-			}
-			if (ImGui::MenuItem("Box Collider"))
-			{
-				m_SelectedEntity.AddComponent<BoxCollider2DComponent>();
-				ImGui::CloseCurrentPopup();
-			}
-			if (ImGui::MenuItem("Circle Collider"))
-			{
-				m_SelectedEntity.AddComponent<CircleCollider2DComponent>();
-				ImGui::CloseCurrentPopup();
-			}
+			AddPopupComponent<CameraComponent>("Camera");
+			AddPopupComponent<SpriteRendererComponent>("Sprite Renderer");
+			AddPopupComponent<CircleRendererComponent>("Circle Renderer");
+			AddPopupComponent<RigidBody2DComponent>("Rigid Body");
+			AddPopupComponent<BoxCollider2DComponent>("Box Collider");
+			AddPopupComponent<CircleCollider2DComponent>("Circle Collider");
+			AddPopupComponent<ScriptComponent>("Script");
 			
 			ImGui::EndPopup();
 		}
@@ -519,6 +507,26 @@ namespace DAZEL
 					ImGui::DragFloat("Restitution", &component.m_fRestitution, 0.01f, 0.f, 1.f);
 					ImGui::DragFloat("Restitution Threshold", &component.m_fRestitutionThreshold, 0.01f, 0.f, 10.f);
 				}, true);
+		}
+
+		if (entity.HasComponent<ScriptComponent>())
+		{
+			DrawComponent<ScriptComponent>("Script", entity, [](ScriptComponent& component)
+				{
+					bool bScriptExist = ScriptEngine::IsEntityClassExists(component.m_strName);
+					if (bScriptExist)
+						ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.1, 0.9, 0.0, 1.0));
+
+					char buffer[256];
+					memset(buffer, 0, sizeof(buffer));
+					sprintf_s(buffer, sizeof(buffer), component.m_strName.c_str());
+					if (ImGui::InputText("Class", buffer, sizeof(buffer)))
+						component.m_strName = std::string(buffer);
+
+					if (bScriptExist)
+						ImGui::PopStyleColor();
+				});
+
 		}
 	}
 }

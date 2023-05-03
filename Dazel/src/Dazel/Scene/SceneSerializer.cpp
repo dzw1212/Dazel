@@ -258,6 +258,16 @@ namespace DAZEL
 			out << YAML::EndMap;
 		}
 
+		if (entity.HasComponent<ScriptComponent>())
+		{
+			auto& scriptComponent = entity.GetComponent<ScriptComponent>();
+			out << YAML::Key << "ScriptComponent";
+			out << YAML::Value << YAML::BeginMap;
+			out << YAML::Key << "Class";
+			out << YAML::Value << scriptComponent.m_strName;
+			out << YAML::EndMap;
+		}
+
         out << YAML::EndMap;
         out << YAML::EndMap;
         return out.good();
@@ -401,6 +411,13 @@ namespace DAZEL
 					circleColliderComponent.m_fFriction = circleColliderComponentNode["Friction"].as<float>();
 					circleColliderComponent.m_fRestitution = circleColliderComponentNode["Restitution"].as<float>();
 					circleColliderComponent.m_fRestitutionThreshold = circleColliderComponentNode["Restitution Threshold"].as<float>();
+				}
+
+				auto scriptComponentNode = componentsNode["ScriptComponent"];
+				if (scriptComponentNode)
+				{
+					auto& scriptComponent = deserializeEntity.AddComponent<ScriptComponent>();
+					scriptComponent.m_strName = scriptComponentNode["Class"].as<std::string>();
 				}
             }
         }

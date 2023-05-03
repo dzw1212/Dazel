@@ -25,6 +25,9 @@ namespace DAZEL
 		void DrawEntityNode(Entity entity);
 		void DrawComponents(Entity entity);
 
+		template<typename ComponentType>
+		void AddPopupComponent(const std::string& strShowName);
+
 	private:
 		Ref<Scene> m_Context;
 		Entity m_SelectedEntity;

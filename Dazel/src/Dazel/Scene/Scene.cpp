@@ -7,11 +7,15 @@
 #include "Dazel/Core/UUID.h"
 #include "Dazel/Core/Core.h"
 
+#include "Dazel/Scripting/ScriptEngine.h"
+
 #include "box2d/b2_world.h"
 #include "box2d/b2_body.h"
 #include "box2d/b2_polygon_shape.h"
 #include "box2d/b2_circle_shape.h"
 #include "box2d/b2_fixture.h"
+
+
 
 
 namespace DAZEL
@@ -50,7 +54,11 @@ namespace DAZEL
 	void Scene::OnUpdateRuntime(Timestep timeStep)
 	{
 		//Scripts - todo
-
+		auto scriptView = m_Registry.view<ScriptComponent>();
+		for (auto entity : scriptView)
+		{
+			ScriptEngine::OnUpdateEntity(Entity(entity, this), timeStep.GetSeconds());
+		}
 		//Physical
 		TickPhysical(timeStep);
 
@@ -248,11 +256,29 @@ namespace DAZEL
 	void Scene::OnRuntimeStart()
 	{
 		OnPhysical2DStart();
+
+		ScriptEngine::OnRuntimeStart(this);
+		//Instantiate All Entity Class
+		{
+			auto scriptView = m_Registry.view<ScriptComponent>();
+			for (auto entity : scriptView)
+			{
+				auto scriptEntity = Entity(entity, this);
+				const auto& scriptComponent = scriptEntity.GetComponent<ScriptComponent>();
+				if (scriptComponent.m_strName.empty())
+					continue;
+				if (!ScriptEngine::IsEntityClassExists(scriptComponent.m_strName))
+					continue;
+				ScriptEngine::OnCreateEntity(scriptEntity);
+			}
+		}
 	}
 
 	void Scene::OnRuntimeStop()
 	{
 		OnPhysical2DStop();
+
+		ScriptEngine::OnRuntimeStop();
 	}
 
 	void Scene::OnSimulationStart()
@@ -408,6 +434,10 @@ namespace DAZEL
 	}
 	template<>
 	void Scene::OnComponentAdd<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
+	{
+	}	
+	template<>
+	void Scene::OnComponentAdd<ScriptComponent>(Entity entity, ScriptComponent& component)
 	{
 	}
 	template<>

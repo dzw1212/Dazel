@@ -1,29 +1,7 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 
 namespace DAZEL
 {
-	public struct Vector3
-	{
-		public float X, Y, Z;
-
-		public Vector3(float x , float y, float z)
-		{
-			X = x;
-			Y = y;
-			Z = z;
-		}
-	}
-
-	public static class InternalCalls
-	{
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern static void CppFunction();
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern static void Log(ref Vector3 param);
-	}
-
 	public class Main
 	{
 		public float FloatVar { get; set; }
@@ -36,7 +14,6 @@ namespace DAZEL
 		public void PrintMessage()
 		{
 			Console.WriteLine("Hello World From C#");
-			InternalCalls.CppFunction();
 		}
 
 		public void PrintCustomMessage(string msg)
@@ -44,16 +21,5 @@ namespace DAZEL
 			Console.WriteLine($"C# says: {msg}");
 		}
 	}
-
-	public class Entity
-	{
-
-	}
-
-	public class CameraEntity : Entity
-	{ }
-
-	public class spriteRendererEntity : Entity
-	{ }
 }
 

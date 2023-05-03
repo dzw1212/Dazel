@@ -2,6 +2,8 @@
 #include "ScriptEngine.h"
 #include "ScriptGlue.h"
 
+#include "Dazel/Scene/Components.h"
+
 #include "glm/glm.hpp"
 
 #include "mono/jit/jit.h"
@@ -78,14 +80,6 @@ namespace DAZEL
 
 				const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
 				const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
-
-				auto pMonoClass = mono_class_from_name(image, nameSpace, name);
-				auto pEntityClass = mono_class_from_name(image, "DAZEL", "Entity");
-
-				if (mono_class_is_subclass_of(pMonoClass, pEntityClass, false))
-				{
-					std::cout << "subClass: " << name << std::endl;
-				}
 
 				std::cout << std::format("namespace={}, name={}", nameSpace, name) << std::endl;
 			}
@@ -264,6 +258,11 @@ namespace DAZEL
 		MonoImage* pAssemblyImage = nullptr;
 
 		ScriptClass* pScriptClass = nullptr;
+
+		std::unordered_map<std::string, Ref<ScriptClass>> mapAllEntityClass;
+		std::unordered_map<UUID, Ref<ScriptInstance>> mapAllEntityInstance;
+
+		Scene* pCurrentScene = nullptr;
 	};
 
 	static ScriptEngineData *s_ScriptEngineData;
@@ -278,8 +277,7 @@ namespace DAZEL
 
 		ScriptGlue::RegisterInternalCallFunctions();
 
-		Utils::PrintAssemblyTypes(s_ScriptEngineData->pAssembly);
-
+		CollectAllEntityClasses(s_ScriptEngineData->pAssembly);
 
 		s_ScriptEngineData->pScriptClass = new ScriptClass("DAZEL", "Main");
 		auto pClassInstance = s_ScriptEngineData->pScriptClass->Instantiate();
@@ -314,14 +312,77 @@ namespace DAZEL
 		return (s_ScriptEngineData->pAssembly != nullptr) && (s_ScriptEngineData->pAssemblyImage != nullptr);
 	}
 
-	static void CppFunction()
+	void ScriptEngine::CollectAllEntityClasses(MonoAssembly* assembly)
 	{
-		std::cout << "Call CppFunction from C++" << std::endl;
+		MonoImage* image = mono_assembly_get_image(assembly);
+		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
+		int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
+
+		s_ScriptEngineData->mapAllEntityClass.clear();
+
+		for (int32_t i = 0; i < numTypes; i++)
+		{
+			uint32_t cols[MONO_TYPEDEF_SIZE];
+			mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
+
+			const char* namespaceName = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
+			const char* className = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
+
+			auto pMonoClass = mono_class_from_name(image, namespaceName, className);
+			auto pEntityClass = mono_class_from_name(image, "DAZEL", "Entity");
+
+			if (pMonoClass == pEntityClass)
+				continue;
+
+			std::string strFullName = namespaceName == "" ? className : std::format("{}.{}", namespaceName, className);
+
+			if (mono_class_is_subclass_of(pMonoClass, pEntityClass, false))
+			{
+				s_ScriptEngineData->mapAllEntityClass[strFullName] = CreateRef<ScriptClass>(namespaceName, className);
+			}
+		}
 	}
 
-	static void Log(glm::vec3 *param)
+	bool ScriptEngine::IsEntityClassExists(const std::string& strClassName)
 	{
-		LOG_ERROR("param = {}", param->x);
+		return s_ScriptEngineData->mapAllEntityClass.find(strClassName) != s_ScriptEngineData->mapAllEntityClass.end();
+	}
+
+	std::unordered_map<std::string, Ref<ScriptClass>> ScriptEngine::GetAllEntityClass()
+	{
+		return s_ScriptEngineData->mapAllEntityClass;
+	}
+
+	bool ScriptEngine::IsEntityInstanceExists(const UUID& uuid)
+	{
+		return s_ScriptEngineData->mapAllEntityInstance.find(uuid) != s_ScriptEngineData->mapAllEntityInstance.end();
+	}
+
+	void ScriptEngine::OnRuntimeStart(Scene* pScene)
+	{
+		s_ScriptEngineData->pCurrentScene = pScene;
+	}
+
+	void ScriptEngine::OnRuntimeStop()
+	{
+		s_ScriptEngineData->pCurrentScene = nullptr;
+		s_ScriptEngineData->mapAllEntityInstance.clear();
+	}
+
+	void ScriptEngine::OnCreateEntity(Entity entity)
+	{
+		const auto& strClassName = entity.GetComponent<ScriptComponent>().m_strName;
+		auto instance = CreateRef<ScriptInstance>(s_ScriptEngineData->mapAllEntityClass[strClassName], entity);
+		s_ScriptEngineData->mapAllEntityInstance[entity.GetUUId()] = instance;
+		instance->InvokeOnCreate();
+	}
+
+	void ScriptEngine::OnUpdateEntity(Entity entity, float fTimestep)
+	{
+		if (!IsEntityInstanceExists(entity.GetUUId()))
+			return;
+		auto instance = s_ScriptEngineData->mapAllEntityInstance[entity.GetUUId()];
+		instance->InvokeOnUpdate(fTimestep);
 	}
 
 	void ScriptEngine::InitMono()
@@ -364,5 +425,43 @@ namespace DAZEL
 	MonoObject* ScriptClass::InvokeMethod(MonoObject* pClassInstance, MonoMethod* pMethod, void** params)
 	{
 		return mono_runtime_invoke(pMethod, pClassInstance, params, nullptr);
+	}
+	ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass, Entity entity)
+		: m_ScriptClass(scriptClass)
+	{
+		m_pClassInstance = m_ScriptClass->Instantiate();
+
+		m_pOnCreateMethod = m_ScriptClass->GetMethod("OnCreate", 0);
+		m_pOnUpdateMethod = m_ScriptClass->GetMethod("OnUpdate", 1);
+	
+		s_ScriptEngineData->pScriptClass
+		m_pConstructor = m_ScriptClass->GetMethod(".ctor", 1);
+		if (m_pConstructor)
+		{
+			auto uuid = entity.GetUUId();
+			void* params[] =
+			{
+				&uuid,
+			};
+			m_ScriptClass->InvokeMethod(m_pClassInstance, m_pConstructor, params);
+		}
+		
+	}
+	void ScriptInstance::InvokeOnCreate()
+	{
+		if (!m_pClassInstance || !m_pOnCreateMethod)
+			return;
+		m_ScriptClass->InvokeMethod(m_pClassInstance, m_pOnCreateMethod, nullptr);
+	}
+	void ScriptInstance::InvokeOnUpdate(float fTimestep)
+	{
+		if (!m_pClassInstance || !m_pOnUpdateMethod)
+			return;
+
+		void* params[] =
+		{
+			&fTimestep
+		};
+		m_ScriptClass->InvokeMethod(m_pClassInstance, m_pOnUpdateMethod, params);
 	}
 }

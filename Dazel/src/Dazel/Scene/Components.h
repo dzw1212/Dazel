@@ -132,6 +132,14 @@ namespace DAZEL
 		}
 	};
 
+	struct ScriptComponent
+	{
+		std::string m_strName;
+
+		ScriptComponent() = default;
+		ScriptComponent(const ScriptComponent&) = default;
+	};
+
 	struct RigidBody2DComponent
 	{
 		BodyType m_Type = BodyType::STATIC;
@@ -189,6 +197,7 @@ namespace DAZEL
 			NativeScriptComponent,
 			RigidBody2DComponent, 
 			BoxCollider2DComponent, 
-			CircleCollider2DComponent
+			CircleCollider2DComponent,
+			ScriptComponent
 		>;
 }

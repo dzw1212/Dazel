@@ -13,6 +13,7 @@ extern "C" {
 	typedef struct _MonoMethod MonoMethod;
 	typedef struct _MonoAssembly MonoAssembly;
 	typedef struct _MonoImage MonoImage;
+	typedef struct _MonoClassField MonoClassField;
 }
 
 namespace DAZEL
@@ -24,7 +25,7 @@ namespace DAZEL
 		Bool, Char, Byte, Short, Int, Long,
 		UByte, UShort, UInt, ULong,
 		Vector2, Vector3, Vector4,
-		Entity
+		Entity,
 	};
 
 	struct ScriptField
@@ -55,29 +56,6 @@ namespace DAZEL
 		{ "DAZEL.Entity",	ScriptFieldType::Entity },
 	};
 
-	const char* ScriptFieldTypeToString(ScriptFieldType type)
-	{
-		switch (type)
-		{
-		case ScriptFieldType::Float:   return "Float";
-		case ScriptFieldType::Double:  return "Double";
-		case ScriptFieldType::Bool:    return "Bool";
-		case ScriptFieldType::Char:    return "Char";
-		case ScriptFieldType::Byte:    return "Byte";
-		case ScriptFieldType::Short:   return "Short";
-		case ScriptFieldType::Int:     return "Int";
-		case ScriptFieldType::Long:    return "Long";
-		case ScriptFieldType::UByte:   return "UByte";
-		case ScriptFieldType::UShort:  return "UShort";
-		case ScriptFieldType::UInt:    return "UInt";
-		case ScriptFieldType::ULong:   return "ULong";
-		case ScriptFieldType::Vector2: return "Vector2";
-		case ScriptFieldType::Vector3: return "Vector3";
-		case ScriptFieldType::Vector4: return "Vector4";
-		case ScriptFieldType::Entity:  return "Entity";
-		}
-		return "<Invalid>";
-	}
 
 
 	class ScriptClass
@@ -90,13 +68,14 @@ namespace DAZEL
 		MonoMethod* GetMethod(const std::string& strName, int nParamCnt);
 		MonoObject* InvokeMethod(MonoObject* pClassInstance, MonoMethod* pMethod, void** params = nullptr);
 
+		std::map<std::string, ScriptField> m_mapField;
+
 	private:
 		std::string m_strClassNamespace;
 		std::string m_strClassName;
 
 		MonoClass* m_pMonoClass = nullptr;
 
-		std::map<std::string, ScriptField> m_mapField;
 	};
 
 	class ScriptInstance
@@ -106,6 +85,27 @@ namespace DAZEL
 
 		void InvokeOnCreate();
 		void InvokeOnUpdate(float fTimestep);
+
+		template<typename T>
+		T GetFieldValue(const std::string& name)
+		{
+			bool success = GetFieldValueInternal(name, s_FieldValueBuffer);
+			if (!success)
+				return T();
+
+			return *(T*)s_FieldValueBuffer;
+		}
+
+		template<typename T>
+		void SetFieldValue(const std::string& name, const T& value)
+		{
+			SetFieldValueInternal(name, &value);
+		}
+
+	private:
+		inline static char s_FieldValueBuffer[8];
+		bool GetFieldValueInternal(const std::string& name, void* buffer);
+		bool SetFieldValueInternal(const std::string& name, const void* value);
 
 	private:
 		Ref<ScriptClass> m_ScriptClass;

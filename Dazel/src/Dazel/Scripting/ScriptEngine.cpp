@@ -261,6 +261,30 @@ namespace DAZEL
 
 			return it->second;
 		}
+
+		const char* ScriptFieldTypeToString(ScriptFieldType type)
+		{
+			switch (type)
+			{
+			case ScriptFieldType::Float:   return "Float";
+			case ScriptFieldType::Double:  return "Double";
+			case ScriptFieldType::Bool:    return "Bool";
+			case ScriptFieldType::Char:    return "Char";
+			case ScriptFieldType::Byte:    return "Byte";
+			case ScriptFieldType::Short:   return "Short";
+			case ScriptFieldType::Int:     return "Int";
+			case ScriptFieldType::Long:    return "Long";
+			case ScriptFieldType::UByte:   return "UByte";
+			case ScriptFieldType::UShort:  return "UShort";
+			case ScriptFieldType::UInt:    return "UInt";
+			case ScriptFieldType::ULong:   return "ULong";
+			case ScriptFieldType::Vector2: return "Vector2";
+			case ScriptFieldType::Vector3: return "Vector3";
+			case ScriptFieldType::Vector4: return "Vector4";
+			case ScriptFieldType::Entity:  return "Entity";
+			}
+			return "<Invalid>";
+		}
 	}
 
 	struct ScriptEngineData
@@ -358,6 +382,7 @@ namespace DAZEL
 
 			void* iter = nullptr;
 			MonoClassField* field = nullptr;
+			scriptClass->m_mapField.clear();
 			while (field = mono_class_get_fields(pMonoClass, &iter))
 			{
 				const char* fieldName = mono_field_get_name(field);
@@ -509,25 +534,25 @@ namespace DAZEL
 	}
 	bool ScriptInstance::GetFieldValueInternal(const std::string& name, void* buffer)
 	{
-		const auto& fields = m_ScriptClass->GetFields();
+		const auto& fields = m_ScriptClass->m_mapField;
 		auto it = fields.find(name);
 		if (it == fields.end())
 			return false;
 
 		const ScriptField& field = it->second;
-		mono_field_get_value(m_Instance, field.ClassField, buffer);
+		mono_field_get_value(m_pClassInstance, field.ClassField, buffer);
 		return true;
 	}
 
 	bool ScriptInstance::SetFieldValueInternal(const std::string& name, const void* value)
 	{
-		const auto& fields = m_ScriptClass->GetFields();
+		const auto& fields = m_ScriptClass->m_mapField;
 		auto it = fields.find(name);
 		if (it == fields.end())
 			return false;
 
 		const ScriptField& field = it->second;
-		mono_field_set_value(m_Instance, field.ClassField, (void*)value);
+		mono_field_set_value(m_pClassInstance, field.ClassField, (void*)value);
 		return true;
 	}
 }

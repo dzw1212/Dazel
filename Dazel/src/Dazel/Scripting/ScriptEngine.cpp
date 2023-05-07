@@ -248,17 +248,19 @@ namespace DAZEL
 			mono_free(utf8);
 			return result;
 		}
-	}
 
+		ScriptFieldType MonoTypeToScriptFieldType(MonoType* monoType)
+		{
+			std::string typeName = mono_type_get_name(monoType);
 
-	static void TransformComponent_GetPosition(UUID entityUUId, glm::vec3* outPos)
-	{
-		
-	}
+			auto it = s_mapFieldTypeNameToScriptFieldType.find(typeName);
+			if (it == s_mapFieldTypeNameToScriptFieldType.end())
+			{
+				return ScriptFieldType::None;
+			}
 
-	static void TransformComponent_SetPosition(UUID entityUUId, const glm::vec3& pos)
-	{
-
+			return it->second;
+		}
 	}
 
 	struct ScriptEngineData
@@ -288,6 +290,7 @@ namespace DAZEL
 		CORE_ASSERT(LoadAssembly("Resource/Script/Dazel-ScriptCore.dll"), "Load script assembly failed");
 
 		ScriptGlue::RegisterInternalCallFunctions();
+		ScriptGlue::RegisterComponents();
 
 		s_ScriptEngineData->pBaseEntityClass = new ScriptClass("DAZEL", "Entity");
 
@@ -344,9 +347,27 @@ namespace DAZEL
 
 			std::string strFullName = namespaceName == "" ? className : std::format("{}.{}", namespaceName, className);
 
-			if (mono_class_is_subclass_of(pMonoClass, pEntityClass, false))
+			if (!mono_class_is_subclass_of(pMonoClass, pEntityClass, false))
+				continue;
+
+			auto scriptClass = CreateRef<ScriptClass>(namespaceName, className);
+			s_ScriptEngineData->mapAllEntityClass[strFullName] = scriptClass;
+
+			int nFieldCount = mono_class_num_fields(pMonoClass);
+			LOG_INFO("class {} fields count = {}", strFullName, nFieldCount);
+
+			void* iter = nullptr;
+			MonoClassField* field = nullptr;
+			while (field = mono_class_get_fields(pMonoClass, &iter))
 			{
-				s_ScriptEngineData->mapAllEntityClass[strFullName] = CreateRef<ScriptClass>(namespaceName, className);
+				const char* fieldName = mono_field_get_name(field);
+				
+				MonoType* type = mono_field_get_type(field);
+				std::string typeName = mono_type_get_name(type);
+				LOG_INFO("field name = {}, type name = {}", fieldName, typeName);
+				ScriptFieldType fieldType = Utils::MonoTypeToScriptFieldType(type);
+
+				scriptClass->m_mapField[fieldName] = { fieldType, fieldName, field };
 			}
 		}
 	}
@@ -396,6 +417,16 @@ namespace DAZEL
 	Scene* ScriptEngine::GetCurrentScene()
 	{
 		return s_ScriptEngineData->pCurrentScene;
+	}
+
+	MonoAssembly* ScriptEngine::GetAssembly()
+	{
+		return s_ScriptEngineData->pAssembly;
+	}
+
+	MonoImage* ScriptEngine::GetAssemblyImage()
+	{
+		return s_ScriptEngineData->pAssemblyImage;
 	}
 
 	void ScriptEngine::InitMono()
@@ -475,5 +506,28 @@ namespace DAZEL
 			&fTimestep
 		};
 		m_ScriptClass->InvokeMethod(m_pClassInstance, m_pOnUpdateMethod, params);
+	}
+	bool ScriptInstance::GetFieldValueInternal(const std::string& name, void* buffer)
+	{
+		const auto& fields = m_ScriptClass->GetFields();
+		auto it = fields.find(name);
+		if (it == fields.end())
+			return false;
+
+		const ScriptField& field = it->second;
+		mono_field_get_value(m_Instance, field.ClassField, buffer);
+		return true;
+	}
+
+	bool ScriptInstance::SetFieldValueInternal(const std::string& name, const void* value)
+	{
+		const auto& fields = m_ScriptClass->GetFields();
+		auto it = fields.find(name);
+		if (it == fields.end())
+			return false;
+
+		const ScriptField& field = it->second;
+		mono_field_set_value(m_Instance, field.ClassField, (void*)value);
+		return true;
 	}
 }

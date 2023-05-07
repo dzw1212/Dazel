@@ -3,7 +3,11 @@
 #include "ScriptEngine.h"
 #include "glm/glm.hpp"
 
+#include "Dazel/Scene/Components.h"
+#include "box2d/b2_body.h"
+
 #include "mono/metadata/object.h"
+#include "mono/metadata/reflection.h"
 
 #include "Dazel/Core/KeyCodes.h"
 #include "Dazel/Core/Input.h"
@@ -18,25 +22,46 @@ namespace DAZEL
 	{
 		([]()
 			{
-				std::string_view typeName = typeid(Component).name();
+				std::string_view typeName = typeid(ComponentType).name();
+				std::cout << typeName << std::endl;
 				size_t pos = typeName.find_last_of(':');
 				std::string_view structName = typeName.substr(pos + 1);
-				std::string managedTypename = fmt::format("Hazel.{}", structName);
+				std::string managedTypename = std::format("DAZEL.{}", structName);
 
-				MonoType* managedType = mono_reflection_type_from_name(managedTypename.data(), ScriptEngine::GetCoreAssemblyImage());
+				std::cout << structName << std::endl;
+				std::cout << managedTypename << std::endl;
+
+				MonoType* managedType = mono_reflection_type_from_name(managedTypename.data(), ScriptEngine::GetAssemblyImage());
 				if (!managedType)
-				{
-					HZ_CORE_ERROR("Could not find component type {}", managedTypename);
 					return;
-				}
-				s_EntityHasComponentFuncs[managedType] = [](Entity entity) { return entity.HasComponent<Component>(); };
+				s_EntityHasComponentFuncs[managedType] = [](Entity entity) { return entity.HasComponent<ComponentType>(); };
 			}(), ...);
 	}
 
-	template<typename... Component>
-	static void RegisterComponent(ComponentGroup<Component...>)
+	template<typename... ComponentType>
+	static void RegisterComponent(ComponentGroup<ComponentType...>)
 	{
-		RegisterComponent<Component...>();
+		RegisterComponent<ComponentType...>();
+	}
+
+
+	void ScriptGlue::RegisterComponents()
+	{
+		RegisterComponent(AllComponents{});
+	}
+
+	static bool Entity_HasComponent(UUID entityID, MonoReflectionType* componentType)
+	{
+		Scene* scene = ScriptEngine::GetCurrentScene();
+		if (!scene)
+			return false;
+		Entity entity = scene->GetEntityByUUID(entityID);
+		if (!entity)
+			return false;
+		MonoType* managedType = mono_reflection_type_get_type(componentType);
+		if (s_EntityHasComponentFuncs.find(managedType) == s_EntityHasComponentFuncs.end())
+			return false;
+		return s_EntityHasComponentFuncs.at(managedType)(entity);
 	}
 
 #define ADD_INTERNAL_CALL(Name) mono_add_internal_call("DAZEL.InternalCall::"#Name, Name)
@@ -70,10 +95,41 @@ namespace DAZEL
 		return Input::IsKeyPressed(nKeyCode);
 	}
 
+	static void Rigidbody2DComponent_ApplyLinearImpulse(UUID entityID, glm::vec2* impulse, glm::vec2* point, bool wake)
+	{
+		Scene* scene = ScriptEngine::GetCurrentScene();
+		if (!scene)
+			return;
+		Entity entity = scene->GetEntityByUUID(entityID);
+		if (!entity)
+			return;
+
+		auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+		b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+		body->ApplyLinearImpulse(b2Vec2(impulse->x, impulse->y), b2Vec2(point->x, point->y), wake);
+	}
+
+	static void Rigidbody2DComponent_ApplyLinearImpulseToCenter(UUID entityID, glm::vec2* impulse, bool wake)
+	{
+		Scene* scene = ScriptEngine::GetCurrentScene();
+		if (!scene)
+			return;
+		Entity entity = scene->GetEntityByUUID(entityID);
+		if (!entity)
+			return;
+
+		auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+		b2Body* body = (b2Body*)rb2d.m_RuntimeBody;
+		body->ApplyLinearImpulseToCenter(b2Vec2(impulse->x, impulse->y), wake);
+	}
+
 	void ScriptGlue::RegisterInternalCallFunctions()
 	{
 		ADD_INTERNAL_CALL(TransformComponent_GetPosition);
 		ADD_INTERNAL_CALL(TransformComponent_SetPosition);
 		ADD_INTERNAL_CALL(Input_IsKeyDown);
+		ADD_INTERNAL_CALL(Entity_HasComponent);
+		ADD_INTERNAL_CALL(Rigidbody2DComponent_ApplyLinearImpulse);
+		ADD_INTERNAL_CALL(Rigidbody2DComponent_ApplyLinearImpulseToCenter);
 	}
 }

@@ -8,17 +8,6 @@ using System.Runtime.CompilerServices;
 
 namespace DAZEL
 {
-	public struct Vector3
-	{
-		public float X, Y, Z;
-
-		public Vector3(float x, float y, float z)
-		{
-			X = x;
-			Y = y;
-			Z = z;
-		}
-	}
 	public static class InternalCall
 	{
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -29,5 +18,15 @@ namespace DAZEL
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		internal extern static bool Input_IsKeyDown(KeyCode keycode);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		internal extern static bool Entity_HasComponent(ulong entityID, Type componentType);
+
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		internal extern static void Rigidbody2DComponent_ApplyLinearImpulse(ulong entityID, ref Vector2 impulse, ref Vector2 point, bool wake);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		internal extern static void Rigidbody2DComponent_ApplyLinearImpulseToCenter(ulong entityID, ref Vector2 impulse, bool wake);
 	}
 }

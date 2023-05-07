@@ -35,7 +35,11 @@ namespace DAZEL
 	}
 
 	public class TestEntity : Entity
-	{ 
+	{
+
+		public float temp1;
+		public Vector2 temp2;
+		public string temp3;
 		public void OnCreate()
 		{
 			Console.Write("TextEntity OnCreate in csharp\n");
@@ -52,8 +56,20 @@ namespace DAZEL
 				pos.Y += speed;
 			Position = pos;
 		}
-	}
 
-	public class spriteRendererEntity : Entity                                                                                         
-	{ }
+		public bool HasComponent<T>() where T : Component, new()
+		{
+			Type componentType = typeof(T);
+			return InternalCall.Entity_HasComponent(m_Id, componentType);
+		}
+
+		public T GetComponent<T>() where T : Component, new()
+		{
+			if (!HasComponent<T>())
+				return null;
+
+			T component = new T() { Entity = this };
+			return component;
+		}
+	}
 }

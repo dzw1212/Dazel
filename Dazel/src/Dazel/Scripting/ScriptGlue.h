@@ -6,5 +6,6 @@ namespace DAZEL
 	{
 	public:
 		static void RegisterInternalCallFunctions();
+		static void RegisterComponents();
 	};
 }

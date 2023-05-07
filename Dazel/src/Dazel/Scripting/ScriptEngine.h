@@ -12,10 +12,74 @@ extern "C" {
 	typedef struct _MonoObject MonoObject;
 	typedef struct _MonoMethod MonoMethod;
 	typedef struct _MonoAssembly MonoAssembly;
+	typedef struct _MonoImage MonoImage;
 }
 
 namespace DAZEL
 {
+	enum class ScriptFieldType
+	{
+		None = 0,
+		Float, Double,
+		Bool, Char, Byte, Short, Int, Long,
+		UByte, UShort, UInt, ULong,
+		Vector2, Vector3, Vector4,
+		Entity
+	};
+
+	struct ScriptField
+	{
+		ScriptFieldType Type;
+		std::string Name;
+		MonoClassField* ClassField;
+	};
+
+	static std::unordered_map<std::string, ScriptFieldType> s_mapFieldTypeNameToScriptFieldType =
+	{
+		{ "System.Single",	ScriptFieldType::Float },
+		{ "System.Double",	ScriptFieldType::Double },
+		{ "System.Boolean", ScriptFieldType::Bool },
+		{ "System.Char",	ScriptFieldType::Char },
+		{ "System.Int16",	ScriptFieldType::Short },
+		{ "System.Int32",	ScriptFieldType::Int },
+		{ "System.Int64",	ScriptFieldType::Long },
+		{ "System.Byte",	ScriptFieldType::Byte },
+		{ "System.UInt16",	ScriptFieldType::UShort },
+		{ "System.UInt32",	ScriptFieldType::UInt },
+		{ "System.UInt64",	ScriptFieldType::ULong },
+
+		{ "DAZEL.Vector2",	ScriptFieldType::Vector2 },
+		{ "DAZEL.Vector3",	ScriptFieldType::Vector3 },
+		{ "DAZEL.Vector4",	ScriptFieldType::Vector4 },
+
+		{ "DAZEL.Entity",	ScriptFieldType::Entity },
+	};
+
+	const char* ScriptFieldTypeToString(ScriptFieldType type)
+	{
+		switch (type)
+		{
+		case ScriptFieldType::Float:   return "Float";
+		case ScriptFieldType::Double:  return "Double";
+		case ScriptFieldType::Bool:    return "Bool";
+		case ScriptFieldType::Char:    return "Char";
+		case ScriptFieldType::Byte:    return "Byte";
+		case ScriptFieldType::Short:   return "Short";
+		case ScriptFieldType::Int:     return "Int";
+		case ScriptFieldType::Long:    return "Long";
+		case ScriptFieldType::UByte:   return "UByte";
+		case ScriptFieldType::UShort:  return "UShort";
+		case ScriptFieldType::UInt:    return "UInt";
+		case ScriptFieldType::ULong:   return "ULong";
+		case ScriptFieldType::Vector2: return "Vector2";
+		case ScriptFieldType::Vector3: return "Vector3";
+		case ScriptFieldType::Vector4: return "Vector4";
+		case ScriptFieldType::Entity:  return "Entity";
+		}
+		return "<Invalid>";
+	}
+
+
 	class ScriptClass
 	{
 	public:
@@ -31,6 +95,8 @@ namespace DAZEL
 		std::string m_strClassName;
 
 		MonoClass* m_pMonoClass = nullptr;
+
+		std::map<std::string, ScriptField> m_mapField;
 	};
 
 	class ScriptInstance
@@ -74,6 +140,8 @@ namespace DAZEL
 		static void OnUpdateEntity(Entity entity, float fTimestep);
 
 		static Scene* GetCurrentScene();
+		static MonoAssembly* GetAssembly();
+		static MonoImage* GetAssemblyImage();
 	private:
 		static void InitMono();
 		static void ShutdownMono();

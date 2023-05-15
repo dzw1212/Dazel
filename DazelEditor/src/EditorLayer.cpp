@@ -194,6 +194,31 @@ void EditorLayer::OnUpdate(DAZEL::Timestep timeStep)
 		if (m_bPhysicalVisiable)
 			OnOverlayRender();
 
+		auto selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+		if (selectedEntity)
+		{
+			if (m_SceneState == SceneState::EDIT)
+			{
+				DAZEL::Renderer2D::BeginScene(m_EditorCamera);
+			}
+			else if (m_SceneState == SceneState::PLAY)
+			{
+				auto cameraEntities = m_ActiveScene->GetAllEntities<DAZEL::TransformComponent, DAZEL::CameraComponent>();
+				for (auto entity : cameraEntities)
+				{
+					auto [transform, camera] = cameraEntities.get<DAZEL::TransformComponent, DAZEL::CameraComponent>(entity);
+					if (camera.m_bIsMainCamera)
+					{
+						DAZEL::Renderer2D::BeginScene(camera.m_Camera, transform.GetTransform());
+						break;
+					}
+				}
+			}
+			auto& transComponent = selectedEntity.GetComponent<DAZEL::TransformComponent>();
+			DAZEL::Renderer2D::DrawRect(transComponent.GetTransform(), glm::vec4(1.0, 0.0, 0.0, 1.0), selectedEntity.GetId());
+			DAZEL::Renderer2D::EndScene();
+		}
+
 		m_FrameBuffer->Unbind();
 	}
 }
@@ -558,8 +583,17 @@ void EditorLayer::OnScenePlay()
 	m_SceneState = SceneState::PLAY;
 	m_RuntimeScene = DAZEL::Scene::Copy(m_EditorScene);
 
+	auto selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+
 	m_ActiveScene = m_RuntimeScene;
-	m_SceneHierarchyPanel.SetSelectedEntity({});
+
+	if (selectedEntity)
+	{
+		auto newSelectedEntity = m_ActiveScene->GetEntityByUUID(selectedEntity.GetUUId());
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_SceneHierarchyPanel.SetSelectedEntity(newSelectedEntity);
+		LOG_ERROR("play, selected entity id change {} to {}", selectedEntity.GetId(), newSelectedEntity.GetId());
+	}
 
 	m_ActiveScene->OnRuntimeStart();
 }
@@ -575,7 +609,18 @@ void EditorLayer::OnSceneStop()
 
 	m_SceneState = SceneState::EDIT;
 	m_ActiveScene = m_EditorScene;
+
+	auto selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+
 	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+	if (selectedEntity)
+	{
+		auto newSelectedEntity = m_ActiveScene->GetEntityByUUID(selectedEntity.GetUUId());
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_SceneHierarchyPanel.SetSelectedEntity(newSelectedEntity);
+		LOG_ERROR("stop, selected entity id change {} to {}", selectedEntity.GetId(), newSelectedEntity.GetId());
+	}
 }
 
 void EditorLayer::OnSceneSimulate()

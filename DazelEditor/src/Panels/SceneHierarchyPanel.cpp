@@ -511,7 +511,7 @@ namespace DAZEL
 
 		if (entity.HasComponent<ScriptComponent>())
 		{
-			DrawComponent<ScriptComponent>("Script", entity, [](ScriptComponent& component)
+			DrawComponent<ScriptComponent>("Script", entity, [entity](ScriptComponent& component) mutable
 				{
 					bool bScriptExist = ScriptEngine::IsEntityClassExists(component.m_strName);
 					if (bScriptExist)
@@ -522,6 +522,26 @@ namespace DAZEL
 					sprintf_s(buffer, sizeof(buffer), component.m_strName.c_str());
 					if (ImGui::InputText("Class", buffer, sizeof(buffer)))
 						component.m_strName = std::string(buffer);
+
+					// Fields
+					Ref<ScriptInstance> scriptInstance = ScriptEngine::GetEntityInstance(entity.GetUUId());
+					if (scriptInstance)
+					{
+						const auto& fields = scriptInstance->GetScriptClass()->m_mapField;
+
+						for (const auto& [name, field] : fields)
+						{
+
+							if (field.Type == ScriptFieldType::Float)
+							{
+								float data = scriptInstance->GetFieldValue<float>(name);
+								if (ImGui::DragFloat(name.c_str(), &data))
+								{
+									scriptInstance->SetFieldValue(name, data);
+								}
+							}
+						}
+					}
 
 					if (bScriptExist)
 						ImGui::PopStyleColor();

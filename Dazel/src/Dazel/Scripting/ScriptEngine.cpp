@@ -283,7 +283,47 @@ namespace DAZEL
 			case ScriptFieldType::Vector4: return "Vector4";
 			case ScriptFieldType::Entity:  return "Entity";
 			}
+			ASSERT(false, "Script field type unknown");
 			return "<Invalid>";
+		}
+
+		ScriptFieldType ScriptFieldTypeToString(const std::string& strType)
+		{
+			if (strType == "Float")
+				return ScriptFieldType::Float;
+			else if (strType == "Double")
+				return ScriptFieldType::Double;
+			else if (strType == "Bool")
+				return ScriptFieldType::Bool;
+			else if (strType == "Char")
+				return ScriptFieldType::Char;
+			else if (strType == "Byte")
+				return ScriptFieldType::Byte;
+			else if (strType == "Short")
+				return ScriptFieldType::Short;
+			else if (strType == "Int")
+				return ScriptFieldType::Int;
+			else if (strType == "Long")
+				return ScriptFieldType::Long;
+			else if (strType == "UByte")
+				return ScriptFieldType::UByte;
+			else if (strType == "UShort")
+				return ScriptFieldType::UShort;
+			else if (strType == "UInt")
+				return ScriptFieldType::UInt;
+			else if (strType == "Vector2")
+				return ScriptFieldType::Vector2;
+			else if (strType == "Vector3")
+				return ScriptFieldType::Vector3;
+			else if (strType == "Vector4")
+				return ScriptFieldType::Vector4;
+			else if (strType == "Entity")
+				return ScriptFieldType::Entity;
+			else
+			{
+				ASSERT(false, "Script field type unknown");
+				return ScriptFieldType::None;
+			}
 		}
 	}
 
@@ -410,6 +450,15 @@ namespace DAZEL
 	bool ScriptEngine::IsEntityInstanceExists(const UUID& uuid)
 	{
 		return s_ScriptEngineData->mapAllEntityInstance.find(uuid) != s_ScriptEngineData->mapAllEntityInstance.end();
+	}
+
+	Ref<ScriptInstance> ScriptEngine::GetEntityInstance(const UUID& uuid)
+	{
+		auto it = s_ScriptEngineData->mapAllEntityInstance.find(uuid);
+		if (it == s_ScriptEngineData->mapAllEntityInstance.end())
+			return nullptr;
+
+		return it->second;
 	}
 
 	void ScriptEngine::OnRuntimeStart(Scene* pScene)

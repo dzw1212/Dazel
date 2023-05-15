@@ -34,27 +34,36 @@ namespace DAZEL
 		}
 	}
 
-	public class TestEntity : Entity
+	public class Player : Entity
 	{
-
-		public float temp1;
-		public Vector2 temp2;
-		public string temp3;
+		private TransformComponent m_Transform;
+		private Rigidbody2DComponent m_Rigidbody;
 		public void OnCreate()
 		{
-			Console.Write("TextEntity OnCreate in csharp\n");
-			Console.Write($"TextEntity UUID =  {m_Id}\n");
+			m_Transform = GetComponent<TransformComponent>();
+			m_Rigidbody = GetComponent<Rigidbody2DComponent>();
 		}
 
 		public void OnUpdate(float fTimestep)
 		{
 			float speed = 0.01f;
-			Vector3 pos = Position;
+			Vector3 velocity = Vector3.Zero;
+
 			if (Input.IsKeyDown(KeyCode.W))
-				pos.Y -= speed;
+				velocity.Y = 1.0f;
 			else if (Input.IsKeyDown(KeyCode.S))
-				pos.Y += speed;
-			Position = pos;
+				velocity.Y = -1.0f;
+
+			if (Input.IsKeyDown(KeyCode.A))
+				velocity.X = -1.0f;
+			else if (Input.IsKeyDown(KeyCode.D))
+				velocity.X = 1.0f;
+
+			velocity *= speed;
+
+			Console.Write("x = {0}, y = {1}, z = {2}\n", velocity.X, velocity.Y, velocity.Z);
+
+			m_Rigidbody.ApplyLinearImpulse(velocity.XY, true);
 		}
 
 		public bool HasComponent<T>() where T : Component, new()

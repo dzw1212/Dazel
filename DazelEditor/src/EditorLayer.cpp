@@ -592,7 +592,6 @@ void EditorLayer::OnScenePlay()
 		auto newSelectedEntity = m_ActiveScene->GetEntityByUUID(selectedEntity.GetUUId());
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 		m_SceneHierarchyPanel.SetSelectedEntity(newSelectedEntity);
-		LOG_ERROR("play, selected entity id change {} to {}", selectedEntity.GetId(), newSelectedEntity.GetId());
 	}
 
 	m_ActiveScene->OnRuntimeStart();
@@ -619,7 +618,6 @@ void EditorLayer::OnSceneStop()
 		auto newSelectedEntity = m_ActiveScene->GetEntityByUUID(selectedEntity.GetUUId());
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 		m_SceneHierarchyPanel.SetSelectedEntity(newSelectedEntity);
-		LOG_ERROR("stop, selected entity id change {} to {}", selectedEntity.GetId(), newSelectedEntity.GetId());
 	}
 }
 

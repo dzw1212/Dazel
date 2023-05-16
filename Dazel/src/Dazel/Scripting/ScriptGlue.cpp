@@ -33,7 +33,10 @@ namespace DAZEL
 
 				MonoType* managedType = mono_reflection_type_from_name(managedTypename.data(), ScriptEngine::GetAssemblyImage());
 				if (!managedType)
+				{
+					LOG_ERROR("Script componentType {} not find", managedTypename);
 					return;
+				}
 				s_EntityHasComponentFuncs[managedType] = [](Entity entity) { return entity.HasComponent<ComponentType>(); };
 			}(), ...);
 	}
@@ -95,7 +98,7 @@ namespace DAZEL
 		return Input::IsKeyPressed(nKeyCode);
 	}
 
-	static void Rigidbody2DComponent_ApplyLinearImpulse(UUID entityID, glm::vec2* impulse, glm::vec2* point, bool wake)
+	static void RigidBody2DComponent_ApplyLinearImpulse(UUID entityID, glm::vec2* impulse, glm::vec2* point, bool wake)
 	{
 		Scene* scene = ScriptEngine::GetCurrentScene();
 		if (!scene)
@@ -109,7 +112,7 @@ namespace DAZEL
 		body->ApplyLinearImpulse(b2Vec2(impulse->x, impulse->y), b2Vec2(point->x, point->y), wake);
 	}
 
-	static void Rigidbody2DComponent_ApplyLinearImpulseToCenter(UUID entityID, glm::vec2* impulse, bool wake)
+	static void RigidBody2DComponent_ApplyLinearImpulseToCenter(UUID entityID, glm::vec2* impulse, bool wake)
 	{
 		Scene* scene = ScriptEngine::GetCurrentScene();
 		if (!scene)
@@ -129,7 +132,7 @@ namespace DAZEL
 		ADD_INTERNAL_CALL(TransformComponent_SetPosition);
 		ADD_INTERNAL_CALL(Input_IsKeyDown);
 		ADD_INTERNAL_CALL(Entity_HasComponent);
-		ADD_INTERNAL_CALL(Rigidbody2DComponent_ApplyLinearImpulse);
-		ADD_INTERNAL_CALL(Rigidbody2DComponent_ApplyLinearImpulseToCenter);
+		ADD_INTERNAL_CALL(RigidBody2DComponent_ApplyLinearImpulse);
+		ADD_INTERNAL_CALL(RigidBody2DComponent_ApplyLinearImpulseToCenter);
 	}
 }

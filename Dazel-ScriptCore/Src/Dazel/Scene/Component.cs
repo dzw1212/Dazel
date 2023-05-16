@@ -27,17 +27,16 @@ namespace DAZEL
 		}
 	}
 
-	public class Rigidbody2DComponent : Component
+	public class RigidBody2DComponent : Component
 	{
-
 		public void ApplyLinearImpulse(Vector2 impulse, Vector2 worldPosition, bool wake)
 		{
-			InternalCall.Rigidbody2DComponent_ApplyLinearImpulse(Entity.m_Id, ref impulse, ref worldPosition, wake);
+			InternalCall.RigidBody2DComponent_ApplyLinearImpulse(Entity.m_Id, ref impulse, ref worldPosition, wake);
 		}
 
 		public void ApplyLinearImpulse(Vector2 impulse, bool wake)
 		{
-			InternalCall.Rigidbody2DComponent_ApplyLinearImpulseToCenter(Entity.m_Id, ref impulse, wake);
+			InternalCall.RigidBody2DComponent_ApplyLinearImpulseToCenter(Entity.m_Id, ref impulse, wake);
 		}
 
 	}

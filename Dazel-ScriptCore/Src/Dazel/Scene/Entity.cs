@@ -37,16 +37,16 @@ namespace DAZEL
 	public class Player : Entity
 	{
 		private TransformComponent m_Transform;
-		private Rigidbody2DComponent m_Rigidbody;
+		private RigidBody2DComponent m_Rigidbody;
 		public void OnCreate()
 		{
 			m_Transform = GetComponent<TransformComponent>();
-			m_Rigidbody = GetComponent<Rigidbody2DComponent>();
+			m_Rigidbody = GetComponent<RigidBody2DComponent>();
 		}
 
 		public void OnUpdate(float fTimestep)
 		{
-			float speed = 0.01f;
+			float speed = 0.5f;
 			Vector3 velocity = Vector3.Zero;
 
 			if (Input.IsKeyDown(KeyCode.W))
@@ -61,9 +61,11 @@ namespace DAZEL
 
 			velocity *= speed;
 
-			Console.Write("x = {0}, y = {1}, z = {2}\n", velocity.X, velocity.Y, velocity.Z);
+			if (velocity.X == 0 && velocity.Y == 0)
+				return;
 
 			m_Rigidbody.ApplyLinearImpulse(velocity.XY, true);
+
 		}
 
 		public bool HasComponent<T>() where T : Component, new()

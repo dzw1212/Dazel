@@ -164,7 +164,8 @@ namespace DAZEL
 		static void Init();
 		static void Shutdown();
 
-		static bool LoadAssembly(const std::filesystem::path& filepath);
+		static bool LoadCoreAssembly(const std::filesystem::path& filepath);
+		static bool LoadAppAssembly(const std::filesystem::path& filepath);
 
 		static void CollectAllEntityClasses(MonoAssembly* assembly);
 		static bool IsEntityClassExists(const std::string& strClassName);

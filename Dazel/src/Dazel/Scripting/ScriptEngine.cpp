@@ -330,15 +330,20 @@ namespace DAZEL
 	struct ScriptEngineData
 	{
 		MonoDomain* pRootDomain = nullptr;
-		MonoDomain* pAppDomain = nullptr;
+		MonoAssembly* pCoreAssembly = nullptr;
+		MonoImage* pCoreAssemblyImage = nullptr;
+		std::filesystem::path CoreAssemblyFilepath;
 
-		MonoAssembly* pAssembly = nullptr;
-		MonoImage* pAssemblyImage = nullptr;
+		MonoDomain* pAppDomain = nullptr;
+		MonoAssembly* pAppAssembly = nullptr;
+		MonoImage* pAppAssemblyImage = nullptr;	
+		std::filesystem::path AppAssemblyFilepath;
 
 		ScriptClass* pBaseEntityClass = nullptr;
 
 		std::unordered_map<std::string, Ref<ScriptClass>> mapAllEntityClass;
 		std::unordered_map<UUID, Ref<ScriptInstance>> mapAllEntityInstance;
+		std::unordered_map<UUID, ScriptFieldMap> mapEntityScriptField;
 
 		Scene* pCurrentScene = nullptr;
 	};
@@ -370,7 +375,7 @@ namespace DAZEL
 		s_ScriptEngineData = nullptr;
 	}
 
-	bool ScriptEngine::LoadAssembly(const std::filesystem::path& filepath)
+	bool ScriptEngine::LoadCoreAssembly(const std::filesystem::path& filepath)
 	{
 		//第二个参数允许传递一个配置文件的路径
 		MonoDomain* appDomain = mono_domain_create_appdomain(const_cast<char*>("DAZEL_Mono_AppDomain"), nullptr);
@@ -381,10 +386,29 @@ namespace DAZEL
 		//将s_AppDomain设为当前应用域，第二个参数表示是否强制
 		mono_domain_set(s_ScriptEngineData->pAppDomain, true);
 
-		s_ScriptEngineData->pAssembly = Utils::LoadCSharpAssembly(filepath.string());
-		s_ScriptEngineData->pAssemblyImage = mono_assembly_get_image(s_ScriptEngineData->pAssembly);
+		s_ScriptEngineData->CoreAssemblyFilepath = filepath;
+		s_ScriptEngineData->pCoreAssembly = Utils::LoadCSharpAssembly(filepath.string());
+		s_ScriptEngineData->pCoreAssemblyImage = mono_assembly_get_image(s_ScriptEngineData->pCoreAssembly);
 
-		return (s_ScriptEngineData->pAssembly != nullptr) && (s_ScriptEngineData->pAssemblyImage != nullptr);
+		return (s_ScriptEngineData->pCoreAssembly != nullptr) && (s_ScriptEngineData->pCoreAssemblyImage != nullptr);
+	}
+
+	bool ScriptEngine::LoadAppAssembly(const std::filesystem::path& filepath)
+	{
+		//第二个参数允许传递一个配置文件的路径
+		MonoDomain* appDomain = mono_domain_create_appdomain(const_cast<char*>("DAZEL_Mono_AppDomain"), nullptr);
+		CORE_ASSERT(appDomain, "Create mono app domain failed");
+
+		s_ScriptEngineData->pAppDomain = appDomain;
+
+		//将s_AppDomain设为当前应用域，第二个参数表示是否强制
+		mono_domain_set(s_ScriptEngineData->pAppDomain, true);
+
+		s_ScriptEngineData->CoreAssemblyFilepath = filepath;
+		s_ScriptEngineData->pCoreAssembly = Utils::LoadCSharpAssembly(filepath.string());
+		s_ScriptEngineData->pCoreAssemblyImage = mono_assembly_get_image(s_ScriptEngineData->pCoreAssembly);
+
+		return (s_ScriptEngineData->pCoreAssembly != nullptr) && (s_ScriptEngineData->pCoreAssemblyImage != nullptr);
 	}
 
 	void ScriptEngine::CollectAllEntityClasses(MonoAssembly* assembly)
@@ -418,7 +442,6 @@ namespace DAZEL
 			s_ScriptEngineData->mapAllEntityClass[strFullName] = scriptClass;
 
 			int nFieldCount = mono_class_num_fields(pMonoClass);
-			LOG_INFO("class {} fields count = {}", strFullName, nFieldCount);
 
 			void* iter = nullptr;
 			MonoClassField* field = nullptr;
@@ -429,7 +452,6 @@ namespace DAZEL
 				
 				MonoType* type = mono_field_get_type(field);
 				std::string typeName = mono_type_get_name(type);
-				LOG_INFO("field name = {}, type name = {}", fieldName, typeName);
 				ScriptFieldType fieldType = Utils::MonoTypeToScriptFieldType(type);
 
 				scriptClass->m_mapField[fieldName] = { fieldType, fieldName, field };
@@ -515,10 +537,15 @@ namespace DAZEL
 	}
 	void ScriptEngine::ShutdownMono()
 	{
-		mono_jit_cleanup(s_ScriptEngineData->pAppDomain);
+		mono_domain_set(mono_get_root_domain(), false);
 
+		mono_domain_unload(s_ScriptEngineData->pAppDomain);
 		s_ScriptEngineData->pAppDomain = nullptr;
+
+		mono_jit_cleanup(s_ScriptEngineData->pRootDomain);
 		s_ScriptEngineData->pRootDomain = nullptr;
+
+		
 		s_ScriptEngineData->pAssembly = nullptr;
 	}
 	MonoObject* ScriptEngine::InstantiateClass(MonoClass* pMonoClass)

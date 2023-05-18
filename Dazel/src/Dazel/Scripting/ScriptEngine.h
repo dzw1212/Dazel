@@ -62,7 +62,7 @@ namespace DAZEL
 	{
 	public:
 		ScriptClass() = default;
-		ScriptClass(const std::string& strClassNamespace, const std::string& strClassName);
+		ScriptClass(const std::string& strClassNamespace, const std::string& strClassName, bool bIsCore = false);
 
 		MonoObject* Instantiate();
 		MonoMethod* GetMethod(const std::string& strName, int nParamCnt);
@@ -167,6 +167,8 @@ namespace DAZEL
 		static bool LoadCoreAssembly(const std::filesystem::path& filepath);
 		static bool LoadAppAssembly(const std::filesystem::path& filepath);
 
+		static void ReloadAssembly();
+
 		static void CollectAllEntityClasses(MonoAssembly* assembly);
 		static bool IsEntityClassExists(const std::string& strClassName);
 		static std::unordered_map<std::string, Ref<ScriptClass>> GetAllEntityClass();
@@ -182,8 +184,8 @@ namespace DAZEL
 		static void OnUpdateEntity(Entity entity, float fTimestep);
 
 		static Scene* GetCurrentScene();
-		static MonoAssembly* GetAssembly();
-		static MonoImage* GetAssemblyImage();
+		static MonoAssembly* GetCoreAssembly();
+		static MonoImage* GetCoreAssemblyImage();
 	private:
 		static void InitMono();
 		static void ShutdownMono();

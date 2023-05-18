@@ -1,0 +1,9 @@
+D:\dev\Dazel\DazelEditor\ScriptSandbox\asset\script\Binaries\Sandbox.dll
+D:\dev\Dazel\DazelEditor\ScriptSandbox\asset\script\Binaries\Sandbox.pdb
+D:\dev\Dazel\DazelEditor\ScriptSandbox\asset\script\Binaries\Dazel-ScriptCore.dll
+D:\dev\Dazel\DazelEditor\ScriptSandbox\asset\script\Binaries\Dazel-ScriptCore.pdb
+D:\dev\Dazel\DazelEditor\ScriptSandbox\asset\script\Intermediates\Debug\Sandbox.csproj.AssemblyReference.cache
+D:\dev\Dazel\DazelEditor\ScriptSandbox\asset\script\Intermediates\Debug\Sandbox.csproj.CoreCompileInputs.cache
+D:\dev\Dazel\DazelEditor\ScriptSandbox\asset\script\Intermediates\Debug\Sandbox.csproj.CopyComplete
+D:\dev\Dazel\DazelEditor\ScriptSandbox\asset\script\Intermediates\Debug\Sandbox.dll
+D:\dev\Dazel\DazelEditor\ScriptSandbox\asset\script\Intermediates\Debug\Sandbox.pdb

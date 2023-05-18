@@ -28,10 +28,7 @@ namespace DAZEL
 				std::string_view structName = typeName.substr(pos + 1);
 				std::string managedTypename = std::format("DAZEL.{}", structName);
 
-				std::cout << structName << std::endl;
-				std::cout << managedTypename << std::endl;
-
-				MonoType* managedType = mono_reflection_type_from_name(managedTypename.data(), ScriptEngine::GetAssemblyImage());
+				MonoType* managedType = mono_reflection_type_from_name(managedTypename.data(), ScriptEngine::GetCoreAssemblyImage());
 				if (!managedType)
 				{
 					LOG_ERROR("Script componentType {} not find", managedTypename);
@@ -50,6 +47,7 @@ namespace DAZEL
 
 	void ScriptGlue::RegisterComponents()
 	{
+		s_EntityHasComponentFuncs.clear();
 		RegisterComponent(AllComponents{});
 	}
 

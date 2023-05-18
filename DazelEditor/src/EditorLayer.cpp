@@ -9,6 +9,7 @@
 
 #include "EditorLayer.h"
 #include "Dazel/Scene/Components.h"
+#include "Dazel/Scripting/ScriptEngine.h"
 
 glm::vec2 CurMousePosTo2DPos(const glm::vec2& mousePos, const glm::vec2& viewPortSize, 
 	const glm::vec2& bounds, const glm::vec3& cameraPos)
@@ -310,7 +311,17 @@ void EditorLayer::OnImGuiRender()
 
 				ImGui::EndMenu();
 			}
+
+			if (ImGui::BeginMenu("Script"))
+			{
+				if (ImGui::MenuItem("Reload assembly", "Ctrl+R"))
+					DAZEL::ScriptEngine::ReloadAssembly();
+
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMenuBar();
+
 		}
 		ImGui::End();
 	}
@@ -726,6 +737,11 @@ bool EditorLayer::OnKeyPressed(DAZEL::KeyPressedEvent& event)
 		case DAZEL_KEY_D:
 		{
 			m_ActiveScene->CopyEntity(m_SceneHierarchyPanel.GetSelectedEntity());
+			break;
+		}
+		case DAZEL_KEY_R:
+		{
+			DAZEL::ScriptEngine::ReloadAssembly();
 			break;
 		}
 		default:

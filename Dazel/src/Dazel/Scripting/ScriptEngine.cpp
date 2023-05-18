@@ -340,6 +340,7 @@ namespace DAZEL
 		std::filesystem::path AppAssemblyFilepath;
 
 		ScriptClass* pBaseEntityClass = nullptr;
+		MonoClass* pBaseEntityNativeClass = nullptr;
 
 		std::unordered_map<std::string, Ref<ScriptClass>> mapAllEntityClass;
 		std::unordered_map<UUID, Ref<ScriptInstance>> mapAllEntityInstance;
@@ -356,14 +357,16 @@ namespace DAZEL
 		s_ScriptEngineData = new ScriptEngineData;
 		InitMono();
 
-		CORE_ASSERT(LoadAssembly("Resource/Script/Dazel-ScriptCore.dll"), "Load script assembly failed");
+		CORE_ASSERT(LoadCoreAssembly("Resource/Script/Dazel-ScriptCore.dll"), "Load script core assembly failed");
+		CORE_ASSERT(LoadAppAssembly("ScriptSandbox/asset/script/Binaries/Sandbox.dll"), "Load script app assembly failed");
 
 		ScriptGlue::RegisterInternalCallFunctions();
 		ScriptGlue::RegisterComponents();
 
-		s_ScriptEngineData->pBaseEntityClass = new ScriptClass("DAZEL", "Entity");
+		s_ScriptEngineData->pBaseEntityClass = new ScriptClass("DAZEL", "Entity", true);
+		s_ScriptEngineData->pBaseEntityNativeClass = mono_class_from_name(s_ScriptEngineData->pCoreAssemblyImage, "DAZEL", "Entity");
 
-		CollectAllEntityClasses(s_ScriptEngineData->pAssembly);
+		CollectAllEntityClasses(s_ScriptEngineData->pAppAssembly);
 	}
 	void ScriptEngine::Shutdown()
 	{
@@ -395,20 +398,28 @@ namespace DAZEL
 
 	bool ScriptEngine::LoadAppAssembly(const std::filesystem::path& filepath)
 	{
-		//第二个参数允许传递一个配置文件的路径
-		MonoDomain* appDomain = mono_domain_create_appdomain(const_cast<char*>("DAZEL_Mono_AppDomain"), nullptr);
-		CORE_ASSERT(appDomain, "Create mono app domain failed");
+		s_ScriptEngineData->AppAssemblyFilepath = filepath;
+		s_ScriptEngineData->pAppAssembly = Utils::LoadCSharpAssembly(filepath.string());
+		s_ScriptEngineData->pAppAssemblyImage = mono_assembly_get_image(s_ScriptEngineData->pAppAssembly);
 
-		s_ScriptEngineData->pAppDomain = appDomain;
+		return (s_ScriptEngineData->pAppAssembly != nullptr) && (s_ScriptEngineData->pAppAssemblyImage != nullptr);
+	}
 
-		//将s_AppDomain设为当前应用域，第二个参数表示是否强制
-		mono_domain_set(s_ScriptEngineData->pAppDomain, true);
+	void ScriptEngine::ReloadAssembly()
+	{
+		mono_domain_set(mono_get_root_domain(), false);
 
-		s_ScriptEngineData->CoreAssemblyFilepath = filepath;
-		s_ScriptEngineData->pCoreAssembly = Utils::LoadCSharpAssembly(filepath.string());
-		s_ScriptEngineData->pCoreAssemblyImage = mono_assembly_get_image(s_ScriptEngineData->pCoreAssembly);
+		mono_domain_unload(s_ScriptEngineData->pAppDomain);
 
-		return (s_ScriptEngineData->pCoreAssembly != nullptr) && (s_ScriptEngineData->pCoreAssemblyImage != nullptr);
+		LoadCoreAssembly(s_ScriptEngineData->CoreAssemblyFilepath);
+		LoadAppAssembly(s_ScriptEngineData->AppAssemblyFilepath);
+
+		s_ScriptEngineData->pBaseEntityClass = new ScriptClass("DAZEL", "Entity", true);
+		s_ScriptEngineData->pBaseEntityNativeClass = mono_class_from_name(s_ScriptEngineData->pCoreAssemblyImage, "DAZEL", "Entity");
+
+		CollectAllEntityClasses(s_ScriptEngineData->pAppAssembly);
+
+		ScriptGlue::RegisterComponents();
 	}
 
 	void ScriptEngine::CollectAllEntityClasses(MonoAssembly* assembly)
@@ -428,14 +439,13 @@ namespace DAZEL
 			const char* className = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
 
 			auto pMonoClass = mono_class_from_name(image, namespaceName, className);
-			auto pEntityClass = mono_class_from_name(image, "DAZEL", "Entity");
 
-			if (pMonoClass == pEntityClass)
+			if (pMonoClass == s_ScriptEngineData->pBaseEntityNativeClass)
 				continue;
 
 			std::string strFullName = namespaceName == "" ? className : std::format("{}.{}", namespaceName, className);
 
-			if (!mono_class_is_subclass_of(pMonoClass, pEntityClass, false))
+			if (!mono_class_is_subclass_of(pMonoClass, s_ScriptEngineData->pBaseEntityNativeClass, false))
 				continue;
 
 			auto scriptClass = CreateRef<ScriptClass>(namespaceName, className);
@@ -515,14 +525,14 @@ namespace DAZEL
 		return s_ScriptEngineData->pCurrentScene;
 	}
 
-	MonoAssembly* ScriptEngine::GetAssembly()
+	MonoAssembly* ScriptEngine::GetCoreAssembly()
 	{
-		return s_ScriptEngineData->pAssembly;
+		return s_ScriptEngineData->pCoreAssembly;
 	}
 
-	MonoImage* ScriptEngine::GetAssemblyImage()
+	MonoImage* ScriptEngine::GetCoreAssemblyImage()
 	{
-		return s_ScriptEngineData->pAssemblyImage;
+		return s_ScriptEngineData->pCoreAssemblyImage;
 	}
 
 	void ScriptEngine::InitMono()
@@ -544,9 +554,6 @@ namespace DAZEL
 
 		mono_jit_cleanup(s_ScriptEngineData->pRootDomain);
 		s_ScriptEngineData->pRootDomain = nullptr;
-
-		
-		s_ScriptEngineData->pAssembly = nullptr;
 	}
 	MonoObject* ScriptEngine::InstantiateClass(MonoClass* pMonoClass)
 	{
@@ -554,10 +561,10 @@ namespace DAZEL
 		mono_runtime_object_init(pClassInstance);
 		return pClassInstance;
 	}
-	ScriptClass::ScriptClass(const std::string& strClassNamespace, const std::string& strClassName)
+	ScriptClass::ScriptClass(const std::string& strClassNamespace, const std::string& strClassName, bool bIsCore)
 		: m_strClassNamespace(strClassNamespace), m_strClassName(strClassName)
 	{
-		m_pMonoClass = mono_class_from_name(s_ScriptEngineData->pAssemblyImage, m_strClassNamespace.c_str(), m_strClassName.c_str());
+		m_pMonoClass = mono_class_from_name(bIsCore ? s_ScriptEngineData->pCoreAssemblyImage : s_ScriptEngineData->pAppAssemblyImage, m_strClassNamespace.c_str(), m_strClassName.c_str());
 	}
 	MonoObject* ScriptClass::Instantiate()
 	{

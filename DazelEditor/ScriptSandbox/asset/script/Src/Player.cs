@@ -14,7 +14,6 @@ namespace Sandbox
 		private RigidBody2DComponent m_Rigidbody;
 		public void OnCreate()
 		{
-			Console.Write("OnCreate\n");
 			m_Transform = GetComponent<TransformComponent>();
 			m_Rigidbody = GetComponent<RigidBody2DComponent>();
 		}

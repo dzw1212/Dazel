@@ -23,17 +23,16 @@ namespace DAZEL
 		([]()
 			{
 				std::string_view typeName = typeid(ComponentType).name();
-				std::cout << typeName << std::endl;
 				size_t pos = typeName.find_last_of(':');
 				std::string_view structName = typeName.substr(pos + 1);
 				std::string managedTypename = std::format("DAZEL.{}", structName);
 
 				MonoType* managedType = mono_reflection_type_from_name(managedTypename.data(), ScriptEngine::GetCoreAssemblyImage());
 				if (!managedType)
-				{
-					LOG_ERROR("Script componentType {} not find", managedTypename);
 					return;
-				}
+
+				LOG_INFO("FInd script componentType : {}", managedTypename);
+
 				s_EntityHasComponentFuncs[managedType] = [](Entity entity) { return entity.HasComponent<ComponentType>(); };
 			}(), ...);
 	}

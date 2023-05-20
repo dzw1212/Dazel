@@ -4,6 +4,7 @@
 
 #include "Dazel/Scene/Components.h"
 #include "Dazel/Scene/Scene.h"
+#include "Dazel/Core/Application.h"
 
 #include "FileWatch.hpp"
 
@@ -331,29 +332,6 @@ namespace DAZEL
 
 	}
 
-	void fileWatchFunc(const std::string& path, const filewatch::Event change_type) 
-	{
-		LOG_ERROR("path = {}, change_type={}", path, filewatch::event_to_string(change_type));
-		switch (change_type)
-		{
-		case filewatch::Event::added:
-			std::cout << "The file was added to the directory." << '\n';
-			break;
-		case filewatch::Event::removed:
-			std::cout << "The file was removed from the directory." << '\n';
-			break;
-		case filewatch::Event::modified:
-			std::cout << "The file was modified. This can be a change in the time stamp or attributes." << '\n';
-			break;
-		case filewatch::Event::renamed_old:
-			std::cout << "The file was renamed and this is the old name." << '\n';
-			break;
-		case filewatch::Event::renamed_new:
-			std::cout << "The file was renamed and this is the new name." << '\n';
-			break;
-		};
-	}
-
 	struct ScriptEngineData
 	{
 		MonoDomain* pRootDomain = nullptr;
@@ -375,11 +353,41 @@ namespace DAZEL
 
 		Scene* pCurrentScene = nullptr;
 
-		filewatch::FileWatch<std::string>* pFileWatch;
+		Scope<filewatch::FileWatch<std::string>> AppAssemblyFileWatch;
+		bool bAssemblyReloadPending = false;
 	};
 
 	static ScriptEngineData *s_ScriptEngineData;
 
+	static void onAppAssemblyFileChange(const std::string& path, const filewatch::Event change_type)
+	{
+		LOG_ERROR("path = {}, change_type = {}", path, filewatch::event_to_string(change_type));
+		switch (change_type)
+		{
+		case filewatch::Event::added:
+			break;
+		case filewatch::Event::removed:
+			break;
+		case filewatch::Event::modified:
+			if (!s_ScriptEngineData->bAssemblyReloadPending)
+			{
+				s_ScriptEngineData->bAssemblyReloadPending = true;
+
+				Application::Get().SubmitFuncToMainThread([]()
+					{
+						s_ScriptEngineData->AppAssemblyFileWatch.reset();
+						ScriptEngine::ReloadAssembly();
+					});
+
+				//ScriptEngine::ReloadAssembly();
+			}
+			break;
+		case filewatch::Event::renamed_old:
+			break;
+		case filewatch::Event::renamed_new:
+			break;
+		};
+	}
 
 	void ScriptEngine::Init()
 	{
@@ -396,10 +404,6 @@ namespace DAZEL
 		s_ScriptEngineData->pBaseEntityNativeClass = mono_class_from_name(s_ScriptEngineData->pCoreAssemblyImage, "DAZEL", "Entity");
 
 		CollectAllEntityClasses(s_ScriptEngineData->pAppAssembly);
-
-		std::filesystem::path WatchFilepath("D:/dev/Dazel/DazelEditor/ScriptSandbox/asset/script/Src/Player.cs");
-
-		s_ScriptEngineData->pFileWatch = new filewatch::FileWatch<std::string>(WatchFilepath.string(), fileWatchFunc);
 	}
 	void ScriptEngine::Shutdown()
 	{
@@ -435,11 +439,15 @@ namespace DAZEL
 		s_ScriptEngineData->pAppAssembly = Utils::LoadCSharpAssembly(filepath.string());
 		s_ScriptEngineData->pAppAssemblyImage = mono_assembly_get_image(s_ScriptEngineData->pAppAssembly);
 
+		s_ScriptEngineData->AppAssemblyFileWatch = CreateScope<filewatch::FileWatch<std::string>>(s_ScriptEngineData->AppAssemblyFilepath.string(), onAppAssemblyFileChange);
+		s_ScriptEngineData->bAssemblyReloadPending = false;
+
 		return (s_ScriptEngineData->pAppAssembly != nullptr) && (s_ScriptEngineData->pAppAssemblyImage != nullptr);
 	}
 
 	void ScriptEngine::ReloadAssembly()
 	{
+		LOG_INFO("ReloadAssembly");
 		mono_domain_set(mono_get_root_domain(), false);
 
 		mono_domain_unload(s_ScriptEngineData->pAppDomain);

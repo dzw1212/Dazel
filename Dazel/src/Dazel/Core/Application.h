@@ -48,7 +48,8 @@ namespace DAZEL
 
 		inline ApplicationCommandLineArgs GetCommandLineArgs() const { return m_CommandLineArgs; }
 
-
+		void SubmitFuncToMainThread(const std::function<void()>& function);
+		void ExecuteMainThreadFuncQueue();
 	private:
 		bool OnWindowClose(WindowCloseEvent& event);
 		bool OnWindowResize(WindowResizeEvent& event);
@@ -63,6 +64,9 @@ namespace DAZEL
 		bool m_bMinimized = false;
 
 		ApplicationCommandLineArgs m_CommandLineArgs;
+
+		std::vector<std::function<void()>> m_vecMainThreadFuncQueue;
+		std::mutex m_MainThreadFuncQueueMutex;
 	};
 
 	Application* CreateApplication(ApplicationCommandLineArgs args);

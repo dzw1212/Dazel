@@ -80,6 +80,25 @@ namespace DAZEL
 		layer->OnAttach();
 	}
 
+	void Application::SubmitFuncToMainThread(const std::function<void()>& function)
+	{
+		std::scoped_lock<std::mutex> lock(m_MainThreadFuncQueueMutex);
+		m_vecMainThreadFuncQueue.push_back(function);
+	}
+
+	void Application::ExecuteMainThreadFuncQueue()
+	{
+		std::scoped_lock<std::mutex> lock(m_MainThreadFuncQueueMutex);
+
+		if (m_vecMainThreadFuncQueue.size() > 0)
+		{
+			for (auto& func : m_vecMainThreadFuncQueue)
+				func();
+
+			m_vecMainThreadFuncQueue.clear();
+		}
+	}
+
 	bool Application::OnWindowClose(WindowCloseEvent& event)
 	{
 		m_bRunning = false;
@@ -107,6 +126,8 @@ namespace DAZEL
 			float fCurTime = glfwGetTime();
 			Timestep timeStep = fCurTime - m_fLastFrameTime;
 			m_fLastFrameTime = fCurTime;
+
+			ExecuteMainThreadFuncQueue();
 
 			if (!m_bMinimized)
 			{

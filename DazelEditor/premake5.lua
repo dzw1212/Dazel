@@ -25,6 +25,7 @@ project "DazelEditor"
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.entt}",
         "%{IncludeDir.ImGuizmo}",
+        "%{IncludeDir.filewatch}",
     }
 
     links "Dazel"

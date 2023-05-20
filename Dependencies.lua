@@ -14,6 +14,7 @@ IncludeDir = {
     ["VulkanSDK"] = "%{VULKAN_SDK}/Include",
     ["Box2D"] = "%{wks.location}/Dazel/Vender/Box2D/include",
     ["mono"] = "%{wks.location}/Dazel/Vender/mono/include",
+    ["filewatch"] = "%{wks.location}/Dazel/Vender/filewatch",
 }
 
 LibraryDir = {

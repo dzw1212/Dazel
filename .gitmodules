@@ -19,3 +19,6 @@
 [submodule "Dazel/Vender/Box2D"]
 	path = Dazel/Vender/Box2D
 	url = https://github.com/dzw1212/box2d.git
+[submodule "Dazel/Vender/filewatch"]
+	path = Dazel/Vender/filewatch
+	url = https://github.com/dzw1212/filewatch.git

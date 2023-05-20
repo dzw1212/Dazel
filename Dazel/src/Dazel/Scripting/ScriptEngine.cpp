@@ -5,6 +5,8 @@
 #include "Dazel/Scene/Components.h"
 #include "Dazel/Scene/Scene.h"
 
+#include "FileWatch.hpp"
+
 #include "glm/glm.hpp"
 
 #include "mono/jit/jit.h"
@@ -325,6 +327,31 @@ namespace DAZEL
 				return ScriptFieldType::None;
 			}
 		}
+
+
+	}
+
+	void fileWatchFunc(const std::string& path, const filewatch::Event change_type) 
+	{
+		LOG_ERROR("path = {}, change_type={}", path, filewatch::event_to_string(change_type));
+		switch (change_type)
+		{
+		case filewatch::Event::added:
+			std::cout << "The file was added to the directory." << '\n';
+			break;
+		case filewatch::Event::removed:
+			std::cout << "The file was removed from the directory." << '\n';
+			break;
+		case filewatch::Event::modified:
+			std::cout << "The file was modified. This can be a change in the time stamp or attributes." << '\n';
+			break;
+		case filewatch::Event::renamed_old:
+			std::cout << "The file was renamed and this is the old name." << '\n';
+			break;
+		case filewatch::Event::renamed_new:
+			std::cout << "The file was renamed and this is the new name." << '\n';
+			break;
+		};
 	}
 
 	struct ScriptEngineData
@@ -347,6 +374,8 @@ namespace DAZEL
 		std::unordered_map<UUID, ScriptFieldMap> mapEntityScriptField;
 
 		Scene* pCurrentScene = nullptr;
+
+		filewatch::FileWatch<std::string>* pFileWatch;
 	};
 
 	static ScriptEngineData *s_ScriptEngineData;
@@ -367,6 +396,10 @@ namespace DAZEL
 		s_ScriptEngineData->pBaseEntityNativeClass = mono_class_from_name(s_ScriptEngineData->pCoreAssemblyImage, "DAZEL", "Entity");
 
 		CollectAllEntityClasses(s_ScriptEngineData->pAppAssembly);
+
+		std::filesystem::path WatchFilepath("D:/dev/Dazel/DazelEditor/ScriptSandbox/asset/script/Src/Player.cs");
+
+		s_ScriptEngineData->pFileWatch = new filewatch::FileWatch<std::string>(WatchFilepath.string(), fileWatchFunc);
 	}
 	void ScriptEngine::Shutdown()
 	{

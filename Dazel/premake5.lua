@@ -47,6 +47,7 @@ project "Dazel"
         "%{IncludeDir.VulkanSDK}",
         "%{IncludeDir.Box2D}",
         "%{IncludeDir.mono}",
+        "%{IncludeDir.filewatch}",
     }
 
     links

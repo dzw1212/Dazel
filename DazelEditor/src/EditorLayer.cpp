@@ -40,6 +40,7 @@ void EditorLayer::OnAttach()
 	m_SpriteSheet = DAZEL::Texture2D::Create("assert/game/texture/tilemap_packed.png");
 
 	m_PlayIcon = DAZEL::Texture2D::Create("Resource/Icon/Scene/PlayIcon.png");
+	m_PauseIcon = DAZEL::Texture2D::Create("Resource/Icon/Scene/PauseIcon.png");
 	m_StopIcon = DAZEL::Texture2D::Create("Resource/Icon/Scene/StopIcon.png");
 	m_SimulateIcon = DAZEL::Texture2D::Create("Resource/Icon/Scene/SimulateIcon.png");
 
@@ -159,6 +160,11 @@ void EditorLayer::OnUpdate(DAZEL::Timestep timeStep)
 			case SceneState::PLAY:
 			{
 				m_ActiveScene->OnUpdateRuntime(timeStep);
+				break;
+			}
+			case SceneState::PAUSE:
+			{
+				m_ActiveScene->OnUpdateRuntime(timeStep, false);
 				break;
 			}
 			case SceneState::EDIT:
@@ -557,7 +563,7 @@ void EditorLayer::UI_Tools()
 	float fSize = ImGui::GetWindowHeight() - 4.0f;
 	
 	{
-		DAZEL::Ref<DAZEL::Texture2D> icon = (m_SceneState == SceneState::EDIT || m_SceneState == SceneState::SIMULATE) ? m_PlayIcon : m_StopIcon;
+		DAZEL::Ref<DAZEL::Texture2D> icon = (m_SceneState == SceneState::EDIT || m_SceneState == SceneState::SIMULATE || m_SceneState == SceneState::PAUSE) ? m_PlayIcon : m_PauseIcon;
 		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (fSize * 0.5f));
 
 		if (ImGui::ImageButton((ImTextureID)icon->GetId(), ImVec2(fSize, fSize), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor) && toolbarEnabled)
@@ -565,20 +571,30 @@ void EditorLayer::UI_Tools()
 			if (m_SceneState == SceneState::EDIT || m_SceneState == SceneState::SIMULATE)
 				OnScenePlay();
 			else if (m_SceneState == SceneState::PLAY)
-				OnSceneStop();
+				OnScenePause();
+			else if (m_SceneState == SceneState::PAUSE)
+				OnSceneContinue();
 		}
 	}
 	ImGui::SameLine();
 	{
-		DAZEL::Ref<DAZEL::Texture2D> icon = (m_SceneState == SceneState::EDIT || m_SceneState == SceneState::PLAY) ? m_SimulateIcon : m_StopIcon;
+		DAZEL::Ref<DAZEL::Texture2D> icon = m_StopIcon;
 		if (ImGui::ImageButton((ImTextureID)icon->GetId(), ImVec2(fSize, fSize), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor) && toolbarEnabled)
 		{
-			if (m_SceneState == SceneState::EDIT || m_SceneState == SceneState::PLAY)
-				OnSceneSimulate();
-			else if (m_SceneState == SceneState::SIMULATE)
 				OnSceneStop();
 		}
 	}
+	//ImGui::SameLine();
+	//{
+	//	DAZEL::Ref<DAZEL::Texture2D> icon = (m_SceneState == SceneState::EDIT || m_SceneState == SceneState::PLAY) ? m_SimulateIcon : m_StopIcon;
+	//	if (ImGui::ImageButton((ImTextureID)icon->GetId(), ImVec2(fSize, fSize), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor) && toolbarEnabled)
+	//	{
+	//		if (m_SceneState == SceneState::EDIT || m_SceneState == SceneState::PLAY)
+	//			OnSceneSimulate();
+	//		else if (m_SceneState == SceneState::SIMULATE)
+	//			OnSceneStop();
+	//	}
+	//}
 
 	ImGui::PopStyleVar(2);
 	ImGui::PopStyleColor(3);
@@ -608,9 +624,25 @@ void EditorLayer::OnScenePlay()
 	m_ActiveScene->OnRuntimeStart();
 }
 
+void EditorLayer::OnScenePause()
+{
+	if (m_SceneState != SceneState::PLAY)
+		return;
+
+	m_SceneState = SceneState::PAUSE;
+}
+
+void EditorLayer::OnSceneContinue()
+{
+	if (m_SceneState != SceneState::PAUSE)
+		return;
+
+	m_SceneState = SceneState::PLAY;
+}
+
 void EditorLayer::OnSceneStop()
 {
-	if (m_SceneState == SceneState::PLAY)
+	if (m_SceneState == SceneState::PLAY || m_SceneState == SceneState::PAUSE)
 		m_ActiveScene->OnRuntimeStop();
 	else if (m_SceneState == SceneState::SIMULATE)
 		m_ActiveScene->OnSimulationStop();

@@ -11,6 +11,7 @@
 enum class SceneState
 {
 	PLAY,
+	PAUSE,
 	EDIT,
 	SIMULATE,
 };
@@ -34,6 +35,8 @@ public:
 public:
 	void UI_Tools();
 	void OnScenePlay();
+	void OnScenePause();
+	void OnSceneContinue();
 	void OnSceneStop();
 	void OnSceneSimulate();
 
@@ -91,6 +94,7 @@ private:
 	//Scene State
 	SceneState m_SceneState = SceneState::EDIT;
 	DAZEL::Ref<DAZEL::Texture2D> m_PlayIcon;
+	DAZEL::Ref<DAZEL::Texture2D> m_PauseIcon;
 	DAZEL::Ref<DAZEL::Texture2D> m_StopIcon;
 	DAZEL::Ref<DAZEL::Texture2D> m_SimulateIcon;
 

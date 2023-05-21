@@ -28,7 +28,7 @@ namespace DAZEL
 		Entity GetPrimaryCameraEntity();
 
 		void OnUpdateEditor(Timestep timeStep, EditorCamera& camera);
-		void OnUpdateRuntime(Timestep timeStep);
+		void OnUpdateRuntime(Timestep timeStep, bool bTickPhysical = true);
 		void OnUpdateSimulation(Timestep timeStep, EditorCamera& camera);
 		void OnViewportResize(UINT uiWidth, UINT uiHeight);
 

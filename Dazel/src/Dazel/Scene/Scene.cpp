@@ -51,7 +51,7 @@ namespace DAZEL
 	{
 		RenderScene(camera);
 	}
-	void Scene::OnUpdateRuntime(Timestep timeStep)
+	void Scene::OnUpdateRuntime(Timestep timeStep, bool bTickPhysical)
 	{
 		//Scripts - todo
 		auto scriptView = m_Registry.view<ScriptComponent>();
@@ -59,8 +59,10 @@ namespace DAZEL
 		{
 			ScriptEngine::OnUpdateEntity(Entity(entity, this), timeStep.GetSeconds());
 		}
+
 		//Physical
-		TickPhysical(timeStep);
+		if (bTickPhysical)
+			TickPhysical(timeStep);
 
 		//Render 2D
 		Camera* mainCamera = nullptr;
